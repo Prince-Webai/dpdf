@@ -3,10 +3,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, FileText, Zap, User, Star, Shield, Clock } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
-export default function DashboardOverview() {
+function DashboardOverviewContent() {
     const searchParams = useSearchParams()
     const isDevView = searchParams.get('view') === 'developer'
     const [user, setUser] = useState<any>(null)
@@ -185,5 +185,13 @@ export default function DashboardOverview() {
                 </Card>
             </div>
         </div>
+    )
+}
+
+export default function DashboardOverview() {
+    return (
+        <Suspense fallback={<div className="p-8 text-gray-500">Loading dashboard...</div>}>
+            <DashboardOverviewContent />
+        </Suspense>
     )
 }

@@ -1,5 +1,6 @@
 import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { Toaster } from "@/components/ui/toaster"
+export const dynamic = 'force-dynamic'
 
 export default function DashboardLayout({
     children,

@@ -1,5 +1,6 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { Toaster } from "@/components/ui/toaster"
+export const dynamic = 'force-dynamic'
 
 export default function AdminLayout({
     children,
