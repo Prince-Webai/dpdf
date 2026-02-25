@@ -32,6 +32,7 @@ export function DashboardSidebar() {
         { name: 'Usage Logs', href: '/dashboard/usage', icon: BarChart3 },
         { name: 'Extract Sandbox', href: '/dashboard/tools/extract', icon: FileText },
         { name: 'Documentation', href: '/docs', icon: BookOpen },
+        { name: 'Settings', href: '/dashboard/settings', icon: Settings },
     ]
 
     const navItems = isDevMode ? devItems : userItems
