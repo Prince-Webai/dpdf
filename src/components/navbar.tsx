@@ -2,11 +2,33 @@
 
 import Link from 'next/link'
 import { FileText, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/utils/supabase/client'
+import { User } from '@supabase/supabase-js'
+import { usePathname } from 'next/navigation'
 
 export function Navbar() {
+    const pathname = usePathname()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [user, setUser] = useState<User | null>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
+        }
+        getUser()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null)
+        })
+
+        return () => subscription.unsubscribe()
+    }, [supabase.auth])
+
+    if (pathname?.startsWith('/admin')) return null
 
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-lg">
@@ -24,12 +46,20 @@ export function Navbar() {
                 </div>
 
                 <div className="hidden md:flex items-center gap-4">
-                    <Button variant="ghost" asChild className="text-gray-300 hover:text-white hover:bg-white/10">
-                        <Link href="/login">Log in</Link>
-                    </Button>
-                    <Button asChild className="bg-white text-black hover:bg-gray-200">
-                        <Link href="/signup">Get Started</Link>
-                    </Button>
+                    {user ? (
+                        <Button asChild className="bg-white text-black hover:bg-gray-200">
+                            <Link href="/dashboard">Dashboard</Link>
+                        </Button>
+                    ) : (
+                        <>
+                            <Button variant="ghost" asChild className="text-gray-300 hover:text-white hover:bg-white/10">
+                                <Link href="/login">Log in</Link>
+                            </Button>
+                            <Button asChild className="bg-white text-black hover:bg-gray-200">
+                                <Link href="/signup">Get Started</Link>
+                            </Button>
+                        </>
+                    )}
                 </div>
 
                 {/* Mobile Nav Toggle */}
@@ -45,12 +75,20 @@ export function Navbar() {
                     <Link href="/pricing" className="text-gray-300 hover:text-white px-2 py-1">Pricing</Link>
                     <Link href="/docs" className="text-gray-300 hover:text-white px-2 py-1">Docs</Link>
                     <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/10">
-                        <Button variant="outline" asChild className="w-full border-white/20 text-white hover:bg-white/10">
-                            <Link href="/login">Log in</Link>
-                        </Button>
-                        <Button asChild className="w-full bg-indigo-600 text-white hover:bg-indigo-700">
-                            <Link href="/signup">Get Started</Link>
-                        </Button>
+                        {user ? (
+                            <Button asChild className="w-full bg-white text-black hover:bg-gray-200">
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Button>
+                        ) : (
+                            <>
+                                <Button variant="outline" asChild className="w-full border-white/20 text-white hover:bg-white/10">
+                                    <Link href="/login">Log in</Link>
+                                </Button>
+                                <Button asChild className="w-full bg-indigo-600 text-white hover:bg-indigo-700">
+                                    <Link href="/signup">Get Started</Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             )}

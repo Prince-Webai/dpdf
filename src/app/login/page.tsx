@@ -33,7 +33,13 @@ export default function LoginPage() {
                 throw error
             }
 
-            router.push('/dashboard')
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user?.app_metadata?.role === 'admin' || user?.email === 'devashishbhavsar1@duck.com') {
+                router.push('/admin')
+            } else {
+                router.push('/dashboard')
+            }
             router.refresh()
         } catch (err: any) {
             setError(err.message || "Failed to sign in")

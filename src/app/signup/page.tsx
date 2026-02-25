@@ -26,25 +26,32 @@ export default function SignupPage() {
         setError(null)
 
         try {
-            const { error: signUpError } = await supabase.auth.signUp({
+            // Import and use the admin action to bypass rate limits
+            const { adminSignUp } = await import('./actions')
+            const result = await adminSignUp({
                 email,
                 password,
-                options: {
-                    data: {
-                        first_name: firstName,
-                        last_name: lastName,
-                    }
-                }
+                firstName,
+                lastName
             })
 
-            if (signUpError) {
-                throw signUpError
+            if (!result.success) {
+                throw new Error(result.error)
             }
 
-            // Successfully signed up. They may need to confirm their email, 
-            // but for now redirect them to login or dashboard.
-            router.push('/dashboard')
-            router.refresh()
+            // Successfully signed up. Now log them in normally.
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+
+            if (signInError) {
+                // If auto-login fails, redirect to login page
+                router.push('/login?message=Account created successfully')
+            } else {
+                router.push('/dashboard')
+                router.refresh()
+            }
         } catch (err: any) {
             setError(err.message || "Failed to create account")
             setIsLoading(false)
