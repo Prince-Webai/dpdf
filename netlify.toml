@@ -5,10 +5,8 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[functions]
-  node_version = "20"
-
 [build.environment]
+  NODE_VERSION = "20"
   NEXT_USE_NETLIFY_EDGE = "true"
 
 [[headers]]

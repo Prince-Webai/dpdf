@@ -10,6 +10,8 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
+import { adminSignUp } from './actions'
+
 export default function SignupPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -26,8 +28,6 @@ export default function SignupPage() {
         setError(null)
 
         try {
-            // Import and use the admin action to bypass rate limits
-            const { adminSignUp } = await import('./actions')
             const result = await adminSignUp({
                 email,
                 password,
