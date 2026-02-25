@@ -44,7 +44,7 @@ export default function SettingsPage() {
             <Card className="bg-[#0a0a0a] border-white/10">
                 <CardHeader>
                     <CardTitle>Billing</CardTitle>
-                    <CardDescription className="text-gray-400">Manage your subscription and payment methods.</CardDescription>
+                    <CardDescription className="text-gray-400">Manage your billing and payment methods.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between items-center">

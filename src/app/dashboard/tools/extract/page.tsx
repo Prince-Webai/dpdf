@@ -42,8 +42,8 @@ export default function ExtractToolPage() {
 
             if (!uploadReq.ok) throw new Error("Failed to upload document");
 
-            // STEP 3: Call the Extract API using the uploaded file's URL
-            const extractReq = await fetch('/api/v1/pdf/convert/to/json', {
+            // STEP 3: Extract RAW TEXT from the PDF using PDF.co
+            const textReq = await fetch('/api/v1/pdf/convert/to/text', {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer dn_test_sandbox',
@@ -56,8 +56,30 @@ export default function ExtractToolPage() {
                 })
             });
 
-            if (!extractReq.ok) throw new Error("Failed to extract data");
+            if (!textReq.ok) throw new Error("Failed to extract document text");
+            const textData = await textReq.json();
+
+            if (textData.error) {
+                throw new Error(textData.message || "Failed to extract text from PDF");
+            }
+
+            // STEP 4: Send the extracted text to our OpenAI Extractor Prompt Endpoint
+            const extractReq = await fetch('/api/ai/extract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ documentText: textData.body })
+            });
+
+            if (!extractReq.ok) {
+                const errData = await extractReq.json();
+                throw new Error(errData.message || "AI extraction network request failed");
+            }
+
             const extractData = await extractReq.json();
+
+            if (extractData.error) {
+                throw new Error(extractData.message || "AI extraction failed");
+            }
 
             setResult(JSON.stringify(extractData, null, 2));
 
@@ -121,12 +143,12 @@ export default function ExtractToolPage() {
                                     </div>
                                 </div>
                             )}
+
+                            <div className="mt-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-200">
+                                <p><strong>Note:</strong> This sandbox leverages your Development API key automatically. Requests made here do not count towards your production quota.</p>
+                            </div>
                         </CardContent>
                     </Card>
-
-                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-200">
-                        <p><strong>Note:</strong> This sandbox leverages your Development API key automatically. Requests made here do not count towards your production quota.</p>
-                    </div>
                 </div>
 
                 {/* Output Panel */}

@@ -11,15 +11,47 @@ function DashboardOverviewContent() {
     const isDevView = searchParams.get('view') === 'developer'
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [stats, setStats] = useState({ totalCalls: 0, successRate: 100, activeKeys: 0 })
+    const [recentActivity, setRecentActivity] = useState<any[]>([])
     const supabase = createClient()
 
     useEffect(() => {
-        async function loadUser() {
+        async function loadDashboardData() {
             const { data: { user } } = await supabase.auth.getUser()
             setUser(user)
+
+            if (user) {
+                // Fetch Active Keys count directly from database
+                const { count: keysCount } = await supabase
+                    .from('api_keys')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', user.id)
+
+                // Fetch API request logs from database (if available) safely
+                const { data: requestLogs } = await supabase
+                    .from('api_requests')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5)
+
+                const activity = requestLogs || []
+
+                const successCount = activity.filter(r => r.status >= 200 && r.status < 300).length;
+                const calculatedSuccessRate = activity.length > 0 ? ((successCount / activity.length) * 100).toFixed(1) : 100;
+
+                setStats({
+                    totalCalls: activity.length,
+                    successRate: Number(calculatedSuccessRate),
+                    activeKeys: keysCount || 0
+                })
+
+                setRecentActivity(activity)
+            }
+
             setLoading(false)
         }
-        loadUser()
+        loadDashboardData()
     }, [])
 
     if (loading) return <div className="p-8 text-gray-500">Loading your profile...</div>
@@ -40,8 +72,7 @@ function DashboardOverviewContent() {
                             <Activity className="h-4 w-4 text-indigo-400" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-white">1,248</div>
-                            <p className="text-xs text-gray-500 mt-1">+12% from last month</p>
+                            <div className="text-3xl font-bold text-white">{stats.totalCalls}</div>
                         </CardContent>
                     </Card>
                     <Card className="bg-[#0a0a0a] border-white/10">
@@ -50,8 +81,7 @@ function DashboardOverviewContent() {
                             <Zap className="h-4 w-4 text-emerald-400" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-white">99.2%</div>
-                            <p className="text-xs text-gray-500 mt-1">Excellent performance</p>
+                            <div className="text-3xl font-bold text-white">{stats.successRate}%</div>
                         </CardContent>
                     </Card>
                     <Card className="bg-[#0a0a0a] border-white/10">
@@ -60,30 +90,30 @@ function DashboardOverviewContent() {
                             <Star className="h-4 w-4 text-orange-400" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-white">2</div>
-                            <p className="text-xs text-indigo-400 mt-1 hover:underline cursor-pointer">Manage keys</p>
+                            <div className="text-3xl font-bold text-white">{stats.activeKeys}</div>
                         </CardContent>
                     </Card>
                 </div>
-                {/* ... rest of dev view (existing activity) ... */}
+
                 <h2 className="text-xl font-semibold mb-4 mt-12">Recent API Activity</h2>
                 <Card className="bg-[#0a0a0a] border-white/10 overflow-hidden">
                     <div className="divide-y divide-white/10">
-                        {[
-                            { action: "PDF to JSON Extraction", status: 200, time: "2 minutes ago", id: "req_xyz123" },
-                            { action: "Merge PDF Documents", status: 200, time: "1 hour ago", id: "req_abc456" },
-                        ].map((item, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-2 h-2 rounded-full ${item.status === 200 ? 'bg-green-500' : 'bg-red-500'}`} />
-                                    <div>
-                                        <p className="font-medium text-sm text-gray-200">{item.action}</p>
-                                        <p className="text-xs text-gray-500 font-mono">{item.id}</p>
+                        {recentActivity.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500">No recent API activity found in the database.</div>
+                        ) : (
+                            recentActivity.map((item, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-2 h-2 rounded-full ${item.status >= 200 && item.status < 300 ? 'bg-green-500' : 'bg-red-500'}`} />
+                                        <div>
+                                            <p className="font-medium text-sm text-gray-200">{item.action || "API Request"}</p>
+                                            <p className="text-xs text-gray-500 font-mono">{item.id}</p>
+                                        </div>
                                     </div>
+                                    <div className="text-sm text-gray-400">{new Date(item.created_at).toLocaleString()}</div>
                                 </div>
-                                <div className="text-sm text-gray-400">{item.time}</div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </Card>
             </div>
@@ -169,19 +199,19 @@ function DashboardOverviewContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="bg-[#0a0a0a] border-white/10 p-4">
                     <p className="text-xs text-gray-500 mb-1">Total Requests</p>
-                    <p className="text-xl font-bold text-white">1.2k</p>
+                    <p className="text-xl font-bold text-white">{stats.totalCalls}</p>
                 </Card>
                 <Card className="bg-[#0a0a0a] border-white/10 p-4">
                     <p className="text-xs text-gray-500 mb-1">Average Response</p>
                     <p className="text-xl font-bold text-white">450ms</p>
                 </Card>
                 <Card className="bg-[#0a0a0a] border-white/10 p-4">
-                    <p className="text-xs text-gray-500 mb-1">Uptime</p>
-                    <p className="text-xl font-bold text-white">99.99%</p>
+                    <p className="text-xs text-gray-500 mb-1">Success Rate</p>
+                    <p className="text-xl font-bold text-white">{stats.successRate}%</p>
                 </Card>
                 <Card className="bg-[#0a0a0a] border-white/10 p-4">
                     <p className="text-xs text-gray-500 mb-1">Support Tier</p>
-                    <p className="text-xl font-bold text-indigo-400">Standard</p>
+                    <p className="text-xl font-bold text-indigo-400">{plan}</p>
                 </Card>
             </div>
         </div>
