@@ -11,7 +11,7 @@ export async function createInitialAdmin() {
         const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
         if (listError) throw listError
 
-        const adminEmail = 'devashishbhavsar1@duck.com'
+        const adminEmail = process.env.ADMIN_EMAIL || 'devashishbhavsar1@duck.com'
         const existingAdmin = users.find(u => u.email === adminEmail)
 
         if (existingAdmin) {
@@ -25,7 +25,7 @@ export async function createInitialAdmin() {
         // Create the admin user
         const { data, error } = await supabase.auth.admin.createUser({
             email: adminEmail,
-            password: 'N1ckS0n@Doc@Nexus',
+            password: process.env.INITIAL_ADMIN_PASSWORD || 'ChangeMe123!',
             email_confirm: true,
             app_metadata: { role: 'admin' },
             user_metadata: {

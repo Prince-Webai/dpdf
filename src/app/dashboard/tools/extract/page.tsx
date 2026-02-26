@@ -4,11 +4,29 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Upload, FileText, Loader2, Code, Download } from "lucide-react"
+import Script from 'next/script'
 
 export default function ExtractToolPage() {
     const [file, setFile] = useState<File | null>(null)
     const [isProcessing, setIsProcessing] = useState(false)
     const [result, setResult] = useState<string | null>(null)
+
+    const extractTextLocally = async (file: File): Promise<string> => {
+        const arrayBuffer = await file.arrayBuffer();
+        // @ts-ignore
+        if (!window.pdfjsLib) throw new Error("PDF library not loaded yet. Please wait a moment.");
+        // @ts-ignore
+        const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            // @ts-ignore
+            const pageText = textContent.items.map((item: any) => item.str).join(" ");
+            fullText += pageText + "\n";
+        }
+        return fullText;
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -23,55 +41,83 @@ export default function ExtractToolPage() {
         setResult(null)
 
         try {
-            // STEP 1: Get Pre-signed URL from PDF.co via our Proxy
-            // We use a mock API key 'dn_test_sandbox' to bypass our local middleware check
-            const presignedReq = await fetch('/api/v1/file/upload/get-presigned-url?name=' + encodeURIComponent(file.name), {
-                headers: { 'Authorization': 'Bearer dn_test_sandbox' }
-            });
+            let documentText = "";
 
-            if (!presignedReq.ok) throw new Error("Failed to get upload URL");
-            const presignedData = await presignedReq.json();
+            // Attempt to use PDF.co Proxy first (the platform standard)
+            try {
+                // STEP 1: Get Pre-signed URL from PDF.co via our Proxy
+                const presignedReq = await fetch('/api/v1/file/upload/get-presigned-url?name=' + encodeURIComponent(file.name), {
+                    headers: { 'Authorization': 'Bearer dn_test_sandbox' }
+                });
 
-            // STEP 2: Upload the actual file directly to the provided PDF.co AWS S3 bucket
-            // This goes directly to the presigned URL, NOT through our proxy
-            const uploadReq = await fetch(presignedData.presignedUrl, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/pdf' },
-                body: file
-            });
+                if (!presignedReq.ok) {
+                    const errData = await presignedReq.json().catch(() => ({}));
+                    const errorMsg = errData.error || errData.message || "";
 
-            if (!uploadReq.ok) throw new Error("Failed to upload document");
+                    // If the master key is missing, we fall back to local extraction automatically
+                    if (presignedReq.status === 500 && (errorMsg.includes("Missing upstream") || errorMsg.includes("PDFCO_MASTER_API_KEY"))) {
+                        console.log("PDF.co not configured. Falling back to local AI extraction...");
+                        documentText = await extractTextLocally(file);
+                    } else {
+                        throw new Error(errorMsg || "Failed to get upload URL (Status " + presignedReq.status + ")");
+                    }
+                } else {
+                    const presignedData = await presignedReq.json();
 
-            // STEP 3: Extract RAW TEXT from the PDF using PDF.co
-            const textReq = await fetch('/api/v1/pdf/convert/to/text', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer dn_test_sandbox',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: presignedData.url,
-                    inline: true,
-                    async: false // For sandboxes we want synchronous responses
-                })
-            });
+                    // STEP 2: Upload the actual file directly to the provided PDF.co AWS S3 bucket
+                    const uploadReq = await fetch(presignedData.presignedUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/pdf' },
+                        body: file
+                    });
 
-            if (!textReq.ok) throw new Error("Failed to extract document text");
-            const textData = await textReq.json();
+                    if (!uploadReq.ok) throw new Error("Failed to upload document");
 
-            if (textData.error) {
-                throw new Error(textData.message || "Failed to extract text from PDF");
+                    // STEP 3: Extract RAW TEXT from the PDF using PDF.co
+                    const textReq = await fetch('/api/v1/pdf/convert/to/text', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer dn_test_sandbox',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            url: presignedData.url,
+                            inline: true,
+                            async: false
+                        })
+                    });
+
+                    if (!textReq.ok) {
+                        const errData = await textReq.json().catch(() => ({}));
+                        throw new Error(errData.error || errData.message || "Failed to extract document text (Status " + textReq.status + ")");
+                    }
+                    const textData = await textReq.json();
+
+                    if (textData.error) {
+                        throw new Error(textData.message || "Failed to extract text from PDF");
+                    }
+
+                    documentText = textData.body;
+                }
+            } catch (proxyError: any) {
+                // If it's just a configuration error, we might have already set documentText or we can try here
+                if (!documentText) {
+                    console.log("Proxy failed, trying local extraction:", proxyError.message);
+                    documentText = await extractTextLocally(file);
+                } else {
+                    throw proxyError;
+                }
             }
 
             // STEP 4: Send the extracted text to our OpenAI Extractor Prompt Endpoint
             const extractReq = await fetch('/api/ai/extract', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ documentText: textData.body })
+                body: JSON.stringify({ documentText })
             });
 
             if (!extractReq.ok) {
-                const errData = await extractReq.json();
+                const errData = await extractReq.json().catch(() => ({}));
                 throw new Error(errData.message || "AI extraction network request failed");
             }
 
@@ -92,6 +138,19 @@ export default function ExtractToolPage() {
         } finally {
             setIsProcessing(false)
         }
+    }
+
+    const handleDownload = () => {
+        if (!result) return
+        const blob = new Blob([result], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `extracted_${file?.name.replace('.pdf', '') || 'data'}.txt`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
     }
 
     return (
@@ -157,7 +216,12 @@ export default function ExtractToolPage() {
                         <div className="bg-white/5 border-b border-white/10 px-4 py-3 flex items-center justify-between">
                             <h3 className="font-semibold text-sm flex items-center gap-2"><Code className="h-4 w-4 text-emerald-400" /> JSON Response</h3>
                             {result && (
-                                <Button variant="ghost" size="sm" className="h-8 text-xs text-gray-400 hover:text-white">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 text-xs text-gray-400 hover:text-white"
+                                    onClick={handleDownload}
+                                >
                                     <Download className="h-3 w-3 mr-2" /> Download
                                 </Button>
                             )}
@@ -194,6 +258,14 @@ export default function ExtractToolPage() {
                     </Card>
                 </div>
             </div>
+            <Script
+                src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+                strategy="afterInteractive"
+                onLoad={() => {
+                    // @ts-ignore
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                }}
+            />
         </div>
     )
 }

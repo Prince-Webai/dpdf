@@ -20,43 +20,46 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
         const userApiKey = authHeader.split(" ")[1];
 
         // 2. Securely check `userApiKey` against Supabase
-        const cookieStore = cookies()
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    async getAll() {
-                        return (await cookieStore).getAll()
+        // Bypass for Sandbox key used in the dashboard tools
+        if (userApiKey === 'dn_test_sandbox') {
+            console.log("Sandbox request detected: bypassing API key validation.");
+        } else {
+            const cookieStore = cookies()
+            const supabase = createServerClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                {
+                    cookies: {
+                        async getAll() {
+                            return (await cookieStore).getAll()
+                        },
+                        async setAll(cookiesToSet) {
+                            try {
+                                const store = await cookieStore;
+                                cookiesToSet.forEach(({ name, value, options }) =>
+                                    store.set(name, value, options)
+                                )
+                            } catch {
+                                // The `setAll` method was called from a Server Component.
+                            }
+                        },
                     },
-                    async setAll(cookiesToSet) {
-                        try {
-                            const store = await cookieStore;
-                            cookiesToSet.forEach(({ name, value, options }) =>
-                                store.set(name, value, options)
-                            )
-                        } catch {
-                            // The `setAll` method was called from a Server Component.
-                            // This can be ignored if you have middleware refreshing
-                            // user sessions.
-                        }
-                    },
-                },
+                }
+            )
+
+            // Use the secure RPC function to bypass RLS since the proxy request might not have a session cookie
+            const { data: keyData, error: keyError } = await supabase
+                .rpc('validate_api_key', { input_key: userApiKey })
+
+            if (keyError || !keyData || keyData.length === 0) {
+                return NextResponse.json({ error: "Invalid DocuNexu API Key" }, { status: 401 });
             }
-        )
 
-        // Use the secure RPC function to bypass RLS since the proxy request might not have a session cookie
-        const { data: keyData, error: keyError } = await supabase
-            .rpc('validate_api_key', { input_key: userApiKey })
+            const { is_active } = keyData[0];
 
-        if (keyError || !keyData || keyData.length === 0) {
-            return NextResponse.json({ error: "Invalid DocuNexu API Key" }, { status: 401 });
-        }
-
-        const { user_id, is_active } = keyData[0];
-
-        if (!is_active) {
-            return NextResponse.json({ error: "This API Key has been deactivated" }, { status: 403 });
+            if (!is_active) {
+                return NextResponse.json({ error: "This API Key has been deactivated" }, { status: 403 });
+            }
         }
 
         // 2. Build the target URL

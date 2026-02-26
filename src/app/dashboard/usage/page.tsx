@@ -24,7 +24,7 @@ export default function UsagePage() {
 
                 // Fetch API request logs safely
                 const { data: requestLogs } = await supabase
-                    .from('api_requests')
+                    .from('usage_logs')
                     .select('*')
                     .eq('user_id', user.id)
 
