@@ -32,8 +32,26 @@ create policy "Users can update own profile." on profiles
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url)
-  values (new.id, new.email, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
+  insert into public.profiles (id, email, full_name, avatar_url, plan, credits, token_limit, credit_limit)
+  values (
+    new.id, 
+    new.email, 
+    coalesce(new.raw_user_meta_data->>'full_name', ''), 
+    new.raw_user_meta_data->>'avatar_url',
+    coalesce(new.raw_user_meta_data->>'plan', 'free'),
+    coalesce((new.raw_user_meta_data->>'credits')::int, 100),
+    coalesce((new.raw_user_meta_data->>'token_limit')::int, 50000),
+    coalesce((new.raw_user_meta_data->>'credits')::int, 100)
+  )
+  on conflict (id) do update
+  set 
+    email = excluded.email,
+    full_name = excluded.full_name,
+    avatar_url = excluded.avatar_url,
+    plan = excluded.plan,
+    credits = excluded.credits,
+    token_limit = excluded.token_limit,
+    credit_limit = excluded.credit_limit;
   return new;
 end;
 $$ language plpgsql security definer;

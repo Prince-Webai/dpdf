@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-import { adminSignUp } from './actions'
+import { signUpUser } from './actions'
 
 export default function SignupPage() {
     const [isLoading, setIsLoading] = useState(false)
@@ -28,7 +28,7 @@ export default function SignupPage() {
         setError(null)
 
         try {
-            const result = await adminSignUp({
+            const result = await signUpUser({
                 email,
                 password,
                 firstName,
@@ -39,18 +39,17 @@ export default function SignupPage() {
                 throw new Error(result.error)
             }
 
-            // Successfully signed up. Now log them in normally.
-            const { error: signInError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            })
+            // If the signup was successful, Supabase might send a confirmation email
+            // or log the user in automatically depending on the settings.
+            // We check if a session was created.
+            const { data: { session } } = await supabase.auth.getSession()
 
-            if (signInError) {
-                // If auto-login fails, redirect to login page
-                router.push('/login?message=Account created successfully')
-            } else {
+            if (session) {
                 router.push('/dashboard')
                 router.refresh()
+            } else {
+                // If no session, it likely means email confirmation is required
+                router.push('/login?message=Please check your email to confirm your account')
             }
         } catch (err: any) {
             setError(err.message || "Failed to create account")
