@@ -24,7 +24,7 @@ export default function LoginPage() {
         setError(null)
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             })
@@ -33,14 +33,13 @@ export default function LoginPage() {
                 throw error
             }
 
-            const { data: { user } } = await supabase.auth.getUser()
-
-            if (user?.app_metadata?.role === 'admin' || user?.email === 'devashishbhavsar1@duck.com') {
-                router.push('/admin')
-            } else {
-                router.push('/dashboard')
+            if (data.user) {
+                if (data.user?.app_metadata?.role === 'admin' || data.user?.email === 'devashishbhavsar1@duck.com') {
+                    window.location.href = '/admin'
+                } else {
+                    window.location.href = '/dashboard'
+                }
             }
-            router.refresh()
         } catch (err: any) {
             setError(err.message || "Failed to sign in")
             setIsLoading(false)
