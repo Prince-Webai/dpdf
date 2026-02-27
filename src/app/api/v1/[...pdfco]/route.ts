@@ -19,6 +19,8 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
 
         const userApiKey = authHeader.split(" ")[1];
 
+        let userId: string | null = null;
+
         // 2. Securely check `userApiKey` against Supabase
         // Bypass for Sandbox key used in the dashboard tools
         if (userApiKey === 'dn_test_sandbox') {
@@ -55,10 +57,22 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
                 return NextResponse.json({ error: "Invalid DocuNexu API Key" }, { status: 401 });
             }
 
-            const { is_active } = keyData[0];
+            const { is_active, user_id } = keyData[0];
+            userId = user_id;
 
             if (!is_active) {
                 return NextResponse.json({ error: "This API Key has been deactivated" }, { status: 403 });
+            }
+
+            // check if user has credits
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('credits')
+                .eq('id', userId)
+                .single();
+
+            if (profileError || !profile || (profile.credits || 0) <= 0) {
+                return NextResponse.json({ error: "Insufficient credits. Please upgrade your plan." }, { status: 402 });
             }
         }
 
@@ -118,6 +132,26 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
         const responseHeaders = new Headers(proxyResponse.headers);
         // Explicitly prevent sending back our upstream API key if somehow it was echoed
         responseHeaders.delete('x-api-key');
+
+        // 7. If successful (2xx), deduct credits and log usage
+        if (proxyResponse.ok && userId) {
+            // We use a service client or admin client to bypass RLS for deduction since it's a proxy operation
+            const { createAdminClient } = await import("@/utils/supabase/admin");
+            const adminSupabase = await createAdminClient();
+
+            // Deduct 1 credit
+            await adminSupabase.rpc('deduct_user_credits', {
+                p_user_id: userId,
+                p_amount: 1
+            });
+
+            // Log usage
+            await adminSupabase.from('usage_logs').insert({
+                user_id: userId,
+                endpoint: path,
+                credits_used: 1
+            });
+        }
 
         // Return blob for binary data, or text/json
         const responseBuffer = await proxyResponse.arrayBuffer();
