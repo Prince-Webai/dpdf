@@ -180,12 +180,12 @@ export async function updateUserMetadata(userId: string, data: {
         if (error) throw error
 
         // Also update the profiles table in the public schema for faster access and search
-        // Use upsert so even if something is missing it always gets written correctly
         const profileUpsert: any = {
             id: userId,
+            email: currentUser?.email, // Ensure email is present for NOT NULL constraint
         }
 
-        // Only include fields that are being updated (avoid overwriting unrelated fields with undefined)
+        // Only include fields that are being updated
         if (updateData.user_metadata.plan !== undefined) profileUpsert.plan = updateData.user_metadata.plan
         if (updateData.user_metadata.credits !== undefined) profileUpsert.credits = updateData.user_metadata.credits
         if (updateData.user_metadata.token_limit !== undefined) profileUpsert.token_limit = updateData.user_metadata.token_limit
@@ -198,14 +198,12 @@ export async function updateUserMetadata(userId: string, data: {
 
         if (profileError) {
             console.error('Error upserting profile table:', profileError)
-            // Don't throw — auth.users was already updated successfully
-        } else {
-            console.log('Profile table updated successfully for user:', userId)
+            // Still proceed as auth.users was updated, but log the error
         }
 
-        // Only revalidate the user-facing dashboard (server cache)
-        // Admin page is client-side and refreshes itself via loadUsers()
-        revalidatePath('/dashboard')
+        // Broadly revalidate the dashboard paths
+        revalidatePath('/dashboard', 'layout')
+        revalidatePath('/admin/users')
 
         return { success: true }
     } catch (error: any) {

@@ -2,13 +2,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, FileText, Zap, User, Star, Shield, Clock } from "lucide-react"
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useProfile } from '@/context/profile-context'
+import { Button } from "@/components/ui/button"
 
 function DashboardOverviewContent() {
     const searchParams = useSearchParams()
+    const router = useRouter()
     const isDevView = searchParams.get('view') === 'developer'
     const { user, plan, credits, creditLimit, creditPercentage, fullName, loading } = useProfile()
     const [stats, setStats] = useState({ totalCalls: 0, successRate: 100, activeKeys: 0 })
@@ -176,9 +178,12 @@ function DashboardOverviewContent() {
                                 <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${creditPercentage}%` }} />
                             </div>
                         </div>
-                        <button className="w-full mt-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                        <Button
+                            onClick={() => router.push('/pricing')}
+                            className="w-full mt-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors"
+                        >
                             Upgrade Plan
-                        </button>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
