@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-import { signUpUser } from '@/lib/auth-actions'
+import { signUpUser } from '@/lib/actions'
 
 export default function SignupPage() {
     const [isLoading, setIsLoading] = useState(false)

@@ -18,7 +18,7 @@ import {
 import { useProfile } from '@/context/profile-context'
 import { Loader2, AlertTriangle, CreditCard, Zap } from "lucide-react"
 import { createClient } from '@/utils/supabase/client'
-import { deleteSelfAccount } from '../actions'
+import { deleteSelfAccount } from '@/lib/actions'
 import { toast } from '@/hooks/use-toast'
 
 const PLAN_DISPLAY: Record<string, { label: string; description: string; color: string }> = {

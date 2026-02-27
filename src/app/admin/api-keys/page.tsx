@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Ban, Key, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react"
-import { listAllApiKeys, revokeApiKey } from "../actions"
+import { listAllApiKeys, revokeApiKey } from "@/lib/actions"
 
 interface ApiKey {
     id: string;

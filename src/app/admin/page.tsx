@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Key, Activity, ArrowUpRight, Loader2 } from "lucide-react"
-import { getAdminStats, createInitialAdmin } from "./actions"
+import { getAdminStats, createInitialAdmin } from "@/lib/actions"
 
 export default function AdminOverviewPage() {
     const [stats, setStats] = useState<{

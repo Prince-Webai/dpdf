@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Ban, UserCheck, Shield, MoreHorizontal, Loader2 } from "lucide-react"
-import { listAllUsers, updateUserMetadata, deleteUserAccount, getUserUsage } from "../actions"
+import { listAllUsers, updateUserMetadata, deleteUserAccount, getUserUsage } from "@/lib/actions"
 import { toast } from "@/hooks/use-toast"
 import {
     Dialog,
