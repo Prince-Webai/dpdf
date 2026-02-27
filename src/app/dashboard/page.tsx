@@ -5,61 +5,49 @@ import { Activity, FileText, Zap, User, Star, Shield, Clock } from "lucide-react
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { useProfile } from '@/context/profile-context'
 
 function DashboardOverviewContent() {
     const searchParams = useSearchParams()
     const isDevView = searchParams.get('view') === 'developer'
-    const [user, setUser] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
+    const { user, plan, credits, creditLimit, creditPercentage, fullName, loading } = useProfile()
     const [stats, setStats] = useState({ totalCalls: 0, successRate: 100, activeKeys: 0 })
     const [recentActivity, setRecentActivity] = useState<any[]>([])
+    const [statsLoading, setStatsLoading] = useState(true)
     const supabase = createClient()
 
     useEffect(() => {
-        async function loadDashboardData() {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
+        if (!user?.id) return
 
-            if (user) {
-                // Fetch Active Keys count directly from database
-                const { count: keysCount } = await supabase
-                    .from('api_keys')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('user_id', user.id)
+        async function loadStats() {
+            setStatsLoading(true)
+            const { count: keysCount } = await supabase
+                .from('api_keys')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
 
-                // Fetch API request logs from database (if available) safely
-                const { data: requestLogs } = await supabase
-                    .from('api_requests')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('created_at', { ascending: false })
-                    .limit(5)
+            const { data: requestLogs } = await supabase
+                .from('api_requests')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(5)
 
-                const activity = requestLogs || []
+            const activity = requestLogs || []
+            const successCount = activity.filter((r: any) => r.status >= 200 && r.status < 300).length
+            const calculatedSuccessRate = activity.length > 0
+                ? Number(((successCount / activity.length) * 100).toFixed(1))
+                : 100
 
-                const successCount = activity.filter(r => r.status >= 200 && r.status < 300).length;
-                const calculatedSuccessRate = activity.length > 0 ? ((successCount / activity.length) * 100).toFixed(1) : 100;
-
-                setStats({
-                    totalCalls: activity.length,
-                    successRate: Number(calculatedSuccessRate),
-                    activeKeys: keysCount || 0
-                })
-
-                setRecentActivity(activity)
-            }
-
-            setLoading(false)
+            setStats({ totalCalls: activity.length, successRate: calculatedSuccessRate, activeKeys: keysCount || 0 })
+            setRecentActivity(activity)
+            setStatsLoading(false)
         }
-        loadDashboardData()
-    }, [])
+
+        loadStats()
+    }, [user?.id])
 
     if (loading) return <div className="p-8 text-gray-500">Loading your profile...</div>
-
-    const userMetadata = user?.user_metadata || {}
-    const plan = userMetadata.plan || 'Hobby'
-    const credits = userMetadata.credits || 100
-    const fullName = userMetadata.full_name || 'DocuNexu User'
 
     if (isDevView) {
         return (
@@ -99,7 +87,7 @@ function DashboardOverviewContent() {
                 <Card className="bg-[#0a0a0a] border-white/10 overflow-hidden">
                     <div className="divide-y divide-white/10">
                         {recentActivity.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">No recent API activity found in the database.</div>
+                            <div className="p-8 text-center text-gray-500">No recent API activity found.</div>
                         ) : (
                             recentActivity.map((item, i) => (
                                 <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
@@ -162,14 +150,14 @@ function DashboardOverviewContent() {
                                 <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Joined Date</p>
                                 <div className="flex items-center gap-2 text-white">
                                     <Clock className="h-4 w-4 text-orange-400" />
-                                    <span>{new Date(user?.created_at).toLocaleDateString()}</span>
+                                    <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}</span>
                                 </div>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Usage/Plan Card */}
+                {/* Plan Card */}
                 <Card className="bg-indigo-600/5 border-indigo-500/20 backdrop-blur-sm">
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -178,14 +166,14 @@ function DashboardOverviewContent() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="text-4xl font-black text-white">{plan}</div>
+                        <div className="text-4xl font-black text-white capitalize">{plan}</div>
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-400">Credits Remaining</span>
-                                <span className="text-white font-bold">{credits} / 100</span>
+                                <span className="text-white font-bold">{credits.toLocaleString()} / {creditLimit.toLocaleString()}</span>
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-indigo-500" style={{ width: `${credits}%` }} />
+                                <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${creditPercentage}%` }} />
                             </div>
                         </div>
                         <button className="w-full mt-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
@@ -211,7 +199,7 @@ function DashboardOverviewContent() {
                 </Card>
                 <Card className="bg-[#0a0a0a] border-white/10 p-4">
                     <p className="text-xs text-gray-500 mb-1">Support Tier</p>
-                    <p className="text-xl font-bold text-indigo-400">{plan}</p>
+                    <p className="text-xl font-bold text-indigo-400 capitalize">{plan}</p>
                 </Card>
             </div>
         </div>

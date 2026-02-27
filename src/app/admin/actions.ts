@@ -2,6 +2,7 @@
 
 import { createAdminClient } from "@/utils/supabase/admin"
 import { createClient } from "@/utils/supabase/server"
+import { revalidatePath } from 'next/cache'
 
 export async function createInitialAdmin() {
     try {
@@ -95,21 +96,40 @@ export async function listAllUsers() {
 
         if (error) throw error
 
-        return users.map(user => ({
-            id: user.id,
-            email: user.email || '',
-            name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
-            role: user.app_metadata?.role || 'user',
-            status: user.banned_until ? 'suspended' : 'active',
-            joined: user.created_at,
-            plan: user.user_metadata?.plan || 'Hobby',
-            credits: user.user_metadata?.credits || 100,
-            tokenLimit: user.user_metadata?.token_limit || 50000
-        }))
+        // Also fetch profiles table so plan/credits reflect the source of truth
+        const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, plan, credits, token_limit, credit_limit, full_name')
+
+        const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]))
+
+        return users.map(user => {
+            const profile = profileMap.get(user.id)
+            return {
+                id: user.id,
+                email: user.email || '',
+                name: profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
+                role: user.app_metadata?.role || 'user',
+                status: user.banned_until ? 'suspended' : 'active',
+                joined: user.created_at,
+                // Prefer profiles table (source of truth) over user_metadata
+                plan: profile?.plan || user.user_metadata?.plan || 'free',
+                credits: profile?.credits ?? user.user_metadata?.credits ?? 100,
+                tokenLimit: profile?.token_limit ?? user.user_metadata?.token_limit ?? 50000
+            }
+        })
     } catch (error) {
         console.error('Error listing users:', error)
         return []
     }
+}
+
+const PLAN_LIMITS: Record<string, { credits: number, token_limit: number }> = {
+    'free': { credits: 100, token_limit: 50000 },
+    'Hobby': { credits: 100, token_limit: 50000 },
+    'Basic': { credits: 17000, token_limit: 1000000 },
+    'Personal': { credits: 37000, token_limit: 5000000 },
+    'Business': { credits: 81000, token_limit: 20000000 }
 }
 
 export async function updateUserMetadata(userId: string, data: {
@@ -121,12 +141,35 @@ export async function updateUserMetadata(userId: string, data: {
     try {
         const supabase = await createAdminClient()
 
+        // Get current user data to see if we're overwriting or just updating
+        const { data: { user: currentUser }, error: fetchError } = await supabase.auth.admin.getUserById(userId)
+        if (fetchError) throw fetchError
+
         const updateData: any = {
-            user_metadata: {}
+            user_metadata: { ...currentUser?.user_metadata }
         }
 
-        if (data.plan) updateData.user_metadata.plan = data.plan
-        if (data.credits !== undefined) updateData.user_metadata.credits = data.credits
+        if (data.plan) {
+            updateData.user_metadata.plan = data.plan
+            // Automatically update credits and token limit based on plan if not explicitly provided
+            const limits = PLAN_LIMITS[data.plan] || PLAN_LIMITS['free']
+
+            if (data.credits === undefined) {
+                updateData.user_metadata.credits = limits.credits
+                updateData.user_metadata.credit_limit = limits.credits
+            }
+            if (data.tokenLimit === undefined) {
+                updateData.user_metadata.token_limit = limits.token_limit
+            }
+        }
+
+        if (data.credits !== undefined) {
+            updateData.user_metadata.credits = data.credits
+            // Ensure credit_limit is at least as large as the current credits
+            if (data.credits > (updateData.user_metadata.credit_limit || 0)) {
+                updateData.user_metadata.credit_limit = data.credits
+            }
+        }
         if (data.tokenLimit !== undefined) updateData.user_metadata.token_limit = data.tokenLimit
 
         if (data.role) {
@@ -135,6 +178,34 @@ export async function updateUserMetadata(userId: string, data: {
 
         const { error } = await supabase.auth.admin.updateUserById(userId, updateData)
         if (error) throw error
+
+        // Also update the profiles table in the public schema for faster access and search
+        // Use upsert so even if something is missing it always gets written correctly
+        const profileUpsert: any = {
+            id: userId,
+        }
+
+        // Only include fields that are being updated (avoid overwriting unrelated fields with undefined)
+        if (updateData.user_metadata.plan !== undefined) profileUpsert.plan = updateData.user_metadata.plan
+        if (updateData.user_metadata.credits !== undefined) profileUpsert.credits = updateData.user_metadata.credits
+        if (updateData.user_metadata.token_limit !== undefined) profileUpsert.token_limit = updateData.user_metadata.token_limit
+        if (updateData.user_metadata.credit_limit !== undefined) profileUpsert.credit_limit = updateData.user_metadata.credit_limit
+        if (updateData.user_metadata.full_name !== undefined) profileUpsert.full_name = updateData.user_metadata.full_name
+
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert(profileUpsert, { onConflict: 'id' })
+
+        if (profileError) {
+            console.error('Error upserting profile table:', profileError)
+            // Don't throw — auth.users was already updated successfully
+        } else {
+            console.log('Profile table updated successfully for user:', userId)
+        }
+
+        // Only revalidate the user-facing dashboard (server cache)
+        // Admin page is client-side and refreshes itself via loadUsers()
+        revalidatePath('/dashboard')
 
         return { success: true }
     } catch (error: any) {
@@ -202,5 +273,21 @@ export async function listAllApiKeys() {
     } catch (error) {
         console.error('Error listing API keys:', error)
         return []
+    }
+}
+export async function revokeApiKey(keyId: string) {
+    try {
+        const supabase = await createAdminClient();
+        const { error } = await supabase
+            .from('api_keys')
+            .update({ is_active: false })
+            .eq('id', keyId);
+        if (error) throw error;
+        // Optionally revalidate cached data if needed
+        // revalidatePath('/admin/api-keys');
+        return { success: true };
+    } catch (error: any) {
+        console.error('Error revoking API key:', error);
+        return { success: false, error: error.message };
     }
 }

@@ -210,12 +210,28 @@ export default function AdminUsersPage() {
                                 <UILabel>Subscription Plan</UILabel>
                                 <select
                                     value={selectedUser.plan}
-                                    onChange={(e) => setSelectedUser({ ...selectedUser, plan: e.target.value })}
+                                    onChange={(e) => {
+                                        const newPlan = e.target.value;
+                                        const PLAN_LIMITS: Record<string, { credits: number, tokenLimit: number }> = {
+                                            'free': { credits: 100, tokenLimit: 50000 },
+                                            'Basic': { credits: 17000, tokenLimit: 1000000 },
+                                            'Personal': { credits: 37000, tokenLimit: 5000000 },
+                                            'Business': { credits: 81000, tokenLimit: 20000000 }
+                                        };
+                                        const limits = PLAN_LIMITS[newPlan] || PLAN_LIMITS['free'];
+                                        setSelectedUser({
+                                            ...selectedUser,
+                                            plan: newPlan,
+                                            credits: limits.credits,
+                                            tokenLimit: limits.tokenLimit
+                                        });
+                                    }}
                                     className="w-full bg-black border border-white/10 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                                 >
-                                    <option value="Hobby">Hobby</option>
-                                    <option value="Pro">Pro</option>
-                                    <option value="Enterprise">Enterprise</option>
+                                    <option value="free">Free</option>
+                                    <option value="Basic">Basic</option>
+                                    <option value="Personal">Personal</option>
+                                    <option value="Business">Business</option>
                                 </select>
                             </div>
                             <div className="space-y-2">

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Ban, Key, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react"
-import { listAllApiKeys } from "../actions"
+import { listAllApiKeys, revokeApiKey } from "../actions"
 
 interface ApiKey {
     id: string;
@@ -20,14 +20,15 @@ export default function AdminApiKeysPage() {
     const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        async function loadKeys() {
-            const data = await listAllApiKeys()
-            if (data && data.length > 0) {
-                setApiKeys(data)
-            }
-            setLoading(false)
+    const loadKeys = async () => {
+        const data = await listAllApiKeys()
+        if (data && data.length > 0) {
+            setApiKeys(data)
         }
+        setLoading(false)
+    }
+
+    useEffect(() => {
         loadKeys()
     }, [])
 
@@ -110,7 +111,16 @@ export default function AdminApiKeysPage() {
                                         <td className="px-6 py-4">{key.last_used}</td>
                                         <td className="px-6 py-4 flex justify-end">
                                             {key.status === 'active' && (
-                                                <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                                                    onClick={async () => {
+                                                        await revokeApiKey(key.id);
+                                                        // Refresh the list after revocation
+                                                        loadKeys();
+                                                    }}
+                                                >
                                                     Revoke
                                                 </Button>
                                             )}

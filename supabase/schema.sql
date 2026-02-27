@@ -9,6 +9,9 @@ create table public.profiles (
   avatar_url text,
   api_key uuid default uuid_generate_v4() unique,
   plan text default 'free',
+  credits integer default 100,
+  token_limit integer default 50000,
+  credit_limit integer default 100,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
