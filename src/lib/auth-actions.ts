@@ -9,7 +9,7 @@ export async function signUpUser(formData: {
     lastName: string;
 }) {
     try {
-        const supabase = await createClient() // Use standard client instead of admin
+        const supabase = await createClient()
 
         const { data, error } = await supabase.auth.signUp({
             email: formData.email,
