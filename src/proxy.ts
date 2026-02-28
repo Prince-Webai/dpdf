@@ -5,8 +5,6 @@ export async function proxy(request: NextRequest) {
   return await updateSession(request)
 }
 
-export const runtime = 'edge'
-
 export const config = {
   matcher: [
     /*
