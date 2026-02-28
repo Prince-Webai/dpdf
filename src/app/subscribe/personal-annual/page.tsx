@@ -4,11 +4,43 @@ import Script from 'next/script'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function PersonalAnnualSubscription() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [subscriptionId, setSubscriptionId] = useState('');
+
+    useEffect(() => {
+        initializePayPal();
+    }, []);
+
+    const initializePayPal = () => {
+        // @ts-ignore
+        if (window.paypal) {
+            const container = document.getElementById('paypal-button-container-P-4B6563621U646290YNGRS3QY');
+            if (container && container.innerHTML === '') {
+                // @ts-ignore
+                window.paypal.Buttons({
+                    style: {
+                        shape: 'rect',
+                        color: 'gold',
+                        layout: 'vertical',
+                        label: 'subscribe'
+                    },
+                    createSubscription: function (data: any, actions: any) {
+                        return actions.subscription.create({
+                            plan_id: 'P-4B6563621U646290YNGRS3QY'
+                        });
+                    },
+                    onApprove: function (data: any, actions: any) {
+                        setSubscriptionId(data.subscriptionID);
+                        setIsSuccess(true);
+                        alert('Subscription successful! ID: ' + data.subscriptionID);
+                    }
+                }).render('#paypal-button-container-P-4B6563621U646290YNGRS3QY');
+            }
+        }
+    };
 
     return (
         <div className="flex flex-col min-h-screen pt-32 pb-24 relative overflow-hidden bg-black text-white">
@@ -129,36 +161,10 @@ export default function PersonalAnnualSubscription() {
             </div>
 
             <Script
-                src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&vault=true&intent=subscription`}
+                src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&vault=true&intent=subscription&currency=USD`}
                 data-sdk-integration-source="button-factory"
                 strategy="afterInteractive"
-                onLoad={() => {
-                    // @ts-ignore
-                    if (window.paypal) {
-                        const container = document.getElementById('paypal-button-container-P-4B6563621U646290YNGRS3QY');
-                        if (container) container.innerHTML = '';
-
-                        // @ts-ignore
-                        window.paypal.Buttons({
-                            style: {
-                                shape: 'rect',
-                                color: 'gold',
-                                layout: 'vertical',
-                                label: 'subscribe'
-                            },
-                            createSubscription: function (data: any, actions: any) {
-                                return actions.subscription.create({
-                                    plan_id: 'P-4B6563621U646290YNGRS3QY'
-                                });
-                            },
-                            onApprove: function (data: any, actions: any) {
-                                setSubscriptionId(data.subscriptionID);
-                                setIsSuccess(true);
-                                alert('Subscription successful! ID: ' + data.subscriptionID);
-                            }
-                        }).render('#paypal-button-container-P-4B6563621U646290YNGRS3QY');
-                    }
-                }}
+                onLoad={initializePayPal}
             />
         </div>
     )

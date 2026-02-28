@@ -4,14 +4,46 @@ import Script from 'next/script'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function PersonalMonthlySubscription() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [subscriptionId, setSubscriptionId] = useState('');
 
+    useEffect(() => {
+        initializePayPal();
+    }, []);
+
+    const initializePayPal = () => {
+        // @ts-ignore
+        if (window.paypal) {
+            const container = document.getElementById('paypal-button-container-P-5A4447816R187922RNGRSZGI');
+            if (container && container.innerHTML === '') {
+                // @ts-ignore
+                window.paypal.Buttons({
+                    style: {
+                        shape: 'rect',
+                        color: 'gold',
+                        layout: 'vertical',
+                        label: 'subscribe'
+                    },
+                    createSubscription: function (data: any, actions: any) {
+                        return actions.subscription.create({
+                            plan_id: 'P-5A4447816R187922RNGRSZGI'
+                        });
+                    },
+                    onApprove: function (data: any, actions: any) {
+                        setSubscriptionId(data.subscriptionID);
+                        setIsSuccess(true);
+                        alert('Subscription successful! ID: ' + data.subscriptionID);
+                    }
+                }).render('#paypal-button-container-P-5A4447816R187922RNGRSZGI');
+            }
+        }
+    };
+
     return (
-        <div className="flex flex-col min-h-screen pt-32 pb-24 relative overflow-hidden bg-black">
+        <div className="flex flex-col min-h-screen pt-32 pb-24 relative overflow-hidden bg-black text-white">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black -z-10" />
 
             <div className="container px-4 mx-auto max-w-4xl relative z-10">
@@ -72,7 +104,7 @@ export default function PersonalMonthlySubscription() {
                                         Secure Checkout
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <Zap className="w-3 h-3" />
+                                        <Zap className="w-3 h-3 text-indigo-400" />
                                         Instant Activation
                                     </div>
                                 </div>
@@ -86,7 +118,7 @@ export default function PersonalMonthlySubscription() {
                             >
                                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50" />
 
-                                <h3 className="text-xl font-semibold mb-6">Payment Method</h3>
+                                <h3 className="text-xl font-semibold mb-6 text-white">Payment Method</h3>
 
                                 <div id="paypal-button-container-P-5A4447816R187922RNGRSZGI" className="min-h-[150px] flex items-center justify-center">
                                     <div className="animate-pulse text-gray-500 text-sm italic">Loading PayPal...</div>
@@ -108,7 +140,7 @@ export default function PersonalMonthlySubscription() {
                         <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-8">
                             <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                         </div>
-                        <h1 className="text-4xl font-bold">Subscription Active!</h1>
+                        <h1 className="text-4xl font-bold text-white">Subscription Active!</h1>
                         <p className="text-gray-400">
                             Thank you for subscribing to the Personal Monthly plan. Your account has been upgraded and your credits are now available.
                         </p>
@@ -117,7 +149,7 @@ export default function PersonalMonthlySubscription() {
                         </div>
                         <Link
                             href="/dashboard"
-                            className="inline-block w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                            className="inline-block w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors shadow-lg"
                         >
                             Go to Dashboard
                         </Link>
@@ -126,36 +158,10 @@ export default function PersonalMonthlySubscription() {
             </div>
 
             <Script
-                src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&vault=true&intent=subscription`}
+                src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&vault=true&intent=subscription&currency=USD`}
                 data-sdk-integration-source="button-factory"
                 strategy="afterInteractive"
-                onLoad={() => {
-                    // @ts-ignore
-                    if (window.paypal) {
-                        const container = document.getElementById('paypal-button-container-P-5A4447816R187922RNGRSZGI');
-                        if (container) container.innerHTML = '';
-
-                        // @ts-ignore
-                        window.paypal.Buttons({
-                            style: {
-                                shape: 'rect',
-                                color: 'gold',
-                                layout: 'vertical',
-                                label: 'subscribe'
-                            },
-                            createSubscription: function (data: any, actions: any) {
-                                return actions.subscription.create({
-                                    plan_id: 'P-5A4447816R187922RNGRSZGI'
-                                });
-                            },
-                            onApprove: function (data: any, actions: any) {
-                                setSubscriptionId(data.subscriptionID);
-                                setIsSuccess(true);
-                                alert('Subscription successful! ID: ' + data.subscriptionID);
-                            }
-                        }).render('#paypal-button-container-P-5A4447816R187922RNGRSZGI');
-                    }
-                }}
+                onLoad={initializePayPal}
             />
         </div>
     )
