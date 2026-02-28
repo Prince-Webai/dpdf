@@ -117,7 +117,7 @@ export default function PricingPage() {
                             ))}
                         </ul>
                         <Button className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10" asChild>
-                            <Link href="/signup">Get Started</Link>
+                            <Link href={billingCycle === 'monthly' ? "/subscribe/basic-monthly" : "/subscribe/basic-annual"}>Get Started</Link>
                         </Button>
                     </motion.div>
 
@@ -147,7 +147,7 @@ export default function PricingPage() {
                             ))}
                         </ul>
                         <Button className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10" asChild>
-                            <Link href="/signup">Get Started</Link>
+                            <Link href={billingCycle === 'monthly' ? "/subscribe/personal-monthly" : "/subscribe/personal-annual"}>Get Started</Link>
                         </Button>
                     </motion.div>
 
@@ -183,7 +183,7 @@ export default function PricingPage() {
                             ))}
                         </ul>
                         <Button className="w-full bg-indigo-600 text-white hover:bg-indigo-500 rounded-xl h-12 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all" asChild>
-                            <Link href="/signup">Get Started</Link>
+                            <Link href={billingCycle === 'monthly' ? "/subscribe/business-monthly" : "/subscribe/business-annual"}>Get Started</Link>
                         </Button>
                     </motion.div>
                 </motion.div>

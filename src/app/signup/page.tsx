@@ -122,7 +122,12 @@ export default function SignupPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                                <div className="flex justify-between items-center">
+                                    <Label htmlFor="password" className="text-gray-300">Password</Label>
+                                    <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300">
+                                        Forgot password?
+                                    </Link>
+                                </div>
                                 <Input
                                     id="password"
                                     type="password"
@@ -133,6 +138,7 @@ export default function SignupPage() {
                                 />
                                 <p className="text-xs text-gray-500">Must be at least 8 characters.</p>
                             </div>
+
                         </div>
 
                         <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200" disabled={isLoading}>

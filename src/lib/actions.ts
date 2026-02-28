@@ -42,6 +42,42 @@ export async function signUpUser(formData: {
     }
 }
 
+export async function forgotPassword(email: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password`,
+        })
+
+        if (error) {
+            console.error('Reset password error:', error)
+            return { success: false, error: error.message }
+        }
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Unexpected error during password reset request:', err)
+        return { success: false, error: err.message || "An unexpected error occurred" }
+    }
+}
+
+export async function updatePassword(password: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase.auth.updateUser({ password })
+
+        if (error) {
+            console.error('Update password error:', error)
+            return { success: false, error: error.message }
+        }
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Unexpected error during password update:', err)
+        return { success: false, error: err.message || "An unexpected error occurred" }
+    }
+}
+
 // --- ADMIN ACTIONS ---
 
 const PLAN_LIMITS: Record<string, { credits: number, token_limit: number }> = {
