@@ -1,17 +1,38 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Check, Star } from "lucide-react"
 import Link from "next/link"
 import { motion, Variants } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
 
 export default function PricingPage() {
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual')
+    const [user, setUser] = useState<any>(null)
+    const router = useRouter()
+    const supabase = createClient()
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            setUser(session?.user || null)
+        }
+        checkUser()
+    }, [supabase])
 
     const prices = {
         monthly: { basic: "14.99", personal: "24.99", business: "54.99" },
         annual: { basic: "13.99", personal: "22.99", business: "49.99" }
+    }
+
+    const handleGetStarted = (path: string) => {
+        if (!user) {
+            router.push(`/login?next=${encodeURIComponent(path)}`)
+        } else {
+            router.push(path)
+        }
     }
 
     const container: Variants = {
@@ -116,8 +137,11 @@ export default function PricingPage() {
                                 <li key={i} className="flex items-center gap-3"><Check className="text-gray-400 w-4 h-4 flex-shrink-0" /> <span className="text-gray-300">{feature}</span></li>
                             ))}
                         </ul>
-                        <Button className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10" asChild>
-                            <Link href={billingCycle === 'monthly' ? "/subscribe/basic-monthly" : "/subscribe/basic-annual"}>Get Started</Link>
+                        <Button
+                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/basic-monthly" : "/subscribe/basic-annual")}
+                            className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
+                        >
+                            Get Started
                         </Button>
                     </motion.div>
 
@@ -146,8 +170,11 @@ export default function PricingPage() {
                                 <li key={i} className="flex items-center gap-3"><Check className="text-gray-400 w-4 h-4 flex-shrink-0" /> <span className="text-gray-300">{feature}</span></li>
                             ))}
                         </ul>
-                        <Button className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10" asChild>
-                            <Link href={billingCycle === 'monthly' ? "/subscribe/personal-monthly" : "/subscribe/personal-annual"}>Get Started</Link>
+                        <Button
+                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/personal-monthly" : "/subscribe/personal-annual")}
+                            className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
+                        >
+                            Get Started
                         </Button>
                     </motion.div>
 
@@ -182,8 +209,11 @@ export default function PricingPage() {
                                 <li key={i} className="flex items-center gap-3"><Check className="text-indigo-400 w-4 h-4 flex-shrink-0" /> <span>{feature}</span></li>
                             ))}
                         </ul>
-                        <Button className="w-full bg-indigo-600 text-white hover:bg-indigo-500 rounded-xl h-12 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all" asChild>
-                            <Link href={billingCycle === 'monthly' ? "/subscribe/business-monthly" : "/subscribe/business-annual"}>Get Started</Link>
+                        <Button
+                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/business-monthly" : "/subscribe/business-annual")}
+                            className="w-full bg-indigo-600 text-white hover:bg-indigo-500 rounded-xl h-12 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all"
+                        >
+                            Get Started
                         </Button>
                     </motion.div>
                 </motion.div>

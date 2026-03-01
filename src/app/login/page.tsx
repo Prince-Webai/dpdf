@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
 export default function LoginPage() {
@@ -16,6 +16,8 @@ export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const next = searchParams.get('next')
     const supabase = createClient()
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -34,7 +36,9 @@ export default function LoginPage() {
             }
 
             if (data.user) {
-                if (data.user?.app_metadata?.role === 'admin' || data.user?.email === 'devashishbhavsar1@duck.com') {
+                if (next) {
+                    window.location.href = next
+                } else if (data.user?.app_metadata?.role === 'admin' || data.user?.email === 'devashishbhavsar1@duck.com') {
                     window.location.href = '/admin'
                 } else {
                     window.location.href = '/dashboard'
@@ -132,7 +136,7 @@ export default function LoginPage() {
                 </div>
 
                 <p className="text-center mt-8 text-sm text-gray-500">
-                    Don't have an account? <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium">Sign up</Link>
+                    Don't have an account? <Link href={`/signup${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-indigo-400 hover:text-indigo-300 font-medium">Sign up</Link>
                 </p>
             </motion.div>
         </div>

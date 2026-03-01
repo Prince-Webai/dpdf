@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
 import { signUpUser } from '@/lib/actions'
@@ -20,6 +20,8 @@ export default function SignupPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const next = searchParams.get('next')
     const supabase = createClient()
 
     const handleSignup = async (e: React.FormEvent) => {
@@ -45,11 +47,15 @@ export default function SignupPage() {
             const { data: { session } } = await supabase.auth.getSession()
 
             if (session) {
-                router.push('/dashboard')
-                router.refresh()
+                if (next) {
+                    window.location.href = next
+                } else {
+                    router.push('/dashboard')
+                    router.refresh()
+                }
             } else {
                 // If no session, it likely means email confirmation is required
-                router.push('/login?message=Please check your email to confirm your account')
+                router.push(`/login?message=Please check your email to confirm your account${next ? `&next=${encodeURIComponent(next)}` : ''}`)
             }
         } catch (err: any) {
             setError(err.message || "Failed to create account")
@@ -169,7 +175,7 @@ export default function SignupPage() {
                 </div>
 
                 <p className="text-center mt-8 text-sm text-gray-500">
-                    Already have an account? <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">Log in</Link>
+                    Already have an account? <Link href={`/login${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-indigo-400 hover:text-indigo-300 font-medium">Log in</Link>
                 </p>
             </motion.div>
         </div>
