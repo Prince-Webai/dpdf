@@ -12,6 +12,8 @@ import { createClient } from '@/utils/supabase/client'
 
 import { signUpUser } from '@/lib/actions'
 
+export const dynamic = 'force-dynamic'
+
 function SignupForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)

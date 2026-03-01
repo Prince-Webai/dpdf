@@ -10,6 +10,8 @@ import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
+export const dynamic = 'force-dynamic'
+
 function LoginForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
