@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { FileText, Loader2, Github } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,7 @@ import { createClient } from '@/utils/supabase/client'
 
 import { signUpUser } from '@/lib/actions'
 
-export default function SignupPage() {
+function SignupForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [firstName, setFirstName] = useState('')
@@ -179,5 +179,17 @@ export default function SignupPage() {
                 </p>
             </motion.div>
         </div>
+    )
+}
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex justify-center items-center">
+                <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
+            </div>
+        }>
+            <SignupForm />
+        </Suspense>
     )
 }
