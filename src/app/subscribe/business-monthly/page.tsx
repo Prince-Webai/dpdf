@@ -93,11 +93,11 @@ export default function BusinessMonthlySubscription() {
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-gray-400">Price</span>
-                                        <span className="text-white font-semibold">$54.99 / mo</span>
+                                        <span className="text-white font-semibold">$49.99 / mo</span>
                                     </div>
                                     <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                                         <span className="text-lg font-semibold text-white">Total today</span>
-                                        <span className="text-2xl font-bold text-white">$54.99</span>
+                                        <span className="text-2xl font-bold text-white">$49.99</span>
                                     </div>
                                 </div>
 

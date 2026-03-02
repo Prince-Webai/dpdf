@@ -23,7 +23,7 @@ export default function PricingPage() {
     }, [supabase])
 
     const prices = {
-        monthly: { basic: "14.99", personal: "24.99", business: "54.99" },
+        monthly: { basic: "14.99", personal: "24.99", business: "49.99" },
         annual: { basic: "13.99", personal: "22.99", business: "49.99" }
     }
 
@@ -127,18 +127,37 @@ export default function PricingPage() {
                         {billingCycle === 'annual' && <p className="text-[10px] text-gray-500 mb-6">Billed annually</p>}
                         {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
 
-                        <p className="text-gray-400 mb-8 h-12">Perfect for individuals starting out.</p>
+                        <p className="text-gray-400 mb-8 h-12">Designed for getting your project off the ground.</p>
                         <div className="bg-white/5 rounded-xl p-4 mb-6 flex justify-between items-center border border-white/5">
-                            <span className="text-sm text-gray-400">Credits/mo</span>
+                            <span className="text-sm text-gray-400">Monthly Credits</span>
                             <span className="text-lg font-bold text-white">17K</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1 text-sm">
-                            {['60-min link expiry', 'Full API access', 'Unlimited output', 'Secured data', 'Advanced security', 'Priority Support'].map((feature, i) => (
-                                <li key={i} className="flex items-center gap-3"><Check className="text-gray-400 w-4 h-4 flex-shrink-0" /> <span className="text-gray-300">{feature}</span></li>
+                            {[
+                                { title: '17K Monthly Credits', desc: 'Ideal for low-traffic MVPs, allowing for roughly 500+ daily interactions.' },
+                                { title: '60-min Link Expiry', desc: 'Standard security for magic links or file sharing.' },
+                                { title: 'Full API Access', desc: 'No "paywalled" endpoints; complete REST and GraphQL suite.' },
+                                { title: 'Unlimited Output', desc: 'No throttling on data generation or response sizes.' },
+                                { title: 'Secured Data', desc: 'Standard TLS encryption and row-level security (RLS).' },
+                                { title: 'Standard Priority Support', desc: 'Access to documentation and community-driven help.' }
+                            ].map((f, i) => (
+                                <li key={i} className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-3">
+                                        <Check className="text-gray-400 w-4 h-4 flex-shrink-0" />
+                                        <span className="text-gray-200 font-medium">{f.title}</span>
+                                    </div>
+                                    <p className="text-gray-500 text-xs ml-7">{f.desc}</p>
+                                </li>
                             ))}
                         </ul>
                         <Button
-                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/basic-monthly" : "/subscribe/basic-annual")}
+                            onClick={() => {
+                                if (billingCycle === 'monthly') {
+                                    window.open("https://www.paypal.com/ncp/payment/SMWA26KE2MZZC", "_blank")
+                                } else {
+                                    window.open("https://www.paypal.com/ncp/payment/59AA2G4UJ864J", "_blank")
+                                }
+                            }}
                             className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
                         >
                             Get Started
@@ -160,18 +179,36 @@ export default function PricingPage() {
                         {billingCycle === 'annual' && <p className="text-[10px] text-gray-500 mb-6">Billed annually</p>}
                         {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
 
-                        <p className="text-gray-400 mb-8 h-12">Ideal for freelancers and professionals.</p>
+                        <p className="text-gray-400 mb-8 h-12">The sweet spot for freelancers and growing side-projects.</p>
                         <div className="bg-white/5 rounded-xl p-4 mb-6 flex justify-between items-center border border-white/5">
-                            <span className="text-sm text-gray-400">Credits/mo</span>
+                            <span className="text-sm text-gray-400">Monthly Credits</span>
                             <span className="text-lg font-bold text-white">37K</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1 text-sm">
-                            {['60-min link expiry', 'Full API access', 'Unlimited output', 'Secured data', 'Advanced security', 'Priority Support'].map((feature, i) => (
-                                <li key={i} className="flex items-center gap-3"><Check className="text-gray-400 w-4 h-4 flex-shrink-0" /> <span className="text-gray-300">{feature}</span></li>
+                            {[
+                                { title: '37K Monthly Credits', desc: 'More than double the Basic tier for multiple users or workflows.' },
+                                { title: 'Enhanced Reliability', desc: 'Built for "pro-sumers" needing consistent uptime for clients.' },
+                                { title: 'Same-Day Support', desc: 'Higher priority in our ticketing queue for faster resolution.' },
+                                { title: 'Advanced Security Suite', desc: '60-min expiry plus additional backend hardening.' },
+                                { title: 'Developer Tooling', desc: 'Full access to CLI tools and staging environments.' }
+                            ].map((f, i) => (
+                                <li key={i} className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-3">
+                                        <Check className="text-gray-400 w-4 h-4 flex-shrink-0" />
+                                        <span className="text-gray-200 font-medium">{f.title}</span>
+                                    </div>
+                                    <p className="text-gray-500 text-xs ml-7">{f.desc}</p>
+                                </li>
                             ))}
                         </ul>
                         <Button
-                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/personal-monthly" : "/subscribe/personal-annual")}
+                            onClick={() => {
+                                if (billingCycle === 'monthly') {
+                                    window.open("https://www.paypal.com/ncp/payment/T4ZGGNHMZX7TQ", "_blank")
+                                } else {
+                                    window.open("https://www.paypal.com/ncp/payment/TZHQHJPA23LVJ", "_blank")
+                                }
+                            }}
                             className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
                         >
                             Get Started
@@ -199,18 +236,36 @@ export default function PricingPage() {
                         {billingCycle === 'annual' && <p className="text-[10px] text-indigo-300/60 mb-6">Billed annually</p>}
                         {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
 
-                        <p className="text-indigo-200/80 mb-8 h-12">For growing teams needing power.</p>
+                        <p className="text-indigo-200/80 mb-8 h-12">Production-ready infrastructure for scaling teams.</p>
                         <div className="bg-indigo-500/10 rounded-xl p-4 mb-6 flex justify-between items-center border border-indigo-500/20">
-                            <span className="text-sm text-indigo-300">Credits/mo</span>
+                            <span className="text-sm text-indigo-300">Monthly Credits</span>
                             <span className="text-lg font-bold text-white">81K</span>
                         </div>
                         <ul className="space-y-4 mb-8 flex-1 text-sm text-indigo-50">
-                            {['60-min link expiry', 'Full API access', 'Unlimited output', 'Secured data', 'Advanced security', 'Priority Support'].map((feature, i) => (
-                                <li key={i} className="flex items-center gap-3"><Check className="text-indigo-400 w-4 h-4 flex-shrink-0" /> <span>{feature}</span></li>
+                            {[
+                                { title: '81K Monthly Credits', desc: 'Massive capacity for high-frequency API calls and data processing.' },
+                                { title: 'Priority Support (VIP)', desc: 'Direct access to senior engineering support for critical issues.' },
+                                { title: 'Advanced Security Protocols', desc: 'Enterprise-grade features, audit logs, and data isolation.' },
+                                { title: 'Team Collaboration', desc: 'Multi-seat access for secure team management.' },
+                                { title: 'High-Availability Infra', desc: 'Priority routing on our global edge network for low latency.' }
+                            ].map((f, i) => (
+                                <li key={i} className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-3">
+                                        <Check className="text-indigo-400 w-4 h-4 flex-shrink-0" />
+                                        <span className="text-indigo-100 font-medium">{f.title}</span>
+                                    </div>
+                                    <p className="text-indigo-300/60 text-xs ml-7">{f.desc}</p>
+                                </li>
                             ))}
                         </ul>
                         <Button
-                            onClick={() => handleGetStarted(billingCycle === 'monthly' ? "/subscribe/business-monthly" : "/subscribe/business-annual")}
+                            onClick={() => {
+                                if (billingCycle === 'monthly') {
+                                    window.open("https://www.paypal.com/ncp/payment/SJP7DLJL4L6NG", "_blank")
+                                } else {
+                                    window.open("https://www.paypal.com/ncp/payment/E5VMGGD3Q9HKE", "_blank")
+                                }
+                            }}
                             className="w-full bg-indigo-600 text-white hover:bg-indigo-500 rounded-xl h-12 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all"
                         >
                             Get Started
