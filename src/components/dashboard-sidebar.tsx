@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FileText, LayoutDashboard, Key, BarChart3, Settings, LogOut, User as UserIcon, BookOpen, ChevronRight, Zap } from 'lucide-react'
+import { FileText, LayoutDashboard, Key, BarChart3, Settings, LogOut, User as UserIcon, BookOpen, ChevronRight, Zap, Database } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/utils/supabase/client'
 import { useState } from 'react'
@@ -25,6 +25,7 @@ export function DashboardSidebar() {
     const devItems = [
         { name: 'API Keys', href: '/dashboard/api-keys', icon: Key },
         { name: 'Usage Logs', href: '/dashboard/usage', icon: BarChart3 },
+        { name: 'SQL Console', href: '/dashboard/sql', icon: Database },
         { name: 'Extract Sandbox', href: '/dashboard/tools/extract', icon: Zap },
         { name: 'Documentation', href: '/docs', icon: BookOpen },
     ]
@@ -36,7 +37,12 @@ export function DashboardSidebar() {
         visible: {
             x: 0,
             opacity: 1,
-            transition: { type: 'spring', bounce: 0, duration: 0.4, staggerChildren: 0.1 }
+            transition: {
+                type: 'spring',
+                bounce: 0,
+                duration: 0.4,
+                staggerChildren: 0.1
+            } as any
         }
     }
 

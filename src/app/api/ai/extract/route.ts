@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic'
+
 const SYSTEM_PROMPT = `You are a precise invoice data extraction engine.
 
 Your task: Extract all structured data from the provided document and return ONLY a valid JSON object.
