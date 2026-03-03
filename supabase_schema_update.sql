@@ -1,5 +1,5 @@
 -- =============================================================
--- DocuNexu - Supabase Complete Schema (Profiles, API Keys, Usage Logs)
+-- DocuNexus - Supabase Complete Schema (Profiles, API Keys, Usage Logs)
 -- Copy and run this entirely in the Supabase SQL Editor
 -- =============================================================
 

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Check, Star } from "lucide-react"
-import Link from "next/link"
+import { Check, Star, Pentagon, Sparkles } from "lucide-react"
 import { motion, Variants } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
@@ -27,14 +26,6 @@ export default function PricingPage() {
         annual: { basic: "13.99", personal: "22.99", business: "49.99" }
     }
 
-    const handleGetStarted = (path: string) => {
-        if (!user) {
-            router.push(`/login?next=${encodeURIComponent(path)}`)
-        } else {
-            router.push(path)
-        }
-    }
-
     const container: Variants = {
         hidden: { opacity: 0 },
         show: {
@@ -51,227 +42,148 @@ export default function PricingPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen pt-32 pb-24 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black -z-10" />
-            <div className="container px-4 md:px-6 mx-auto max-w-6xl relative z-10">
-                <div className="text-center mb-12">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-6xl font-bold tracking-tight mb-4"
-                    >
-                        Pricing that scales with you
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-xl text-gray-400 max-w-2xl mx-auto mb-10"
-                    >
-                        Start for free, upgrade when you need higher limits. No hidden fees.
-                    </motion.p>
+        <div className="flex min-h-screen bg-executive-black text-white selection:bg-executive-gold selection:text-black relative flex-col overflow-hidden">
+            <div className="executive-grain" />
 
-                    {/* Billing Toggle */}
+            {/* Background Elements */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-executive-gold/5 rounded-none blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 rounded-none blur-[120px]" />
+            </div>
+
+            <div className="flex flex-col min-h-screen relative z-10 pt-48 pb-64">
+                <div className="container px-4 md:px-6 mx-auto max-w-7xl">
+                    <div className="text-center mb-32">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            <div className="inline-flex items-center gap-2 border border-executive-gold/20 bg-executive-gold/5 px-4 py-2 rounded-none text-[10px] tracking-[0.4em] uppercase text-executive-gold mb-12 backdrop-blur-md">
+                                <Sparkles className="w-3 h-3" />
+                                <span>Resource Allocation Tiers</span>
+                            </div>
+                            <h1 className="text-5xl md:text-8xl font-serif text-white mb-10 font-normal leading-tight tracking-tighter">
+                                Strategic <span className="text-white/30 italic">Investment.</span>
+                            </h1>
+                            <p className="text-xl md:text-2xl text-white/40 max-w-2xl mx-auto mb-16 font-light">
+                                Precise resource allocation for high-stakes orchestration.
+                                Transparent. Flexible. Engineered for scale.
+                            </p>
+                        </motion.div>
+
+                        {/* Billing Toggle */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex items-center justify-center gap-4 mb-20"
+                        >
+                            <div className="bg-black border border-white/5 p-1 rounded-none flex items-center relative backdrop-blur-md">
+                                <button
+                                    onClick={() => setBillingCycle('monthly')}
+                                    className={`px-8 py-3 rounded-none text-[10px] font-bold tracking-[0.2em] uppercase transition-all relative z-10 ${billingCycle === 'monthly' ? 'text-black' : 'text-white/40'}`}
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    onClick={() => setBillingCycle('annual')}
+                                    className={`px-8 py-3 rounded-none text-[10px] font-bold tracking-[0.2em] uppercase transition-all relative z-10 flex items-center gap-2 ${billingCycle === 'annual' ? 'text-black' : 'text-white/40'}`}
+                                >
+                                    Annual
+                                    <span className="text-executive-gold/60 text-[8px] px-1.5 py-0.5 border border-executive-gold/20">
+                                        -20%
+                                    </span>
+                                </button>
+                                <motion.div
+                                    className="absolute bg-executive-gold h-[calc(100%-8px)]"
+                                    initial={false}
+                                    animate={{
+                                        left: billingCycle === 'monthly' ? 4 : '50%',
+                                        width: 'calc(50% - 4px)'
+                                    }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
+
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-center justify-center gap-4 mb-16"
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto"
                     >
-                        <div className="bg-[#0a0a0a] border border-white/10 p-1 rounded-full flex items-center relative">
-                            <button
-                                onClick={() => setBillingCycle('monthly')}
-                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all relative z-10 ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-500'}`}
-                            >
-                                Monthly
-                            </button>
-                            <button
-                                onClick={() => setBillingCycle('annual')}
-                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all relative z-10 flex items-center gap-2 ${billingCycle === 'annual' ? 'text-white' : 'text-gray-500'}`}
-                            >
-                                Annual
-                                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-md border border-emerald-500/20">
-                                    -20%
-                                </span>
-                            </button>
+                        {/* Plans Array */}
+                        {[
+                            {
+                                name: "Basic",
+                                price: prices[billingCycle].basic,
+                                credits: "17K",
+                                desc: "For foundational protocol testing.",
+                                features: ["17K Monthly Credits", "60-min Link Expiry", "Full API Access", "Standard Support"],
+                                highlight: false,
+                                paypal: billingCycle === 'monthly' ? "https://www.paypal.com/ncp/payment/SMWA26KE2MZZC" : "https://www.paypal.com/ncp/payment/59AA2G4UJ864J"
+                            },
+                            {
+                                name: "Personal",
+                                price: prices[billingCycle].personal,
+                                credits: "37K",
+                                desc: "Surgical precision for solo creators.",
+                                features: ["37K Monthly Credits", "Same-Day Response", "Advanced Security", "Developer Toolset"],
+                                highlight: false,
+                                paypal: billingCycle === 'monthly' ? "https://www.paypal.com/ncp/payment/T4ZGGNHMZX7TQ" : "https://www.paypal.com/ncp/payment/TZHQHJPA23LVJ"
+                            },
+                            {
+                                name: "Business",
+                                price: prices[billingCycle].business,
+                                credits: "81K",
+                                desc: "Production-ready orchestration.",
+                                features: ["81K Monthly Credits", "VIP Priority Support", "Audit Logs", "Global Edge Network"],
+                                highlight: true,
+                                paypal: billingCycle === 'monthly' ? "https://www.paypal.com/ncp/payment/SJP7DLJL4L6NG" : "https://www.paypal.com/ncp/payment/E5VMGGD3Q9HKE"
+                            }
+                        ].map((plan, i) => (
                             <motion.div
-                                className="absolute bg-[#1a1a1a] border border-white/10 rounded-full h-[calc(100%-8px)]"
-                                initial={false}
-                                animate={{
-                                    left: billingCycle === 'monthly' ? 4 : '50%',
-                                    width: 'calc(50% - 4px)'
-                                }}
-                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                            />
-                        </div>
+                                key={plan.name}
+                                variants={item}
+                                whileHover={{ y: -10 }}
+                                className={`p-10 border transition-all duration-500 flex flex-col relative overflow-hidden ${plan.highlight ? 'border-executive-gold bg-executive-gold/[0.03] shadow-[0_0_40px_rgba(156,130,74,0.1)]' : 'border-white/5 bg-executive-panel/40 backdrop-blur-sm'}`}
+                            >
+                                {plan.highlight && (
+                                    <div className="absolute top-0 right-0 p-4">
+                                        <Star className="w-5 h-5 text-executive-gold fill-executive-gold animate-pulse" />
+                                    </div>
+                                )}
+                                <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-white/40 mb-6">{plan.name} Plan</h3>
+                                <div className="mb-8">
+                                    <span className="text-5xl font-serif text-white">${plan.price}</span>
+                                    <span className="text-white/20 font-serif italic ml-2">/period</span>
+                                </div>
+                                <p className="text-white/40 mb-10 text-sm font-light leading-relaxed">{plan.desc}</p>
+
+                                <div className="bg-black/40 border border-white/5 p-6 mb-10 flex justify-between items-center">
+                                    <span className="text-[10px] tracking-[0.2em] font-bold uppercase text-white/40">Credits</span>
+                                    <span className="text-xl font-serif text-executive-gold font-bold">{plan.credits}</span>
+                                </div>
+
+                                <ul className="space-y-5 mb-12 flex-1">
+                                    {plan.features.map((f, fi) => (
+                                        <li key={fi} className="flex items-center text-[10px] tracking-widest uppercase font-bold text-white/30">
+                                            <Check className={`w-3.5 h-3.5 mr-4 ${plan.highlight ? 'text-executive-gold' : 'text-white/20'}`} />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <Button
+                                    onClick={() => window.open(plan.paypal, "_blank")}
+                                    className={`w-full h-14 rounded-none text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 border ${plan.highlight ? 'bg-executive-gold text-black hover:bg-white border-executive-gold' : 'bg-transparent text-white border-white/10 hover:bg-white hover:text-black'}`}
+                                >
+                                    Initiate Contract
+                                </Button>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 </div>
-
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto perspective-1000"
-                >
-                    {/* Basic Tier */}
-                    <motion.div
-                        variants={item}
-                        whileHover={{ y: -10, scale: 1.02 }}
-                        className="rounded-3xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl p-8 flex flex-col shadow-2xl transition-all duration-300 relative group"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none" />
-                        <h3 className="text-2xl font-semibold mb-2">Basic</h3>
-                        <div className="mb-1">
-                            <span className="text-4xl font-bold">${prices[billingCycle].basic}</span>
-                            <span className="text-lg text-gray-500 font-normal">/mo</span>
-                        </div>
-                        {billingCycle === 'annual' && <p className="text-[10px] text-gray-500 mb-6">Billed annually</p>}
-                        {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
-
-                        <p className="text-gray-400 mb-8 h-12">Designed for getting your project off the ground.</p>
-                        <div className="bg-white/5 rounded-xl p-4 mb-6 flex justify-between items-center border border-white/5">
-                            <span className="text-sm text-gray-400">Monthly Credits</span>
-                            <span className="text-lg font-bold text-white">17K</span>
-                        </div>
-                        <ul className="space-y-4 mb-8 flex-1 text-sm">
-                            {[
-                                { title: '17K Monthly Credits', desc: 'Ideal for low-traffic MVPs, allowing for roughly 500+ daily interactions.' },
-                                { title: '60-min Link Expiry', desc: 'Standard security for magic links or file sharing.' },
-                                { title: 'Full API Access', desc: 'No "paywalled" endpoints; complete REST and GraphQL suite.' },
-                                { title: 'Unlimited Output', desc: 'No throttling on data generation or response sizes.' },
-                                { title: 'Secured Data', desc: 'Standard TLS encryption and row-level security (RLS).' },
-                                { title: 'Standard Priority Support', desc: 'Access to documentation and community-driven help.' }
-                            ].map((f, i) => (
-                                <li key={i} className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-3">
-                                        <Check className="text-gray-400 w-4 h-4 flex-shrink-0" />
-                                        <span className="text-gray-200 font-medium">{f.title}</span>
-                                    </div>
-                                    <p className="text-gray-500 text-xs ml-7">{f.desc}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        <Button
-                            onClick={() => {
-                                if (billingCycle === 'monthly') {
-                                    window.open("https://www.paypal.com/ncp/payment/SMWA26KE2MZZC", "_blank")
-                                } else {
-                                    window.open("https://www.paypal.com/ncp/payment/59AA2G4UJ864J", "_blank")
-                                }
-                            }}
-                            className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
-                        >
-                            Get Started
-                        </Button>
-                    </motion.div>
-
-                    {/* Personal Tier */}
-                    <motion.div
-                        variants={item}
-                        whileHover={{ y: -10, scale: 1.02 }}
-                        className="rounded-3xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl p-8 flex flex-col shadow-2xl transition-all duration-300 relative group"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none" />
-                        <h3 className="text-2xl font-semibold mb-2">Personal</h3>
-                        <div className="mb-1">
-                            <span className="text-4xl font-bold">${prices[billingCycle].personal}</span>
-                            <span className="text-lg text-gray-500 font-normal">/mo</span>
-                        </div>
-                        {billingCycle === 'annual' && <p className="text-[10px] text-gray-500 mb-6">Billed annually</p>}
-                        {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
-
-                        <p className="text-gray-400 mb-8 h-12">The sweet spot for freelancers and growing side-projects.</p>
-                        <div className="bg-white/5 rounded-xl p-4 mb-6 flex justify-between items-center border border-white/5">
-                            <span className="text-sm text-gray-400">Monthly Credits</span>
-                            <span className="text-lg font-bold text-white">37K</span>
-                        </div>
-                        <ul className="space-y-4 mb-8 flex-1 text-sm">
-                            {[
-                                { title: '37K Monthly Credits', desc: 'More than double the Basic tier for multiple users or workflows.' },
-                                { title: 'Enhanced Reliability', desc: 'Built for "pro-sumers" needing consistent uptime for clients.' },
-                                { title: 'Same-Day Support', desc: 'Higher priority in our ticketing queue for faster resolution.' },
-                                { title: 'Advanced Security Suite', desc: '60-min expiry plus additional backend hardening.' },
-                                { title: 'Developer Tooling', desc: 'Full access to CLI tools and staging environments.' }
-                            ].map((f, i) => (
-                                <li key={i} className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-3">
-                                        <Check className="text-gray-400 w-4 h-4 flex-shrink-0" />
-                                        <span className="text-gray-200 font-medium">{f.title}</span>
-                                    </div>
-                                    <p className="text-gray-500 text-xs ml-7">{f.desc}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        <Button
-                            onClick={() => {
-                                if (billingCycle === 'monthly') {
-                                    window.open("https://www.paypal.com/ncp/payment/T4ZGGNHMZX7TQ", "_blank")
-                                } else {
-                                    window.open("https://www.paypal.com/ncp/payment/TZHQHJPA23LVJ", "_blank")
-                                }
-                            }}
-                            className="w-full bg-white/10 text-white hover:bg-white/20 rounded-xl h-12 border border-white/10"
-                        >
-                            Get Started
-                        </Button>
-                    </motion.div>
-
-                    {/* Business Tier */}
-                    <motion.div
-                        variants={item}
-                        whileHover={{ y: -15, scale: 1.03 }}
-                        className="rounded-3xl border-2 border-indigo-500 bg-gradient-to-b from-indigo-950/40 to-[#0a0a0a] p-8 flex flex-col relative shadow-[0_0_40px_rgba(99,102,241,0.15)] z-10 group overflow-hidden"
-                    >
-                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-indigo-400 to-transparent opacity-50" />
-                        <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl group-hover:bg-indigo-500/30 transition-colors duration-500 pointer-events-none" />
-
-                        <div className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(99,102,241,0.5)] flex items-center gap-1">
-                            <Star className="w-3 h-3 fill-white" /> Best Value
-                        </div>
-
-                        <h3 className="text-2xl font-semibold mb-2 text-indigo-100">Business</h3>
-                        <div className="mb-1">
-                            <span className="text-4xl font-bold text-white">${prices[billingCycle].business}</span>
-                            <span className="text-lg text-indigo-300 font-normal">/mo</span>
-                        </div>
-                        {billingCycle === 'annual' && <p className="text-[10px] text-indigo-300/60 mb-6">Billed annually</p>}
-                        {billingCycle === 'monthly' && <div className="mb-6 h-[15px]" />}
-
-                        <p className="text-indigo-200/80 mb-8 h-12">Production-ready infrastructure for scaling teams.</p>
-                        <div className="bg-indigo-500/10 rounded-xl p-4 mb-6 flex justify-between items-center border border-indigo-500/20">
-                            <span className="text-sm text-indigo-300">Monthly Credits</span>
-                            <span className="text-lg font-bold text-white">81K</span>
-                        </div>
-                        <ul className="space-y-4 mb-8 flex-1 text-sm text-indigo-50">
-                            {[
-                                { title: '81K Monthly Credits', desc: 'Massive capacity for high-frequency API calls and data processing.' },
-                                { title: 'Priority Support (VIP)', desc: 'Direct access to senior engineering support for critical issues.' },
-                                { title: 'Advanced Security Protocols', desc: 'Enterprise-grade features, audit logs, and data isolation.' },
-                                { title: 'Team Collaboration', desc: 'Multi-seat access for secure team management.' },
-                                { title: 'High-Availability Infra', desc: 'Priority routing on our global edge network for low latency.' }
-                            ].map((f, i) => (
-                                <li key={i} className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-3">
-                                        <Check className="text-indigo-400 w-4 h-4 flex-shrink-0" />
-                                        <span className="text-indigo-100 font-medium">{f.title}</span>
-                                    </div>
-                                    <p className="text-indigo-300/60 text-xs ml-7">{f.desc}</p>
-                                </li>
-                            ))}
-                        </ul>
-                        <Button
-                            onClick={() => {
-                                if (billingCycle === 'monthly') {
-                                    window.open("https://www.paypal.com/ncp/payment/SJP7DLJL4L6NG", "_blank")
-                                } else {
-                                    window.open("https://www.paypal.com/ncp/payment/E5VMGGD3Q9HKE", "_blank")
-                                }
-                            }}
-                            className="w-full bg-indigo-600 text-white hover:bg-indigo-500 rounded-xl h-12 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all"
-                        >
-                            Get Started
-                        </Button>
-                    </motion.div>
-                </motion.div>
             </div>
         </div>
     )

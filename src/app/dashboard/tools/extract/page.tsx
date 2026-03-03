@@ -159,13 +159,13 @@ export default function ExtractToolPage() {
 
                             <div className="flex gap-4 w-full">
                                 <button
-                                    className="flex-1 border border-white/[0.05] py-4 font-mono text-[10px] text-white/40 uppercase tracking-widest hover:bg-white/[0.05] transition-all"
+                                    className="flex-1 border border-white/[0.05] py-4 font-mono text-[10px] text-white/40 uppercase tracking-widest hover:bg-white/[0.05] transition-all rounded-none"
                                     onClick={() => { setFile(null); setResult(null); }}
                                 >
                                     PURGE_BUFFER
                                 </button>
                                 <button
-                                    className="flex-1 border border-executive-gold py-4 font-mono text-[10px] text-executive-gold uppercase tracking-[0.2em] hover:bg-executive-gold hover:text-executive-black transition-all disabled:opacity-20"
+                                    className="flex-1 border border-executive-gold py-4 font-mono text-[10px] text-executive-gold uppercase tracking-[0.2em] hover:bg-executive-gold hover:text-executive-black transition-all disabled:opacity-20 rounded-none"
                                     onClick={handleExtract}
                                     disabled={isProcessing}
                                 >

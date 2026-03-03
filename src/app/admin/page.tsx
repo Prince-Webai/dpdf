@@ -45,7 +45,7 @@ export default function AdminOverviewPage() {
                     <ShieldAlert className="h-8 w-8 text-red-500" />
                     <h1 className="text-6xl font-serif text-white tracking-tight">Platform Overview</h1>
                 </div>
-                <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">HIGH-LEVEL DOCUNEXUS SYSTEM METRICS [ADMIN CLEARANCE]</p>
+                <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">HIGH-LEVEL docunexusS SYSTEM METRICS [ADMIN CLEARANCE]</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

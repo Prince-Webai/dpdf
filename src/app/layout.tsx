@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DocuNexu | AI-Powered PDF API Platform",
+  title: "DocuNexus | AI-Powered PDF API Platform",
   description: "Extract, edit, convert, merge, and split PDF documents at scale with our powerful AI API.",
 };
 

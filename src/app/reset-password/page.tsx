@@ -73,7 +73,7 @@ function ResetPasswordForm() {
             >
                 <Link href="/" className="flex items-center justify-center gap-2 font-bold text-2xl text-white mb-8 hover:opacity-80 transition-opacity">
                     <FileText className="h-8 w-8 text-indigo-500" />
-                    <span>DocuNexu</span>
+                    <span>docunexus</span>
                 </Link>
 
                 <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-xl">

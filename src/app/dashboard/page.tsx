@@ -98,7 +98,7 @@ function DeveloperViewContent() {
                         <span className="w-8 h-[1px] bg-executive-gold"></span> Developer Portal
                     </p>
                     <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-normal leading-[1.1] tracking-tight">
-                        Developer <br /><span className="text-white/20 italic pr-4">Orchestration</span> Hub
+                        Developer <br /><span className="text-white/20 italic pr-4">Hub</span>
                     </h1>
                 </div>
                 <div className="flex flex-col items-end gap-2">
@@ -137,7 +137,7 @@ function DeveloperViewContent() {
                                         <p className="text-[10px] tracking-[0.2em] uppercase text-white/30">{item.key_name || 'Production Key'}</p>
                                         <code className="text-white/80 font-mono text-sm tracking-tight">{item.api_key}</code>
                                     </div>
-                                    <button onClick={() => copyToClipboard(item.api_key)} className="p-3 border border-white/10 text-white/40 hover:text-executive-gold transition-all">
+                                    <button onClick={() => copyToClipboard(item.api_key)} className="p-3 border border-white/10 text-white/40 hover:text-executive-gold transition-all rounded-none">
                                         {copiedKey === item.api_key ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                     </button>
                                 </div>
@@ -201,7 +201,7 @@ function DeveloperViewContent() {
                     <div className="bg-executive-panel border border-white/[0.05] p-8 abstract-texture space-y-8">
                         <Box className="text-executive-gold w-5 h-5 stroke-[1px]" />
                         <h2 className="font-serif text-2xl text-white">Extract Sandbox</h2>
-                        <Link href="/dashboard/tools/extract" className="flex justify-center w-full py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500">
+                        <Link href="/dashboard/tools/extract" className="flex justify-center w-full py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500 rounded-none">
                             Launch Sandbox
                         </Link>
                     </div>

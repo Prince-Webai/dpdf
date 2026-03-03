@@ -27,7 +27,7 @@ export function TopNavHeader() {
                         <Pentagon className="text-executive-gold w-6 h-6 stroke-[1px] group-hover:rotate-180 transition-transform duration-700" />
                         <span className="font-serif text-xl tracking-[0.15em] text-white">NEXUS</span>
                     </Link>
-                    <nav className="flex items-center gap-4 md:gap-8 lg:gap-12 overflow-x-auto">
+                    <nav className="flex items-center gap-4 md:gap-8 lg:gap-12 flex-nowrap shrink-0">
                         {navItems.map((item) => {
                             const isActive = pathname === item.path
                             return (
@@ -65,13 +65,13 @@ export function TopNavHeader() {
                                     await supabase.auth.signOut()
                                     window.location.href = '/login'
                                 }}
-                                className="h-8 w-8 rounded-full overflow-hidden ring-1 ring-white/10 p-[2px] group-hover:ring-red-500/50 transition-all flex items-center justify-center bg-white/5 relative"
+                                className="h-8 w-8 rounded-none overflow-hidden ring-1 ring-white/10 p-[2px] group-hover:ring-red-500/50 transition-all flex items-center justify-center bg-white/5 relative"
                                 title="Sign out"
                             >
                                 {user.user_metadata?.avatar_url ? (
                                     <img
                                         alt="User"
-                                        className="w-full h-full object-cover grayscale opacity-70 group-hover:opacity-10 transition-all rounded-full"
+                                        className="w-full h-full object-cover grayscale opacity-70 group-hover:opacity-10 transition-all rounded-none"
                                         src={user.user_metadata.avatar_url}
                                         referrerPolicy="no-referrer"
                                     />

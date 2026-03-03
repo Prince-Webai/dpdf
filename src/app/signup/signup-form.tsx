@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FileText, Loader2, Github } from 'lucide-react'
+import { FileText, Loader2, Github, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +18,7 @@ export function SignupForm() {
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
     const searchParams = useSearchParams()
     const next = searchParams.get('next')
     const supabase = createClient()
@@ -68,13 +69,13 @@ export function SignupForm() {
             >
                 <Link href="/" className="flex items-center justify-center gap-2 font-bold text-2xl text-white mb-8 hover:opacity-80 transition-opacity">
                     <FileText className="h-8 w-8 text-indigo-500" />
-                    <span>DocuNexu</span>
+                    <span>docunexus</span>
                 </Link>
 
                 <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-xl">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold text-white mb-2">Create an account</h1>
-                        <p className="text-gray-400 text-sm">Start building with DocuNexu API</p>
+                        <p className="text-gray-400 text-sm">Start building with docunexus API</p>
                     </div>
 
                     {error && (
@@ -127,14 +128,23 @@ export function SignupForm() {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-black border-white/10 text-white focus-visible:ring-indigo-500"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="bg-black border-white/10 text-white focus-visible:ring-indigo-500 pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
                                 <p className="text-xs text-gray-500">Must be at least 8 characters.</p>
                             </div>
                         </div>

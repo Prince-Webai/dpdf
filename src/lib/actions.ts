@@ -19,6 +19,7 @@ export async function signUpUser(formData: {
             email: formData.email,
             password: formData.password,
             options: {
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`,
                 data: {
                     first_name: formData.firstName,
                     last_name: formData.lastName,
@@ -46,7 +47,7 @@ export async function forgotPassword(email: string) {
     try {
         const supabase = await createClient()
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password`,
+            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback?next=/reset-password`,
         })
 
         if (error) {

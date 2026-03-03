@@ -31,7 +31,7 @@ export function AdminSidebar() {
             <div className="p-8 border-b border-white/[0.05]">
                 <Link href="/" className="flex items-center gap-2 group font-serif normal-case tracking-normal">
                     <ShieldAlert className="text-red-500 w-6 h-6 stroke-[1px] group-hover:rotate-12 transition-transform duration-700" />
-                    <span className="text-xl font-medium text-white tracking-tight group-hover:text-red-500 transition-colors">DOCUNEXUS ADMIN</span>
+                    <span className="text-xl font-medium text-white tracking-tight group-hover:text-red-500 transition-colors">docunexusS ADMIN</span>
                 </Link>
             </div>
 

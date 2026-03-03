@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 // This is the main proxy handler for all PDF.co API routes
-// Users call: https://docunexu.com/api/v1/pdf/convert/to/json
+// Users call: https://docunexussss.com/api/v1/pdf/convert/to/json
 // We proxy: https://api.pdf.co/v1/pdf/convert/to/json
 
 const PDFCO_BASE_URL = "https://api.pdf.co/v1";
@@ -55,7 +55,7 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
                 .rpc('validate_api_key', { input_key: userApiKey })
 
             if (keyError || !keyData || keyData.length === 0) {
-                return NextResponse.json({ error: "Invalid DocuNexu API Key" }, { status: 401 });
+                return NextResponse.json({ error: "Invalid docunexussss API Key" }, { status: 401 });
             }
 
             const { is_active, user_id } = keyData[0];
@@ -164,7 +164,7 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
         });
 
     } catch (error: any) {
-        console.error("DocuNexu Proxy Error:", error);
+        console.error("docunexussss Proxy Error:", error);
         return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
     }
 }

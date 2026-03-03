@@ -112,7 +112,7 @@ export default function ApiKeysPage() {
                 <button
                     onClick={createKey}
                     disabled={isCreating}
-                    className="border border-executive-gold px-8 py-3 text-executive-gold font-mono text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-executive-gold hover:text-black hover:tracking-[0.4em] flex items-center gap-3 disabled:opacity-20"
+                    className="border border-executive-gold px-8 py-3 text-executive-gold font-mono text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-executive-gold hover:text-black hover:tracking-[0.4em] flex items-center gap-3 disabled:opacity-20 rounded-none"
                 >
                     {isCreating ? <Loader2 className="h-4 w-4 animate-spin text-executive-gold" /> : <Plus className="h-4 w-4" />}
                     REGISTER NEW KEY

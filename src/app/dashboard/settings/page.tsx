@@ -82,7 +82,7 @@ export default function SettingsPage() {
                         <p className="font-serif text-3xl text-white capitalize">{plan} Elite</p>
                         <p className="text-white/50 text-sm font-light">Billed annually.</p>
                     </div>
-                    <Link href="/pricing" className="px-8 py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500 flex items-center gap-3">
+                    <Link href="/pricing" className="px-8 py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500 flex items-center gap-3 rounded-none">
                         <ArrowUpCircle className="w-4 h-4" />
                         Upgrade Plan
                     </Link>
@@ -96,7 +96,7 @@ export default function SettingsPage() {
                         <p className="text-white font-sans font-medium">Delete Account</p>
                         <p className="text-white/40 text-sm font-light">Permanently remove your account and all associated strategic data. This action is irreversible.</p>
                     </div>
-                    <button onClick={() => { setConfirmText(''); setIsDeleteDialogOpen(true) }} className="px-8 py-4 border border-red-500/30 text-red-500/70 text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-red-500 hover:text-white transition-all duration-500 flex items-center gap-3">
+                    <button onClick={() => { setConfirmText(''); setIsDeleteDialogOpen(true) }} className="px-8 py-4 border border-red-500/30 text-red-500/70 text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-red-500 hover:text-white transition-all duration-500 flex items-center gap-3 rounded-none">
                         <Trash2 className="w-4 h-4" />
                         Delete My Account
                     </button>
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                                 variant="ghost"
                                 onClick={() => setIsDeleteDialogOpen(false)}
                                 disabled={isDeleting}
-                                className="flex-1 border border-white/10 rounded-none font-mono text-[10px] uppercase tracking-widest hover:bg-white/5"
+                                className="flex-1 border border-white/10 rounded-none font-mono text-[10px] uppercase tracking-widest hover:bg-white/5 h-12"
                             >
                                 ABORT
                             </Button>
@@ -138,7 +138,7 @@ export default function SettingsPage() {
                                 variant="destructive"
                                 onClick={handleDeleteAccount}
                                 disabled={confirmText !== 'DELETE' || isDeleting}
-                                className="flex-1 bg-red-500/80 text-white rounded-none font-mono text-[10px] uppercase tracking-widest hover:bg-red-600 disabled:opacity-20"
+                                className="flex-1 bg-red-500/80 text-white rounded-none font-mono text-[10px] uppercase tracking-widest hover:bg-red-600 disabled:opacity-20 h-12"
                             >
                                 {isDeleting ? 'PURGING...' : 'AUTHORIZE PURGE'}
                             </Button>

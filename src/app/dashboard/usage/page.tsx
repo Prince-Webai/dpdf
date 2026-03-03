@@ -48,7 +48,7 @@ export default function UsagePage() {
                     </div>
                     <div className="space-y-4">
                         <p className="text-white/50 text-sm font-light leading-relaxed">Your account is currently operating at maximum strategic capacity.</p>
-                        <Link href="/pricing" className="block text-center w-full py-3 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500">
+                        <Link href="/pricing" className="block text-center w-full py-3 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500 rounded-none">
                             Upgrade Plan
                         </Link>
                     </div>

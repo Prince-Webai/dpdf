@@ -33,7 +33,7 @@ export function DashboardSidebar() {
             <div className="p-8 border-b border-white/[0.05]">
                 <Link href="/" className="flex items-center gap-2 group font-serif normal-case tracking-normal">
                     <Pentagon className="text-executive-gold w-6 h-6 stroke-[1px] group-hover:rotate-180 transition-transform duration-700" />
-                    <span className="text-xl font-medium text-white tracking-tight group-hover:text-executive-gold transition-colors">DOCUNEXUS</span>
+                    <span className="text-xl font-medium text-white tracking-tight group-hover:text-executive-gold transition-colors">docunexusS</span>
                 </Link>
             </div>
 
