@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Upload, FileText, Loader2, Code, Download } from "lucide-react"
+import { Upload, FileText, Loader2, Terminal, Download } from "lucide-react"
 import Script from 'next/script'
 
 export default function ExtractToolPage() {
@@ -214,7 +214,7 @@ export default function ExtractToolPage() {
                 <div>
                     <Card className="bg-[#0a0a0a] border-white/10 h-full flex flex-col overflow-hidden">
                         <div className="bg-white/5 border-b border-white/10 px-4 py-3 flex items-center justify-between">
-                            <h3 className="font-semibold text-sm flex items-center gap-2"><Code className="h-4 w-4 text-emerald-400" /> JSON Response</h3>
+                            <h3 className="font-semibold text-sm flex items-center gap-2"><Terminal className="h-4 w-4 text-emerald-400" /> JSON Response</h3>
                             {result && (
                                 <Button
                                     variant="ghost"
@@ -229,7 +229,7 @@ export default function ExtractToolPage() {
                         <CardContent className="p-0 flex-1 relative bg-[#050505] min-h-[400px]">
                             {!result && !isProcessing && (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
-                                    <Code className="h-12 w-12 mb-4 opacity-20" />
+                                    <Terminal className="h-12 w-12 mb-4 opacity-20" />
                                     <p>Upload a document and extract data to see the JSON output.</p>
                                 </div>
                             )}

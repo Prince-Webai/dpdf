@@ -1,300 +1,224 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Code, FileJson, Layers, Cpu, Zap, Lock, FileText } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
+import { FileCode2, Layers, Zap, Shield, ChevronRight, Terminal, Cpu } from "lucide-react"
 
-export default function Home() {
+export default function LandingPage() {
+  const { scrollYProgress } = useScroll()
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
+
   return (
-    <div className="flex flex-col min-h-screen pt-16">
+    <div className="flex flex-col min-h-screen bg-black overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[120px]" />
+      </div>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-24 pb-32">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black -z-10" />
-
-        <div className="container px-4 md:px-6 mx-auto text-center max-w-5xl">
+      <motion.section
+        className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 md:px-6 z-10"
+        style={{ opacity, scale }}
+      >
+        <div className="container mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-sm text-indigo-300 mb-8">
-              <span className="flex h-2 w-2 rounded-full bg-indigo-500 mr-2 animate-pulse"></span>
-              New: AI-Powered Invoice Parsing API available now
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
-              The modern <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">PDF API</span><br className="hidden md:block" /> for developers.
-            </h1>
-
-            <p className="text-xl text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Eliminate PDF processing problems. Extract data, convert to JSON, merge, split, and edit documents with a powerful, developer-friendly API platform.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button size="lg" className="h-12 px-8 bg-white text-black hover:bg-gray-200 text-base rounded-full" asChild>
-                <Link href="/signup">
-                  Start building for free <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="h-12 px-8 border-white/20 text-white hover:bg-white/10 text-base rounded-full" asChild>
-                <Link href="/docs">
-                  Explore Documentation
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-20 relative mx-auto"
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 h-full w-full" />
-            <div className="rounded-xl border border-white/10 bg-black/50 p-2 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="flex items-center border-b border-white/10 px-4 py-3 bg-[#0a0a0a]">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
-                </div>
-                <div className="mx-auto text-xs text-gray-500">api.docunexu.com/v1/extract</div>
-              </div>
-              <pre className="p-6 text-sm text-left overflow-x-auto text-gray-300 font-mono bg-[#0a0a0a]">
-                <code>
-                  <span className="text-pink-400">curl</span> -X POST https://api.docunexu.com/v1/pdf/extract \<br />
-                  {"  "} -H <span className="text-green-400">"Authorization: Bearer YOUR_API_KEY"</span> \<br />
-                  {"  "} -H <span className="text-green-400">"Content-Type: application/json"</span> \<br />
-                  {"  "} -d <span className="text-yellow-300">{"'{ \"url\": \"https://example.com/invoice.pdf\", \"format\": \"json\" }'"}</span><br />
-                  <br />
-                  <span className="text-gray-500">// Response</span><br />
-                  {"{"}<br />
-                  {"  "}<span className="text-indigo-400">"status"</span>: <span className="text-green-400">"success"</span>,<br />
-                  {"  "}<span className="text-indigo-400">"data"</span>: {"{"}<br />
-                  {"    "}<span className="text-indigo-400">"invoice_number"</span>: <span className="text-green-400">"INV-2024-001"</span>,<br />
-                  {"    "}<span className="text-indigo-400">"total_amount"</span>: <span className="text-orange-400">1250.00</span>,<br />
-                  {"    "}<span className="text-indigo-400">"line_items"</span>: [...]<br />
-                  {"  "}{"}"}<br />
-                  {"}"}
-                </code>
-              </pre>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Animated Scroll Section */}
-      <section className="py-32 relative">
-        <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-          <div className="text-center mb-24">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-bold tracking-tight mb-6"
-            >
-              Powerful PDF tools you can integrate in minutes
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-lg text-gray-400 max-w-2xl mx-auto"
-            >
-              Everything you need to automate your document workflows, completely re-engineered for the modern web.
-            </motion.p>
-          </div>
-
-          <div className="space-y-32">
-            {/* Feature 1: Left Text, Right Visual */}
-            <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-24">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="flex-1 space-y-6"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
-                  <FileJson className="w-8 h-8 text-indigo-400" />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-bold">AI-Powered Extraction</h3>
-                <p className="text-xl text-gray-400 leading-relaxed">
-                  Say goodbye to rigid templates. Our Document Parser and built-in AI models turn complex PDF invoices, receipts, and forms into clean, standardized JSON automatically with unmatched precision.
-                </p>
-                <ul className="space-y-3 mt-6">
-                  {['Extract text, tables, and form fields', 'No zonal OCR mapping required', 'Supports scanned documents (OCR)'].map((item, i) => (
-                    <li key={i} className="flex items-center text-gray-300">
-                      <div className="mr-3 w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateY: -15 }}
-                whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, type: "spring" }}
-                className="flex-1 relative w-full aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]"
-                style={{ perspective: "1000px" }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-900/20 to-transparent z-0" />
-                <div className="absolute inset-4 border border-indigo-500/20 rounded-xl bg-black/50 backdrop-blur-sm p-6 overflow-hidden flex flex-col items-center justify-center transform hover:scale-[1.02] transition-transform duration-500">
-                  <Cpu className="w-32 h-32 text-indigo-500/50 mb-8" />
-                  <div className="w-full h-8 bg-indigo-500/20 rounded-md mb-2 animate-pulse" />
-                  <div className="w-3/4 h-8 bg-indigo-500/20 rounded-md animate-pulse delay-75" />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Feature 2: Right Text, Left Visual */}
-            <div className="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-24">
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="flex-1 space-y-6"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
-                  <Layers className="w-8 h-8 text-cyan-400" />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-bold">Merge, Split & Convert</h3>
-                <p className="text-xl text-gray-400 leading-relaxed">
-                  Combine thousands of pages flawlessly, split massive archives by page ranges, or convert PDFs into responsive HTML, images (JPG/PNG), or editable spreadsheets.
-                </p>
-                <ul className="space-y-3 mt-6">
-                  {['Intelligent bookmark merging', 'Split by text search or barcode', 'Preserves original document formatting'].map((item, i) => (
-                    <li key={i} className="flex items-center text-gray-300">
-                      <div className="mr-3 w-1.5 h-1.5 rounded-full bg-cyan-500" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateY: 15 }}
-                whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, type: "spring" }}
-                className="flex-1 relative w-full aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]"
-                style={{ perspective: "1000px" }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-bl from-cyan-900/20 to-transparent z-0" />
-                <div className="absolute inset-4 border border-cyan-500/20 rounded-xl bg-black/50 backdrop-blur-sm flex items-center justify-center gap-4 transform hover:scale-[1.02] transition-transform duration-500">
-                  <motion.div animate={{ y: [0, -20, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} className="w-24 h-32 bg-cyan-900/40 border border-cyan-500/50 rounded-lg shadow-2xl flex items-center justify-center">
-                    <FileText className="w-8 h-8 text-cyan-400" />
-                  </motion.div>
-                  <motion.div animate={{ y: [0, 20, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 1 }} className="w-24 h-32 bg-blue-900/40 border border-blue-500/50 rounded-lg shadow-2xl flex items-center justify-center">
-                    <FileText className="w-8 h-8 text-blue-400" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Feature 3: Center Highlight */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#111] to-[#0a0a0a] p-12 text-center relative overflow-hidden group"
-            >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-colors duration-700" />
-              <div className="relative z-10">
-                <div className="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(16,185,129,0.2)] group-hover:scale-110 transition-transform duration-500">
-                  <Code className="w-10 h-10 text-emerald-400" />
-                </div>
-                <h3 className="text-3xl md:text-5xl font-bold mb-6">HTML & URL to PDF Generation</h3>
-                <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-10">
-                  Our advanced rendering engine generates pixel-perfect PDFs from raw HTML, CSS templates, or live URLs, supporting modern web standards, custom fonts, and intricate layouts.
-                </p>
-                <Button size="lg" className="h-14 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-base" asChild>
-                  <Link href="/docs">View the HTML to PDF Guide</Link>
-                </Button>
-              </div>
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Security Section with particles */}
-      <section className="py-32 relative border-y border-white/10 overflow-hidden">
-        {/* Animated background pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
-
-        <div className="container px-4 md:px-6 mx-auto text-center max-w-4xl relative z-10">
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", bounce: 0.5 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 border border-green-500/20 shadow-[0_0_50px_rgba(34,197,94,0.2)] mb-8"
-          >
-            <Lock className="w-10 h-10 text-green-400" />
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-bold tracking-tight mb-8"
-          >
-            Enterprise-grade security built-in
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-2xl text-gray-400 mb-10 leading-relaxed font-light"
-          >
-            Your data is encrypted at rest (AES-256) and in transit (TLS 1.2+). We strictly adhere to GDPR, HIPAA, and SOC2 compliance standards.
-            <span className="text-white font-medium block mt-4">Processed files are permanently destroyed within minutes.</span>
-          </motion.p>
-        </div>
-      </section>
-
-      {/* Hero-style CTA */}
-      <section className="py-40 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_var(--tw-gradient-stops))] from-indigo-900/40 via-black to-black -z-10" />
-        <div className="absolute inset-0 bg-transparent flex justify-center items-end opacity-20 -z-10">
-          <div className="w-[1000px] h-[500px] bg-indigo-500 rounded-full blur-[150px] translate-y-1/2" />
-        </div>
-
-        <div className="container px-4 md:px-6 mx-auto text-center max-w-4xl relative z-10">
-          <motion.h2
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-8"
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm mb-8"
           >
-            Ready to automate your documents?
-          </motion.h2>
+            <Zap className="w-4 h-4 text-indigo-400" />
+            <span className="font-medium">DocuNexu API v2.0 is now live</span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-600 leading-[1.1]"
+          >
+            The Intelligence Layer <br className="hidden md:block" /> for Documents
+          </motion.h1>
+
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-2xl text-indigo-200/70 mb-12 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="text-lg md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
-            Join thousands of developers building the future of document processing. Get 500 free API credits when you sign up.
+            Extract, merge, and manipulate complex documents with zero infrastructure. Built for high-volume engineering teams who ship fast.
           </motion.p>
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row justify-center gap-5 items-center"
           >
-            <Button size="lg" className="h-16 px-12 bg-white text-black hover:bg-gray-200 hover:scale-105 transition-all text-xl rounded-full shadow-[0_0_40px_rgba(255,255,255,0.3)]" asChild>
+            <Button size="lg" className="h-14 px-8 text-lg bg-white text-black hover:bg-gray-100 hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] rounded-xl" asChild>
               <Link href="/signup">
-                Create free account <ArrowRight className="ml-2 h-6 w-6" />
+                Start Building Free <ChevronRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all rounded-xl" asChild>
+              <Link href="/docs">
+                View Documentation
               </Link>
             </Button>
           </motion.div>
         </div>
+      </motion.section>
+
+      {/* Floating Code Mockup */}
+      <motion.section
+        initial={{ opacity: 0, y: 100 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+        className="relative z-20 container mx-auto px-4 -mt-10 md:-mt-20 mb-32"
+      >
+        <div className="max-w-5xl mx-auto relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+          <div className="relative bg-[#050505] rounded-xl border border-white/10 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+
+            {/* Code Side */}
+            <div className="flex-1 p-6 md:p-8 md:border-r border-white/5">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                </div>
+                <div className="text-xs text-gray-500 font-mono">extract.ts</div>
+              </div>
+              <pre className="font-mono text-sm md:text-base leading-loose text-gray-300 overflow-x-auto">
+                <span className="text-purple-400">import</span> {'{'} DocuNexu {'}'} <span className="text-purple-400">from</span> <span className="text-emerald-400">'@docunexu/sdk'</span>;<br /><br />
+                <span className="text-blue-400">const</span> nx = <span className="text-purple-400">new</span> DocuNexu(process.env.API_KEY);<br /><br />
+                <span className="text-gray-500">// Extract multi-page tables into JSON arrays</span><br />
+                <span className="text-blue-400">const</span> result = <span className="text-purple-400">await</span> nx.extract(<span className="text-emerald-400">"q3_report.pdf"</span>);<br /><br />
+                console.<span className="text-blue-300">log</span>(result.tables[0].columns);<br />
+                <span className="text-gray-500">//  ['Revenue', 'Expenses', 'Net Income']</span>
+              </pre>
+            </div>
+
+            {/* Response Side */}
+            <div className="w-full md:w-80 bg-black/50 p-6 md:p-8 flex flex-col justify-center">
+              <div className="text-xs text-indigo-400 font-mono mb-4 flex items-center gap-2">
+                <Terminal className="w-4 h-4" /> Output
+              </div>
+              <pre className="font-mono text-xs text-emerald-300/80 leading-relaxed overflow-x-auto bg-emerald-950/20 p-4 rounded-lg border border-emerald-900/30">
+                {`{
+  "status": "success",
+  "confidence": 0.99,
+  "pages_processed": 14,
+  "data": {
+    "tables": [
+      {
+        "id": "tbl_1",
+        "rows": 42
+      }
+    ]
+  }
+}`}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Features Grid */}
+      <section className="py-24 relative z-10 bg-black">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight">Everything you need to build document apps</h2>
+            <p className="text-gray-400 text-lg">Powerful APIs designed for edge runtimes, serverless functions, and modern frontend frameworks.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <FeatureCard
+              icon={FileCode2}
+              title="Spatial Layout Analysis"
+              desc="Our AI understands document geometry, extracting complex nested tables and forms exactly as they appear visually."
+              delay={0}
+            />
+            <FeatureCard
+              icon={Layers}
+              title="Byte-level Manipulation"
+              desc="Merge thousands of PDFs, split by bookmarks, or rotate pages on the fly without loading the entire document in memory."
+              delay={0.1}
+            />
+            <FeatureCard
+              icon={Shield}
+              title="Stateless Architecture"
+              desc="Military-grade security by default. We process your documents and purge them instantly. Zero data retention."
+              delay={0.2}
+            />
+            <FeatureCard
+              icon={Cpu}
+              title="Edge Native"
+              desc="Built on global edge networks to ensure sub-100ms latency anywhere in the world."
+              delay={0.3}
+            />
+            <FeatureCard
+              icon={Zap}
+              title="High Throughput"
+              desc="Handle sudden traffic spikes with auto-scaling infrastructure capable of processing millions of pages."
+              delay={0.4}
+            />
+            <FeatureCard
+              icon={Terminal}
+              title="Developer First"
+              desc="Comprehensive SDKs, typed responses, and interactive documentation to get you to production faster."
+              delay={0.5}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-32 relative z-10 border-t border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/20 to-transparent pointer-events-none" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="container px-4 mx-auto text-center relative z-10"
+        >
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">Ready to integrate?</h2>
+          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            Get your API key in seconds and start processing documents for free. No credit card required to start.
+          </p>
+          <Button size="lg" className="h-14 px-10 text-lg bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:scale-105 transition-all" asChild>
+            <Link href="/signup">
+              Create an Account
+            </Link>
+          </Button>
+        </motion.div>
       </section>
     </div>
+  )
+}
+
+function FeatureCard({ icon: Icon, title, desc, delay }: { icon: any, title: string, desc: string, delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay }}
+      className="p-8 rounded-3xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-indigo-500/30 transition-all group flex flex-col gap-6"
+    >
+      <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
+        <Icon className="w-6 h-6 text-indigo-400" />
+      </div>
+      <div>
+        <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{title}</h3>
+        <p className="text-gray-400 leading-relaxed">{desc}</p>
+      </div>
+    </motion.div>
   )
 }

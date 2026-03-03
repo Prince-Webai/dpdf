@@ -24,15 +24,8 @@ export default function LoginPage() {
         setError(null)
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            })
-
-            if (error) {
-                throw error
-            }
-
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+            if (error) throw error
             if (data.user) {
                 if (data.user?.app_metadata?.role === 'admin' || data.user?.email === 'devashishbhavsar1@duck.com') {
                     window.location.href = '/admin'
@@ -83,13 +76,13 @@ export default function LoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-black border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-indigo-500"
+                                    className="bg-black border-white/10 text-white"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="password" className="text-gray-300">Password</Label>
-                                    <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300">
+                                    <Link href="/forgot-password" title="Forgot password?" className="text-xs text-indigo-400 hover:text-indigo-300">
                                         Forgot password?
                                     </Link>
                                 </div>
@@ -99,7 +92,7 @@ export default function LoginPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-black border-white/10 text-white focus-visible:ring-indigo-500"
+                                    className="bg-black border-white/10 text-white"
                                 />
                             </div>
                         </div>

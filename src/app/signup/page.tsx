@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-
 import { signUpUser } from '@/lib/actions'
 
 export default function SignupPage() {
@@ -39,16 +38,12 @@ export default function SignupPage() {
                 throw new Error(result.error)
             }
 
-            // If the signup was successful, Supabase might send a confirmation email
-            // or log the user in automatically depending on the settings.
-            // We check if a session was created.
             const { data: { session } } = await supabase.auth.getSession()
 
             if (session) {
                 router.push('/dashboard')
                 router.refresh()
             } else {
-                // If no session, it likely means email confirmation is required
                 router.push('/login?message=Please check your email to confirm your account')
             }
         } catch (err: any) {
@@ -95,7 +90,7 @@ export default function SignupPage() {
                                         required
                                         value={firstName}
                                         onChange={(e) => setFirstName(e.target.value)}
-                                        className="bg-black border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-indigo-500"
+                                        className="bg-black border-white/10 text-white"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -105,7 +100,7 @@ export default function SignupPage() {
                                         placeholder="Doe"
                                         value={lastName}
                                         onChange={(e) => setLastName(e.target.value)}
-                                        className="bg-black border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-indigo-500"
+                                        className="bg-black border-white/10 text-white"
                                     />
                                 </div>
                             </div>
@@ -118,7 +113,7 @@ export default function SignupPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-black border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-indigo-500"
+                                    className="bg-black border-white/10 text-white"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -129,9 +124,8 @@ export default function SignupPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-black border-white/10 text-white focus-visible:ring-indigo-500"
+                                    className="bg-black border-white/10 text-white"
                                 />
-                                <p className="text-xs text-gray-500">Must be at least 8 characters.</p>
                             </div>
                         </div>
 
