@@ -213,9 +213,14 @@ function DeveloperViewContent() {
                             <h2 className="font-serif text-2xl text-white">Documentation</h2>
                         </div>
                         <div className="space-y-4">
-                            {['API Reference', 'Authentication Guide', 'SDK Libraries', 'Webhooks'].map((doc) => (
-                                <Link key={doc} href="#" className="flex items-center justify-between group py-2 border-b border-white/[0.02] last:border-0">
-                                    <span className="text-sm text-white/50 group-hover:text-white transition-colors">{doc}</span>
+                            {[
+                                { name: 'API Reference', href: '/dashboard/docs/api-reference' },
+                                { name: 'Authentication Guide', href: '/dashboard/docs/authentication' },
+                                { name: 'SDK Libraries', href: '/dashboard/docs/sdk' },
+                                { name: 'Webhooks', href: '/dashboard/docs/webhooks' }
+                            ].map((doc) => (
+                                <Link key={doc.name} href={doc.href} className="flex items-center justify-between group py-2 border-b border-white/[0.02] last:border-0">
+                                    <span className="text-sm text-white/50 group-hover:text-white transition-colors">{doc.name}</span>
                                     <ArrowRight className="w-3 h-3 text-white/10 group-hover:text-executive-gold group-hover:translate-x-1 transition-all" />
                                 </Link>
                             ))}

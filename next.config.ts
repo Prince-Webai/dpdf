@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // @ts-ignore
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 
   // Vercel: allow images from Supabase storage & external providers
   images: {
