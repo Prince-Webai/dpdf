@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Ban, UserCheck, Shield, MoreHorizontal, Loader2 } from "lucide-react"
+import { Search, Ban, UserCheck, Loader2, RefreshCw } from "lucide-react"
 import { listAllUsers, updateUserMetadata, deleteUserAccount, getUserUsage } from "@/lib/actions"
 import { toast } from "@/hooks/use-toast"
 import {
@@ -15,6 +15,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Label as UILabel } from "@/components/ui/label"
+import { motion } from "framer-motion"
 
 interface User {
     id: string;
@@ -103,89 +104,108 @@ export default function AdminUsersPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            <div className="flex items-center justify-center p-24 font-mono text-[10px] tracking-widest text-white/40 animate-pulse uppercase">
+                INITIALIZING USER DIRECTORY UPLINK...
             </div>
         )
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-8">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-16"
+        >
+            <div className="flex justify-between items-end border-b border-white/[0.05] pb-12">
                 <div>
-                    <h1 className="text-3xl font-bold mb-2">Manage Users</h1>
-                    <p className="text-gray-400">View and administer platform accounts.</p>
+                    <h1 className="text-6xl font-serif text-white mb-4 tracking-tight">Manage Users</h1>
+                    <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">ADMINISTER PLATFORM ENTITIES AND RESOURCE ALLOCATION</p>
                 </div>
             </div>
 
             <div className="mb-6 flex gap-4">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <div className="relative flex-1 max-w-md bg-executive-panel">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <Input
-                        placeholder="Search by name or email..."
+                        placeholder="SEARCH DIRECTORY STRINGS..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 bg-[#0a0a0a] border-white/10 text-white w-full"
+                        className="pl-12 border-white/[0.05] text-white w-full rounded-none font-mono text-[10px] uppercase tracking-widest h-12 focus-visible:ring-0 focus-visible:border-red-500/50 transition-colors bg-transparent"
                     />
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={loadUsers}>Refresh</Button>
+                <button
+                    className="flex items-center gap-2 h-12 px-6 border border-white/[0.05] hover:border-executive-gold/30 hover:bg-white/[0.02] text-white/40 hover:text-executive-gold transition-colors font-mono text-[10px] uppercase tracking-widest"
+                    onClick={loadUsers}
+                >
+                    <RefreshCw className="h-4 w-4" /> REFRESH UPLINK
+                </button>
             </div>
 
-            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="border border-white/[0.05] overflow-hidden bg-executive-panel abstract-texture">
+                <div className="overflow-x-auto relative z-10">
                     {users.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500">
-                            No users found. Ensure `SUPABASE_SERVICE_ROLE_KEY` is configured to fetch live users.
+                        <div className="p-8 text-center font-mono text-[10px] text-white/40 uppercase tracking-widest italic">
+                            NO ENTITIES FOUND. ENSURE SERVICE ROLE KEY IS ACTIVE.
                         </div>
                     ) : (
-                        <table className="w-full text-sm text-left text-gray-400">
-                            <thead className="text-xs text-gray-500 uppercase bg-black/50 border-b border-white/10">
+                        <table className="w-full text-left font-mono text-[10px] uppercase tracking-widest">
+                            <thead className="bg-black/50 border-b border-white/[0.05] text-white/40">
                                 <tr>
-                                    <th scope="col" className="px-6 py-4">User</th>
-                                    <th scope="col" className="px-6 py-4">Plan</th>
-                                    <th scope="col" className="px-6 py-4">Credits</th>
-                                    <th scope="col" className="px-6 py-4">Status</th>
-                                    <th scope="col" className="px-6 py-4 flex justify-end">Actions</th>
+                                    <th scope="col" className="px-8 py-6 font-normal">Entity Details</th>
+                                    <th scope="col" className="px-8 py-6 font-normal">Access Tier</th>
+                                    <th scope="col" className="px-8 py-6 font-normal">Resources</th>
+                                    <th scope="col" className="px-8 py-6 font-normal">Status</th>
+                                    <th scope="col" className="px-8 py-6 font-normal text-right">Administrative Override</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/10">
+                            <tbody className="divide-y divide-white/[0.05] text-white/80">
                                 {filteredUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-white/5 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="font-medium text-white">{user.name}</span>
-                                                <span className="text-xs text-gray-500">{user.email}</span>
+                                    <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-col space-y-2">
+                                                <span className="font-bold text-white tracking-wider">{user.name}</span>
+                                                <span className="text-white/40 lowercase tracking-normal">{user.email}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className="px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">
+                                        <td className="px-8 py-6">
+                                            <span className="inline-flex px-3 py-1 bg-white/[0.02] border border-white/[0.05] text-white/60">
                                                 {user.plan}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className="text-gray-300">{user.credits}</span>
+                                        <td className="px-8 py-6">
+                                            <span className="text-white/60">{user.credits} CRD</span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-8 py-6">
                                             {user.status === 'active' ? (
-                                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs font-medium border border-green-500/20">
-                                                    <UserCheck className="h-3 w-3" /> Active
+                                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-400 font-bold border border-green-500/20">
+                                                    <UserCheck className="h-3 w-3" /> ACTIVE
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs font-medium border border-red-500/20">
-                                                    <Ban className="h-3 w-3" /> Suspended
+                                                <span className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 text-red-500 font-bold border border-red-500/20">
+                                                    <Ban className="h-3 w-3" /> SUSPENDED
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => handleViewUsage(user)} className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-400/10">
-                                                Usage
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => { setSelectedUser(user); setIsEditDialogOpen(true); }} className="text-gray-400 hover:text-white hover:bg-white/5">
-                                                Edit
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => { setUserToDelete(user.id); setIsDeleteDialogOpen(true); }} className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
-                                                Delete
-                                            </Button>
+                                        <td className="px-8 py-6 flex justify-end gap-6 h-full items-center">
+                                            <button
+                                                onClick={() => handleViewUsage(user)}
+                                                className="text-white/40 hover:text-blue-400 transition-colors uppercase tracking-widest font-bold focus:outline-none"
+                                            >
+                                                USAGE_LOGS
+                                            </button>
+                                            <button
+                                                onClick={() => { setSelectedUser(user); setIsEditDialogOpen(true); }}
+                                                className="text-white/40 hover:text-white transition-colors uppercase tracking-widest font-bold focus:outline-none"
+                                            >
+                                                EDIT_LIMITS
+                                            </button>
+                                            <button
+                                                onClick={() => { setUserToDelete(user.id); setIsDeleteDialogOpen(true); }}
+                                                className="text-white/40 hover:text-red-500 transition-colors uppercase tracking-widest font-bold focus:outline-none"
+                                            >
+                                                TERMINATE
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -197,17 +217,17 @@ export default function AdminUsersPage() {
 
             {/* Edit User Dialog */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 text-white">
-                    <DialogHeader>
-                        <DialogTitle>Edit User: {selectedUser?.name}</DialogTitle>
-                        <DialogDescription className="text-gray-400">
-                            Manually override user plan and resource limits.
+                <DialogContent className="bg-executive-black border-white/[0.05] text-white p-0 overflow-hidden font-mono uppercase tracking-widest">
+                    <div className="p-8 border-b border-white/[0.05]">
+                        <DialogTitle className="font-serif text-2xl normal-case tracking-normal">Modify Entity: {selectedUser?.name}</DialogTitle>
+                        <DialogDescription className="text-[10px] text-white/40 mt-4 leading-relaxed">
+                            MANUALLY OVERRIDE USER TIER AND RESOURCE QUOTAS. CHANGES PROPAGATE IMMEDIATELY EXPERIENCING ZERO DOWNTIME.
                         </DialogDescription>
-                    </DialogHeader>
+                    </div>
                     {selectedUser && (
-                        <form onSubmit={handleUpdateUser} className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <UILabel>Subscription Plan</UILabel>
+                        <form onSubmit={handleUpdateUser} className="p-8 space-y-8">
+                            <div className="space-y-4">
+                                <UILabel className="text-[10px] text-white/60">ACCESS TIER</UILabel>
                                 <select
                                     value={selectedUser.plan}
                                     onChange={(e) => {
@@ -226,37 +246,41 @@ export default function AdminUsersPage() {
                                             tokenLimit: limits.tokenLimit
                                         });
                                     }}
-                                    className="w-full bg-black border border-white/10 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    className="w-full bg-black border border-white/[0.05] p-4 text-[10px] focus:ring-0 focus:border-white outline-none rounded-none transition-colors"
                                 >
-                                    <option value="free">Free</option>
-                                    <option value="Basic">Basic</option>
-                                    <option value="Personal">Personal</option>
-                                    <option value="Business">Business</option>
+                                    <option value="free">FREE_TIER</option>
+                                    <option value="Basic">BASIC_TIER</option>
+                                    <option value="Personal">PERSONAL_TIER</option>
+                                    <option value="Business">BUSINESS_TIER</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
-                                <UILabel>Available Credits</UILabel>
+                            <div className="space-y-4">
+                                <UILabel className="text-[10px] text-white/60">RESOURCE CREDITS</UILabel>
                                 <Input
                                     type="number"
                                     value={selectedUser.credits}
                                     onChange={(e) => setSelectedUser({ ...selectedUser, credits: parseInt(e.target.value) })}
-                                    className="bg-black border-white/10"
+                                    className="bg-black border-white/[0.05] rounded-none h-14 font-mono text-sm focus-visible:ring-0 focus-visible:border-white"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <UILabel>Token Limit</UILabel>
+                            <div className="space-y-4">
+                                <UILabel className="text-[10px] text-white/60">TOKEN QUOTA LIMIT</UILabel>
                                 <Input
                                     type="number"
                                     value={selectedUser.tokenLimit}
                                     onChange={(e) => setSelectedUser({ ...selectedUser, tokenLimit: parseInt(e.target.value) })}
-                                    className="bg-black border-white/10"
+                                    className="bg-black border-white/[0.05] rounded-none h-14 font-mono text-sm focus-visible:ring-0 focus-visible:border-white"
                                 />
                             </div>
-                            <DialogFooter>
-                                <Button type="submit" disabled={isUpdating} className="bg-indigo-600 hover:bg-indigo-700">
-                                    {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
-                                </Button>
-                            </DialogFooter>
+                            <div className="pt-8">
+                                <button
+                                    type="submit"
+                                    disabled={isUpdating}
+                                    className="w-full bg-white text-black h-12 flex items-center justify-center font-bold tracking-[0.2em] hover:bg-white/90 transition-colors disabled:opacity-50"
+                                >
+                                    {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'COMMIT CHANGES'}
+                                </button>
+                            </div>
                         </form>
                     )}
                 </DialogContent>
@@ -264,28 +288,29 @@ export default function AdminUsersPage() {
 
             {/* Usage Stats Dialog */}
             <Dialog open={isUsageDialogOpen} onOpenChange={setIsUsageDialogOpen}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 text-white max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>Usage History: {selectedUser?.email}</DialogTitle>
-                    </DialogHeader>
-                    <div className="max-h-[400px] overflow-y-auto mt-4">
-                        <table className="w-full text-xs text-left text-gray-400">
-                            <thead className="text-gray-500 uppercase bg-black border-b border-white/10">
+                <DialogContent className="bg-executive-black border-white/[0.05] text-white p-0 max-w-3xl overflow-hidden font-mono uppercase tracking-widest">
+                    <div className="p-8 border-b border-white/[0.05]">
+                        <DialogTitle className="font-serif text-2xl normal-case tracking-normal">Telemetry Log</DialogTitle>
+                        <p className="text-[10px] text-white/40 mt-2 lowercase tracking-normal font-sans">TARGET: {selectedUser?.email}</p>
+                    </div>
+                    <div className="max-h-[500px] overflow-y-auto">
+                        <table className="w-full text-[10px] text-left">
+                            <thead className="text-white/40 bg-black/50 border-b border-white/[0.05] sticky top-0">
                                 <tr>
-                                    <th className="px-4 py-2">Date</th>
-                                    <th className="px-4 py-2">Endpoint</th>
-                                    <th className="px-4 py-2">Credits Used</th>
+                                    <th className="px-8 py-4 font-normal">TIMESTAMP</th>
+                                    <th className="px-8 py-4 font-normal">ENDPOINT_URI</th>
+                                    <th className="px-8 py-4 font-normal text-right">COST</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-white/[0.02] text-white/80">
                                 {usageData.length === 0 ? (
-                                    <tr><td colSpan={3} className="p-4 text-center">No logs found</td></tr>
+                                    <tr><td colSpan={3} className="px-8 py-12 text-center text-white/30 italic tracking-wider">NO ACTIVITY RECORDS FOUND IN CURRENT EPOCH.</td></tr>
                                 ) : (
                                     usageData.map((log: any) => (
-                                        <tr key={log.id}>
-                                            <td className="px-4 py-2">{new Date(log.created_at).toLocaleString()}</td>
-                                            <td className="px-4 py-2">{log.endpoint}</td>
-                                            <td className="px-4 py-2">{log.credits_used}</td>
+                                        <tr key={log.id} className="hover:bg-white/[0.02]">
+                                            <td className="px-8 py-4 text-white/50">{new Date(log.created_at).toLocaleString()}</td>
+                                            <td className="px-8 py-4 text-blue-400 lowercase tracking-normal">{log.endpoint}</td>
+                                            <td className="px-8 py-4 text-right text-red-400">{log.credits_used} CRD</td>
                                         </tr>
                                     ))
                                 )}
@@ -297,23 +322,31 @@ export default function AdminUsersPage() {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 text-white">
-                    <DialogHeader>
-                        <DialogTitle>Confirm Deletion</DialogTitle>
-                        <DialogDescription className="text-gray-400">
-                            Are you sure you want to delete this user account? This action is permanent and will remove all associated data.
+                <DialogContent className="bg-executive-black border-red-500/20 text-white p-0 overflow-hidden font-mono uppercase tracking-widest">
+                    <div className="p-8 bg-red-500/10 border-b border-red-500/20">
+                        <DialogTitle className="font-serif text-2xl normal-case tracking-normal text-red-500">Confirm Termination</DialogTitle>
+                        <DialogDescription className="text-[10px] text-red-500/70 mt-4 leading-relaxed">
+                            WARNING: THIS ACTION PROPOSES THE COMPLETE WIPING OF ENTITY DATA FROM THE REGISTRY. THIS OPERATION IS IRREVERSIBLE.
                         </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeleting} className="text-gray-400">
-                            Cancel
-                        </Button>
-                        <Button onClick={handleDeleteUser} disabled={isDeleting} className="bg-red-600 hover:bg-red-700">
-                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirm Delete'}
-                        </Button>
-                    </DialogFooter>
+                    </div>
+                    <div className="p-8 flex items-center justify-end gap-6 bg-black">
+                        <button
+                            onClick={() => setIsDeleteDialogOpen(false)}
+                            disabled={isDeleting}
+                            className="text-white/40 hover:text-white transition-colors text-[10px] font-bold"
+                        >
+                            ABORT
+                        </button>
+                        <button
+                            onClick={handleDeleteUser}
+                            disabled={isDeleting}
+                            className="bg-red-500 text-black px-8 py-3 font-bold text-[10px] hover:bg-red-400 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[160px]"
+                        >
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'EXECUTE TERMINATION'}
+                        </button>
+                    </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </motion.div>
     )
 }

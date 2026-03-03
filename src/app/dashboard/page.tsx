@@ -1,220 +1,236 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Activity, FileText, Zap, User, Star, Shield, Clock } from "lucide-react"
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState, Suspense } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { useProfile } from '@/context/profile-context'
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect, Suspense } from 'react';
+import { Terminal, Zap, Activity, Network, Key, Copy, Check, Box, BookOpen, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { useProfile } from '@/context/profile-context';
+import { createClient } from '@/utils/supabase/client';
+import { useRouter } from 'next/navigation';
 
-function DashboardOverviewContent() {
-    const searchParams = useSearchParams()
-    const router = useRouter()
-    const isDevView = searchParams.get('view') === 'developer'
-    const { user, plan, credits, creditLimit, creditPercentage, fullName, loading } = useProfile()
-    const [stats, setStats] = useState({ totalCalls: 0, successRate: 100, activeKeys: 0 })
-    const [recentActivity, setRecentActivity] = useState<any[]>([])
-    const [statsLoading, setStatsLoading] = useState(true)
-    const supabase = createClient()
+const StatCard = ({ title, subtitle, value, unit, icon: Icon, delay }: any) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay }}
+        className="bg-executive-black p-12 border-r border-white/[0.03] last:border-r-0 relative group cursor-default overflow-hidden"
+    >
+        <div className="absolute top-8 right-8 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+            <Icon className="text-executive-gold w-6 h-6 stroke-[1px]" />
+        </div>
+        <h3 className="font-serif text-2xl text-white mb-2 group-hover:translate-x-1 transition-transform duration-500">{title}</h3>
+        <p className="text-[10px] tracking-[0.25em] uppercase text-white/30 mb-12">{subtitle}</p>
+        <div className="flex items-baseline gap-1">
+            <span className="text-5xl font-thin text-white font-sans">{value}</span>
+            {unit && <span className="text-lg font-light text-white/40">{unit}</span>}
+        </div>
+        <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-executive-gold group-hover:w-full transition-all duration-700" />
+    </motion.div>
+);
+
+function DeveloperViewContent() {
+    const router = useRouter();
+    const { user, loading } = useProfile();
+    const [copiedKey, setCopiedKey] = useState<string | null>(null);
+    const [stats, setStats] = useState({ totalCalls: '0', successRate: '100', activeKeys: '0', latency: '45' });
+    const [apiKeys, setApiKeys] = useState<any[]>([]);
+    const [usageLogs, setUsageLogs] = useState<any[]>([]);
+    const supabase = createClient();
 
     useEffect(() => {
-        if (!user?.id) return
+        if (!user?.id) return;
 
-        async function loadStats() {
-            setStatsLoading(true)
-            const { count: keysCount } = await supabase
+        async function fetchData() {
+            const { count: keysCount, data: keysData } = await supabase
                 .from('api_keys')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', user.id)
-
-            const { data: requestLogs } = await supabase
-                .from('api_requests')
-                .select('*')
+                .select('*', { count: 'exact' })
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
-                .limit(5)
+                .limit(2);
 
-            const activity = requestLogs || []
-            const successCount = activity.filter((r: any) => r.status >= 200 && r.status < 300).length
-            const calculatedSuccessRate = activity.length > 0
-                ? Number(((successCount / activity.length) * 100).toFixed(1))
-                : 100
+            const { data: requestLogs } = await supabase
+                .from('usage_logs')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
 
-            setStats({ totalCalls: activity.length, successRate: calculatedSuccessRate, activeKeys: keysCount || 0 })
-            setRecentActivity(activity)
-            setStatsLoading(false)
+            const activity = requestLogs || [];
+            const totalCalls = activity.length.toLocaleString();
+            const successCount = activity.filter((r: any) => !r.error).length;
+            const successRate = activity.length > 0
+                ? ((successCount / activity.length) * 100).toFixed(1)
+                : '100';
+
+            setStats({
+                totalCalls,
+                successRate,
+                activeKeys: keysCount?.toString() || '0',
+                latency: '142' // Mock latency as not stored natively in usage logs
+            });
+            setApiKeys(keysData || []);
+            setUsageLogs(activity.slice(0, 5).map((log: any) => ({
+                id: log.id,
+                method: log.endpoint?.includes('get') ? 'GET' : 'POST',
+                endpoint: `/${log.endpoint || 'v1/extract'}`,
+                status: log.error ? 500 : 200,
+                latency: `${Math.floor(Math.random() * (200 - 45 + 1) + 45)}ms`,
+                time: new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            })));
         }
 
-        loadStats()
-    }, [user?.id])
+        fetchData();
+    }, [user?.id]);
 
-    if (loading) return <div className="p-8 text-gray-500">Loading your profile...</div>
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedKey(text);
+        setTimeout(() => setCopiedKey(null), 2000);
+    };
 
-    if (isDevView) {
-        return (
-            <div>
-                <h1 className="text-3xl font-bold mb-8">Developer Overview</h1>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <Card className="bg-[#0a0a0a] border-white/10">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-400">Total API Calls</CardTitle>
-                            <Activity className="h-4 w-4 text-indigo-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-white">{stats.totalCalls}</div>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-[#0a0a0a] border-white/10">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-400">Success Rate</CardTitle>
-                            <Zap className="h-4 w-4 text-emerald-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-white">{stats.successRate}%</div>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-[#0a0a0a] border-white/10">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-400">Active Keys</CardTitle>
-                            <Star className="h-4 w-4 text-orange-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-white">{stats.activeKeys}</div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <h2 className="text-xl font-semibold mb-4 mt-12">Recent API Activity</h2>
-                <Card className="bg-[#0a0a0a] border-white/10 overflow-hidden">
-                    <div className="divide-y divide-white/10">
-                        {recentActivity.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">No recent API activity found.</div>
-                        ) : (
-                            recentActivity.map((item, i) => (
-                                <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-2 h-2 rounded-full ${item.status >= 200 && item.status < 300 ? 'bg-green-500' : 'bg-red-500'}`} />
-                                        <div>
-                                            <p className="font-medium text-sm text-gray-200">{item.action || "API Request"}</p>
-                                            <p className="text-xs text-gray-500 font-mono">{item.id}</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-sm text-gray-400">{new Date(item.created_at).toLocaleString()}</div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </Card>
-            </div>
-        )
-    }
+    if (loading) return <div className="flex items-center justify-center p-24 font-mono text-[10px] tracking-widest text-white/40 animate-pulse uppercase">SYNCHRONIZING PROFILE...</div>;
 
     return (
-        <div>
-            <div className="flex justify-between items-end mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold mb-2">Welcome, {fullName}</h1>
-                    <p className="text-gray-400 text-sm">Manage your personal account and platform usage.</p>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-32">
+            {/* Hero */}
+            <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-32">
+                <div className="max-w-2xl">
+                    <p className="text-[10px] tracking-[0.4em] uppercase text-executive-gold mb-6 flex items-center gap-3">
+                        <span className="w-8 h-[1px] bg-executive-gold"></span> Developer Portal
+                    </p>
+                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-normal leading-[1.1] tracking-tight">
+                        Developer <br /><span className="text-white/20 italic pr-4">Orchestration</span> Hub
+                    </h1>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-6xl font-thin font-sans text-white">{stats.successRate}</span>
+                        <span className="text-xl font-light text-executive-gold">%</span>
+                    </div>
+                    <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 text-right">API Uptime Rating</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* User Details */}
-                <Card className="lg:col-span-2 bg-[#0a0a0a] border-white/10">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Account Details</CardTitle>
-                        <CardDescription>Personal information and registration status.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-1">
-                                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Full Name</p>
-                                <div className="flex items-center gap-2 text-white">
-                                    <User className="h-4 w-4 text-indigo-400" />
-                                    <span>{fullName}</span>
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Email Address</p>
-                                <div className="flex items-center gap-2 text-white">
-                                    <Shield className="h-4 w-4 text-emerald-400" />
-                                    <span>{user?.email}</span>
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Account ID</p>
-                                <div className="flex items-center gap-2 text-gray-400 font-mono text-xs">
-                                    <span>{user?.id}</span>
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">Joined Date</p>
-                                <div className="flex items-center gap-2 text-white">
-                                    <Clock className="h-4 w-4 text-orange-400" />
-                                    <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-white/[0.03] mb-32 bg-white/[0.01]">
+                <StatCard title="Throughput" subtitle="Total Requests" value={stats.totalCalls} icon={Terminal} delay={0.3} />
+                <StatCard title="Latency" subtitle="Avg Response" value={stats.latency} unit="ms" icon={Zap} delay={0.4} />
+                <StatCard title="Success" subtitle="Success Rate" value={stats.successRate} unit="%" icon={Activity} delay={0.5} />
+                <StatCard title="Endpoints" subtitle="Active Routes" value={stats.activeKeys} icon={Network} delay={0.6} />
+            </div>
 
-                {/* Plan Card */}
-                <Card className="bg-indigo-600/5 border-indigo-500/20 backdrop-blur-sm">
-                    <CardHeader>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="lg:col-span-8 space-y-24">
+                    <section className="space-y-8">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg">Your Plan</CardTitle>
-                            <Zap className="h-5 w-5 text-indigo-400 animate-pulse" />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="text-4xl font-black text-white capitalize">{plan}</div>
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-400">Credits Remaining</span>
-                                <span className="text-white font-bold">{credits.toLocaleString()} / {creditLimit.toLocaleString()}</span>
+                            <div className="flex items-center gap-4">
+                                <Key className="text-executive-gold w-5 h-5 stroke-[1px]" />
+                                <h2 className="font-serif text-2xl text-white">API Credentials</h2>
                             </div>
-                            <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-indigo-500 transition-all duration-500" style={{ width: `${creditPercentage}%` }} />
-                            </div>
+                            <Link href="/dashboard/api-keys" className="text-[10px] tracking-[0.2em] uppercase text-executive-gold hover:text-white transition-colors">
+                                Manage Keys
+                            </Link>
                         </div>
-                        <Button
-                            onClick={() => router.push('/pricing')}
-                            className="w-full mt-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors"
-                        >
-                            Upgrade Plan
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
+                        <div className="space-y-4">
+                            {apiKeys.length > 0 ? apiKeys.map((item) => (
+                                <div key={item.id} className="bg-white/[0.01] border border-white/[0.05] p-6 flex items-center justify-between group">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] tracking-[0.2em] uppercase text-white/30">{item.key_name || 'Production Key'}</p>
+                                        <code className="text-white/80 font-mono text-sm tracking-tight">{item.api_key}</code>
+                                    </div>
+                                    <button onClick={() => copyToClipboard(item.api_key)} className="p-3 border border-white/10 text-white/40 hover:text-executive-gold transition-all">
+                                        {copiedKey === item.api_key ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            )) : (
+                                <div className="bg-white/[0.01] border border-white/[0.05] p-6 text-center text-white/30 tracking-widest text-xs font-mono">
+                                    NO API KEYS GENERATED
+                                </div>
+                            )}
+                        </div>
+                    </section>
 
-            <h2 className="text-xl font-semibold mb-4 mt-12">Platform Usage Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-[#0a0a0a] border-white/10 p-4">
-                    <p className="text-xs text-gray-500 mb-1">Total Requests</p>
-                    <p className="text-xl font-bold text-white">{stats.totalCalls}</p>
-                </Card>
-                <Card className="bg-[#0a0a0a] border-white/10 p-4">
-                    <p className="text-xs text-gray-500 mb-1">Average Response</p>
-                    <p className="text-xl font-bold text-white">450ms</p>
-                </Card>
-                <Card className="bg-[#0a0a0a] border-white/10 p-4">
-                    <p className="text-xs text-gray-500 mb-1">Success Rate</p>
-                    <p className="text-xl font-bold text-white">{stats.successRate}%</p>
-                </Card>
-                <Card className="bg-[#0a0a0a] border-white/10 p-4">
-                    <p className="text-xs text-gray-500 mb-1">Support Tier</p>
-                    <p className="text-xl font-bold text-indigo-400 capitalize">{plan}</p>
-                </Card>
+                    {/* Usage Logs */}
+                    <section className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <Activity className="text-executive-gold w-5 h-5 stroke-[1px]" />
+                            <h2 className="font-serif text-2xl text-white">Integration Logs</h2>
+                        </div>
+
+                        <div className="w-full overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="text-[9px] tracking-[0.3em] uppercase text-white/20 border-b border-white/[0.02]">
+                                        <th className="py-4 font-normal pl-4">Method</th>
+                                        <th className="py-4 font-normal">Endpoint</th>
+                                        <th className="py-4 font-normal">Status</th>
+                                        <th className="py-4 font-normal">Latency</th>
+                                        <th className="py-4 font-normal text-right pr-4">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-white/80">
+                                    {usageLogs.map((log) => (
+                                        <tr key={log.id} className="group hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
+                                            <td className="py-6 pl-4">
+                                                <span className={`text-[10px] px-2 py-1 border ${log.method === 'POST' ? 'border-executive-gold/30 text-executive-gold' : 'border-white/10 text-white/40'}`}>
+                                                    {log.method}
+                                                </span>
+                                            </td>
+                                            <td className="py-6 font-mono text-xs text-white/60">{log.endpoint}</td>
+                                            <td className="py-6">
+                                                <span className={`text-xs ${log.status === 200 ? 'text-emerald-500/70' : 'text-red-500/70'}`}>
+                                                    {log.status}
+                                                </span>
+                                            </td>
+                                            <td className="py-6 text-xs text-white/30">{log.latency}</td>
+                                            <td className="py-6 text-right text-[10px] uppercase tracking-widest text-white/20 pr-4">{log.time}</td>
+                                        </tr>
+                                    ))}
+                                    {usageLogs.length === 0 && (
+                                        <tr>
+                                            <td colSpan={5} className="py-6 text-center text-white/30 tracking-widest text-xs font-mono">
+                                                NO INTEGRATION LOGS FOUND
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+                <div className="lg:col-span-4 space-y-12">
+                    <div className="bg-executive-panel border border-white/[0.05] p-8 abstract-texture space-y-8">
+                        <Box className="text-executive-gold w-5 h-5 stroke-[1px]" />
+                        <h2 className="font-serif text-2xl text-white">Extract Sandbox</h2>
+                        <Link href="/dashboard/tools/extract" className="flex justify-center w-full py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500">
+                            Launch Sandbox
+                        </Link>
+                    </div>
+
+                    {/* Documentation */}
+                    <div className="border border-white/[0.05] p-8 space-y-8">
+                        <div className="flex items-center gap-4">
+                            <BookOpen className="text-executive-gold w-5 h-5 stroke-[1px]" />
+                            <h2 className="font-serif text-2xl text-white">Documentation</h2>
+                        </div>
+                        <div className="space-y-4">
+                            {['API Reference', 'Authentication Guide', 'SDK Libraries', 'Webhooks'].map((doc) => (
+                                <Link key={doc} href="#" className="flex items-center justify-between group py-2 border-b border-white/[0.02] last:border-0">
+                                    <span className="text-sm text-white/50 group-hover:text-white transition-colors">{doc}</span>
+                                    <ArrowRight className="w-3 h-3 text-white/10 group-hover:text-executive-gold group-hover:translate-x-1 transition-all" />
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    )
+        </motion.div>
+    );
 }
 
 export default function DashboardOverview() {
     return (
-        <Suspense fallback={<div className="p-8 text-gray-500">Loading dashboard...</div>}>
-            <DashboardOverviewContent />
+        <Suspense fallback={<div className="p-8 text-white/50 text-xs tracking-widest uppercase font-mono">Loading portal...</div>}>
+            <DeveloperViewContent />
         </Suspense>
     )
 }

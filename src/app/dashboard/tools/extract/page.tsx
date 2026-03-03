@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Upload, FileText, Loader2, Code, Download } from "lucide-react"
+import { Upload, FileText, Loader2, Code, Download, Cpu, ShieldAlert } from "lucide-react"
 import Script from 'next/script'
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function ExtractToolPage() {
     const [file, setFile] = useState<File | null>(null)
@@ -14,7 +14,7 @@ export default function ExtractToolPage() {
     const extractTextLocally = async (file: File): Promise<string> => {
         const arrayBuffer = await file.arrayBuffer();
         // @ts-ignore
-        if (!window.pdfjsLib) throw new Error("PDF library not loaded yet. Please wait a moment.");
+        if (!window.pdfjsLib) throw new Error("SYSTEM_MODULE_NOT_LOADED: PDF_LIBRARY_FAILURE");
         // @ts-ignore
         const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let fullText = "";
@@ -42,99 +42,57 @@ export default function ExtractToolPage() {
 
         try {
             let documentText = "";
-
-            // Attempt to use PDF.co Proxy first (the platform standard)
             try {
-                // STEP 1: Get Pre-signed URL from PDF.co via our Proxy
                 const presignedReq = await fetch('/api/v1/file/upload/get-presigned-url?name=' + encodeURIComponent(file.name), {
                     headers: { 'Authorization': 'Bearer dn_test_sandbox' }
                 });
-
                 if (!presignedReq.ok) {
                     const errData = await presignedReq.json().catch(() => ({}));
                     const errorMsg = errData.error || errData.message || "";
-
-                    // If the master key is missing, we fall back to local extraction automatically
                     if (presignedReq.status === 500 && (errorMsg.includes("Missing upstream") || errorMsg.includes("PDFCO_MASTER_API_KEY"))) {
-                        console.log("PDF.co not configured. Falling back to local AI extraction...");
                         documentText = await extractTextLocally(file);
                     } else {
-                        throw new Error(errorMsg || "Failed to get upload URL (Status " + presignedReq.status + ")");
+                        throw new Error(errorMsg || "UPLINK_FAILURE");
                     }
                 } else {
                     const presignedData = await presignedReq.json();
-
-                    // STEP 2: Upload the actual file directly to the provided PDF.co AWS S3 bucket
                     const uploadReq = await fetch(presignedData.presignedUrl, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/pdf' },
                         body: file
                     });
-
-                    if (!uploadReq.ok) throw new Error("Failed to upload document");
-
-                    // STEP 3: Extract RAW TEXT from the PDF using PDF.co
+                    if (!uploadReq.ok) throw new Error("BUFFER_UPLOAD_FAILURE");
                     const textReq = await fetch('/api/v1/pdf/convert/to/text', {
                         method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer dn_test_sandbox',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            url: presignedData.url,
-                            inline: true,
-                            async: false
-                        })
+                        headers: { 'Authorization': 'Bearer dn_test_sandbox', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: presignedData.url, inline: true, async: false })
                     });
-
                     if (!textReq.ok) {
                         const errData = await textReq.json().catch(() => ({}));
-                        throw new Error(errData.error || errData.message || "Failed to extract document text (Status " + textReq.status + ")");
+                        throw new Error(errData.error || errData.message || "CONVERSION_FAILURE");
                     }
                     const textData = await textReq.json();
-
-                    if (textData.error) {
-                        throw new Error(textData.message || "Failed to extract text from PDF");
-                    }
-
+                    if (textData.error) throw new Error(textData.message || "EXTRACTION_FAILURE");
                     documentText = textData.body;
                 }
             } catch (proxyError: any) {
-                // If it's just a configuration error, we might have already set documentText or we can try here
                 if (!documentText) {
-                    console.log("Proxy failed, trying local extraction:", proxyError.message);
                     documentText = await extractTextLocally(file);
                 } else {
                     throw proxyError;
                 }
             }
-
-            // STEP 4: Send the extracted text to our OpenAI Extractor Prompt Endpoint
             const extractReq = await fetch('/api/ai/extract', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ documentText })
             });
-
-            if (!extractReq.ok) {
-                const errData = await extractReq.json().catch(() => ({}));
-                throw new Error(errData.message || "AI extraction network request failed");
-            }
-
+            if (!extractReq.ok) throw new Error("AI_LINK_FAILURE");
             const extractData = await extractReq.json();
-
-            if (extractData.error) {
-                throw new Error(extractData.message || "AI extraction failed");
-            }
-
-            setResult(JSON.stringify(extractData, null, 2));
-
+            if (extractData.error) throw new Error(extractData.message || "AI_PARSING_FAULT");
+            setResult(JSON.stringify(extractData, null, 4));
         } catch (error: any) {
-            console.error("Extraction Error:", error);
-            setResult(JSON.stringify({
-                error: true,
-                message: error.message || "An unexpected error occurred during extraction."
-            }, null, 2));
+            setResult(JSON.stringify({ error: true, code: "SYSTEM_FAULT", message: error.message }, null, 4));
         } finally {
             setIsProcessing(false)
         }
@@ -146,118 +104,138 @@ export default function ExtractToolPage() {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = `extracted_${file?.name.replace('.pdf', '') || 'data'}.txt`
+        a.download = `nexus_export_${file?.name.replace('.pdf', '') || 'artifact'}.json`
         document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
         URL.revokeObjectURL(url)
     }
 
     return (
-        <div>
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">AI Invoice Parser Sandbox</h1>
-                <p className="text-gray-400">Test the PDF extraction API directly from your dashboard.</p>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-16"
+        >
+            <div className="border-b border-white/[0.05] pb-12">
+                <h1 className="text-6xl font-serif text-white mb-4 tracking-tight">Technical Workbench</h1>
+                <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em]">AUTONOMOUS DOCUMENT EXTRACTION PIPELINE 01.A</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 bg-white/[0.02] gap-px border border-white/[0.05]">
                 {/* Input Panel */}
-                <div className="space-y-6">
-                    <Card className="bg-[#0a0a0a] border-white/10 overflow-hidden">
-                        <div className="bg-white/5 border-b border-white/10 px-4 py-3 flex items-center justify-between">
-                            <h3 className="font-semibold text-sm">Input Document</h3>
-                        </div>
-                        <CardContent className="p-6">
-                            {!file ? (
-                                <div className="border-2 border-dashed border-white/20 rounded-xl p-12 text-center hover:bg-white/5 transition-colors cursor-pointer relative">
-                                    <input
-                                        type="file"
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        accept=".pdf"
-                                        onChange={handleFileChange}
-                                    />
-                                    <Upload className="h-10 w-10 text-gray-500 mx-auto mb-4" />
-                                    <p className="text-gray-300 font-medium mb-1">Click to upload or drag and drop</p>
-                                    <p className="text-gray-500 text-sm">PDF documents up to 10MB</p>
-                                </div>
-                            ) : (
-                                <div className="border border-indigo-500/30 bg-indigo-500/10 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                                    <div className="w-16 h-16 bg-indigo-500/20 rounded-lg flex items-center justify-center mb-4">
-                                        <FileText className="h-8 w-8 text-indigo-400" />
-                                    </div>
-                                    <h4 className="font-medium text-white mb-1 truncate max-w-full">{file.name}</h4>
-                                    <p className="text-xs text-gray-400 mb-6">{(file.size / 1024 / 1024).toFixed(2)} MB PDF Document</p>
+                <div className="bg-executive-black p-12 space-y-12">
+                    <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
+                        <Cpu className="h-4 w-4 text-executive-gold" />
+                        <h2 className="font-mono text-[10px] text-white uppercase tracking-widest">ARTIFACT_INTAKE</h2>
+                    </div>
 
-                                    <div className="flex gap-3">
-                                        <Button variant="outline" className="border-white/20 hover:bg-white/10" onClick={() => { setFile(null); setResult(null); }}>
-                                            Remove
-                                        </Button>
-                                        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" onClick={handleExtract} disabled={isProcessing}>
-                                            {isProcessing ? (
-                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
-                                            ) : (
-                                                'Extract Data'
-                                            )}
-                                        </Button>
-                                    </div>
+                    {!file ? (
+                        <div className="border border-white/[0.05] aspect-video flex flex-col items-center justify-center group hover:bg-white/[0.02] transition-colors relative abstract-texture">
+                            <input
+                                type="file"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                accept=".pdf"
+                                onChange={handleFileChange}
+                            />
+                            <div className="space-y-6 text-center">
+                                <Upload className="h-8 w-8 text-white/20 mx-auto group-hover:text-executive-gold transition-colors" />
+                                <div className="space-y-2">
+                                    <p className="font-mono text-[10px] text-white/60 uppercase tracking-widest italic leading-relaxed">
+                                        INITIALIZE UPLOAD SEQUENCE<br />
+                                        <span className="text-white/20">SUPPORTED_FORMAT: PDF_ENCRYPTED</span>
+                                    </p>
                                 </div>
-                            )}
-
-                            <div className="mt-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-200">
-                                <p><strong>Note:</strong> This sandbox leverages your Development API key automatically. Requests made here do not count towards your production quota.</p>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    ) : (
+                        <div className="border border-executive-gold/20 bg-executive-gold/[0.02] p-12 flex flex-col items-center text-center space-y-8 animate-in fade-in duration-500">
+                            <div className="w-20 h-20 border border-executive-gold/30 flex items-center justify-center">
+                                <FileText className="h-8 w-8 text-executive-gold" />
+                            </div>
+                            <div className="space-y-2">
+                                <h4 className="font-serif text-3xl text-white italic">{file.name}</h4>
+                                <p className="font-mono text-[9px] text-white/30 uppercase tracking-[0.2em]">{(file.size / 1024 / 1024).toFixed(2)} MB ARCHITECTURAL_ARTIFACT</p>
+                            </div>
+
+                            <div className="flex gap-4 w-full">
+                                <button
+                                    className="flex-1 border border-white/[0.05] py-4 font-mono text-[10px] text-white/40 uppercase tracking-widest hover:bg-white/[0.05] transition-all"
+                                    onClick={() => { setFile(null); setResult(null); }}
+                                >
+                                    PURGE_BUFFER
+                                </button>
+                                <button
+                                    className="flex-1 border border-executive-gold py-4 font-mono text-[10px] text-executive-gold uppercase tracking-[0.2em] hover:bg-executive-gold hover:text-executive-black transition-all disabled:opacity-20"
+                                    onClick={handleExtract}
+                                    disabled={isProcessing}
+                                >
+                                    {isProcessing ? 'PROCESSING...' : 'INITIALIZE_EXTRACTION'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex items-start gap-4 p-6 border border-white/5 bg-white/[0.01]">
+                        <ShieldAlert className="h-4 w-4 text-white/20 shrink-0" />
+                        <p className="font-mono text-[9px] text-white/30 uppercase tracking-widest leading-loose">
+                            SANDBOX MODE ACTIVE. RESOURCE ALLOCATION REDIRECTED TO DEVELOPMENT CHANNELS. PRODUCTION QUOTA UNTOUCHED.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Output Panel */}
-                <div>
-                    <Card className="bg-[#0a0a0a] border-white/10 h-full flex flex-col overflow-hidden">
-                        <div className="bg-white/5 border-b border-white/10 px-4 py-3 flex items-center justify-between">
-                            <h3 className="font-semibold text-sm flex items-center gap-2"><Code className="h-4 w-4 text-emerald-400" /> JSON Response</h3>
-                            {result && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 text-xs text-gray-400 hover:text-white"
-                                    onClick={handleDownload}
-                                >
-                                    <Download className="h-3 w-3 mr-2" /> Download
-                                </Button>
-                            )}
+                <div className="bg-executive-black p-12 flex flex-col space-y-12">
+                    <div className="flex items-center justify-between border-b border-white/[0.05] pb-6">
+                        <div className="flex items-center gap-4">
+                            <Code className="h-4 w-4 text-executive-gold" />
+                            <h2 className="font-mono text-[10px] text-white uppercase tracking-widest">DATA_SCHEMA_OUTPUT</h2>
                         </div>
-                        <CardContent className="p-0 flex-1 relative bg-[#050505] min-h-[400px]">
-                            {!result && !isProcessing && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
-                                    <Code className="h-12 w-12 mb-4 opacity-20" />
-                                    <p>Upload a document and extract data to see the JSON output.</p>
-                                </div>
-                            )}
+                        {result && (
+                            <button
+                                onClick={handleDownload}
+                                className="font-mono text-[9px] text-white/40 hover:text-executive-gold transition-colors flex items-center gap-2 uppercase tracking-widest"
+                            >
+                                <Download className="h-3 w-3" /> EXPORT_ARTIFACT
+                            </button>
+                        )}
+                    </div>
 
-                            {isProcessing && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-indigo-400 font-mono text-sm">
-                                    <Loader2 className="h-8 w-8 animate-spin mb-4" />
-                                    <p>Analyzing document structure...</p>
-                                    <p className="text-gray-500 mt-2">Running AI extraction models</p>
-                                </div>
-                            )}
+                    <div className="flex-1 min-h-[400px] border border-white/[0.05] bg-zinc-900/[0.02] relative overflow-hidden">
+                        {!result && !isProcessing && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20 space-y-6">
+                                <Code className="h-12 w-12 opacity-10" />
+                                <p className="font-mono text-[10px] uppercase tracking-[0.3em] italic">AWAITING_INPUT_STREAM</p>
+                            </div>
+                        )}
 
-                            {result && (
-                                <div className="p-6 overflow-auto h-full max-h-[600px]">
-                                    <pre className="text-sm font-mono text-gray-300">
-                                        <code dangerouslySetInnerHTML={{
-                                            __html: result
-                                                .replace(/"([^"]+)":/g, '<span class="text-indigo-300">"$1"</span>:')
-                                                .replace(/: "([^"]+)"/g, ': <span class="text-green-400">"$1"</span>')
-                                                .replace(/: ([0-9.]+)/g, ': <span class="text-orange-400">$1</span>')
-                                        }} />
-                                    </pre>
+                        {isProcessing && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-executive-black/50 z-20">
+                                <div className="space-y-8 text-center">
+                                    <Loader2 className="h-8 w-8 animate-spin text-executive-gold mx-auto" />
+                                    <div className="space-y-2">
+                                        <p className="font-mono text-[10px] text-executive-gold uppercase tracking-[0.4em] animate-pulse">PARSING_STRUCTURE</p>
+                                        <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest">NEURAL_MAPPING_IN_PROGRESS</p>
+                                    </div>
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            </div>
+                        )}
+
+                        {result && (
+                            <div className="p-12 overflow-auto max-h-[600px] font-mono text-[11px] leading-relaxed relative z-10">
+                                <pre className="text-white/60">
+                                    <code dangerouslySetInnerHTML={{
+                                        __html: result
+                                            .replace(/"([^"]+)":/g, '<span class="text-executive-gold/60">"$1"</span>:')
+                                            .replace(/: "([^"]+)"/g, ': <span class="text-white">"$1"</span>')
+                                            .replace(/: ([0-9.]+)/g, ': <span class="text-white/40">$1</span>')
+                                    }} />
+                                </pre>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+
             <Script
                 src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
                 strategy="afterInteractive"
@@ -266,6 +244,6 @@ export default function ExtractToolPage() {
                     window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
                 }}
             />
-        </div>
+        </motion.div>
     )
 }

@@ -1,6 +1,7 @@
-import { DashboardSidebar } from "@/components/dashboard-sidebar"
 import { Toaster } from "@/components/ui/toaster"
 import { ProfileProvider } from "@/context/profile-context"
+import { TopNavHeader } from "@/components/top-nav-header"
+
 export const dynamic = 'force-dynamic'
 
 export default function DashboardLayout({
@@ -10,14 +11,15 @@ export default function DashboardLayout({
 }) {
     return (
         <ProfileProvider>
-            <div className="flex min-h-screen bg-black text-white">
-                <DashboardSidebar />
-                <main className="flex-1 ml-64 p-8 relative">
-                    <div className="max-w-5xl mx-auto">
-                        {children}
-                    </div>
-                    <Toaster />
+            <div className="flex min-h-screen bg-executive-black text-white selection:bg-executive-gold selection:text-black relative flex-col">
+                <div className="executive-grain" />
+
+                <TopNavHeader />
+
+                <main className="flex-1 pt-32 pb-24 px-8 md:px-16 max-w-[1920px] mx-auto w-full relative z-10">
+                    {children}
                 </main>
+                <Toaster />
             </div>
         </ProfileProvider>
     )
