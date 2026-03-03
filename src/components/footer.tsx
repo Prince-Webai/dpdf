@@ -25,9 +25,9 @@ export function Footer() {
                             Securely orchestrate mission-critical document workflows with quantum-scale precision.
                         </p>
                         <div className="flex gap-6">
-                            <Link href="#" className="hover:text-executive-gold transition-colors"><Twitter className="h-4 w-4" /></Link>
-                            <Link href="#" className="hover:text-executive-gold transition-colors"><Github className="h-4 w-4" /></Link>
-                            <Link href="#" className="hover:text-executive-gold transition-colors"><Linkedin className="h-4 w-4" /></Link>
+                            <Link href="https://twitter.com/docunexus" className="hover:text-executive-gold transition-colors"><Twitter className="h-4 w-4" /></Link>
+                            <Link href="https://github.com/docunexus" className="hover:text-executive-gold transition-colors"><Github className="h-4 w-4" /></Link>
+                            <Link href="https://linkedin.com/company/docunexus" className="hover:text-executive-gold transition-colors"><Linkedin className="h-4 w-4" /></Link>
                         </div>
                     </div>
                     <div>
@@ -43,18 +43,18 @@ export function Footer() {
                         <h3 className="font-serif text-sm text-white mb-6 uppercase tracking-[0.2em]">Resources</h3>
                         <ul className="space-y-4 text-xs">
                             <li><Link href="/docs" className="hover:text-executive-gold transition-colors">API Documentation</Link></li>
-                            <li><Link href="/docs" className="hover:text-executive-gold transition-colors">Strategic Reference</Link></li>
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">Development Blog</Link></li>
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">Global Community</Link></li>
+                            <li><Link href="/docs#authentication" className="hover:text-executive-gold transition-colors">Strategic Reference</Link></li>
+                            <li><Link href="/dashboard" className="hover:text-executive-gold transition-colors">Development Sandbox</Link></li>
+                            <li><Link href="/pricing" className="hover:text-executive-gold transition-colors">Pricing Protocol</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="font-serif text-sm text-white mb-6 uppercase tracking-[0.2em]">Corporate</h3>
                         <ul className="space-y-4 text-xs">
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">About Nexus</Link></li>
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">Contact Relations</Link></li>
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">Privacy Protocol</Link></li>
-                            <li><Link href="#" className="hover:text-executive-gold transition-colors">Terms of Engagement</Link></li>
+                            <li><Link href="/" className="hover:text-executive-gold transition-colors">About Nexus</Link></li>
+                            <li><Link href="mailto:contact@docunexus.com" className="hover:text-executive-gold transition-colors">Contact Relations</Link></li>
+                            <li><Link href="/privacy" className="hover:text-executive-gold transition-colors">Privacy Protocol</Link></li>
+                            <li><Link href="/terms" className="hover:text-executive-gold transition-colors">Terms of Engagement</Link></li>
                         </ul>
                     </div>
                 </div>
