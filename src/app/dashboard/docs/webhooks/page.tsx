@@ -1,5 +1,5 @@
 import React from "react";
-import { Plug1, RefreshCw, Send, CodeSquare } from "lucide-react";
+import { Plug, RefreshCw, Send, CodeSquare } from "lucide-react";
 import Link from "next/link";
 
 export default function WebhooksPage() {
@@ -7,7 +7,7 @@ export default function WebhooksPage() {
         <div className="space-y-12 max-w-5xl mx-auto py-8 text-white text-sm">
             <header className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-executive-gold/10 border border-executive-gold/20 text-executive-gold font-mono tracking-wider mb-2">
-                    <Plug1 className="w-4 h-4" />
+                    <Plug className="w-4 h-4" />
                     <span>EVENTS & WEBHOOKS</span>
                 </div>
                 <h1 className="text-4xl font-serif tracking-tight">Integrating Webhooks</h1>
