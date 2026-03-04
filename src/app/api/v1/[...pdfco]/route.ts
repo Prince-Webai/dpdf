@@ -3,6 +3,8 @@ export const maxDuration = 60; // Increase timeout for PDF processing (Vercel Pr
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+export const dynamic = 'force-dynamic'
+
 // This is the main proxy handler for all PDF.co API routes
 // Users call: https://docunexus.com/api/v1/pdf/convert/to/json
 // We proxy: https://api.pdf.co/v1/pdf/convert/to/json

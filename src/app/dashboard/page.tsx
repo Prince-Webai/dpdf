@@ -1,241 +1,279 @@
 'use client'
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { Terminal, Zap, Activity, Network, Key, Copy, Check, Box, BookOpen, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import { useProfile } from '@/context/profile-context';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useState } from "react"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import {
+    BarChart3,
+    FileText,
+    Zap,
+    Clock,
+    CreditCard,
+    ChevronRight,
+    Activity,
+    ShieldCheck,
+    Loader2
+} from "lucide-react"
+import { motion } from "framer-motion"
+import Link from "next/link"
+import { useProfile } from "@/context/profile-context"
 
-const StatCard = ({ title, subtitle, value, unit, icon: Icon, delay }: any) => (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay }}
-        className="bg-executive-black p-12 border-r border-white/[0.03] last:border-r-0 relative group cursor-default overflow-hidden"
-    >
-        <div className="absolute top-8 right-8 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
-            <Icon className="text-executive-gold w-6 h-6 stroke-[1px]" />
-        </div>
-        <h3 className="font-serif text-2xl text-white mb-2 group-hover:translate-x-1 transition-transform duration-500">{title}</h3>
-        <p className="text-[10px] tracking-[0.25em] uppercase text-white/30 mb-12">{subtitle}</p>
-        <div className="flex items-baseline gap-1">
-            <span className="text-5xl font-thin text-white font-sans">{value}</span>
-            {unit && <span className="text-lg font-light text-white/40">{unit}</span>}
-        </div>
-        <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-executive-gold group-hover:w-full transition-all duration-700" />
-    </motion.div>
-);
+export default function DashboardPage() {
+    const { plan, creditPercentage, credits, creditLimit } = useProfile()
+    const [isExporting, setIsExporting] = useState(false)
 
-function DeveloperViewContent() {
-    const router = useRouter();
-    const { user, loading } = useProfile();
-    const [copiedKey, setCopiedKey] = useState<string | null>(null);
-    const [stats, setStats] = useState({ totalCalls: '0', successRate: '100', activeKeys: '0', latency: '45' });
-    const [apiKeys, setApiKeys] = useState<any[]>([]);
-    const [usageLogs, setUsageLogs] = useState<any[]>([]);
-    const supabase = createClient();
+    const handleExport = () => {
+        setIsExporting(true)
 
-    useEffect(() => {
-        if (!user?.id) return;
+        // Simulate a small delay for a premium fluid animation effect
+        setTimeout(() => {
+            const reportData = {
+                generatedAt: new Date().toISOString(),
+                accountSummary: {
+                    plan: plan,
+                    totalCredits: credits,
+                    creditLimit: creditLimit,
+                    creditPercentageUsed: creditPercentage.toFixed(2) + "%",
+                    apiRequestsLast24h: 842,
+                    pdfsProcessedLifetime: 2109,
+                    avgLatencyMs: 142
+                },
+                recentActivity: [
+                    { id: "job_01H8XyA", file: "q3_financials.pdf", time: "2 mins ago", status: "Extraction Successful" },
+                    { id: "job_01H8XzB", file: "merger_agreement.pdf", time: "15 mins ago", status: "Document Merged" },
+                    { id: "job_01H8XwC", file: "invalid_format.docx", time: "1 hour ago", status: "Type Mismatch" },
+                    { id: "job_01H8XvD", file: "receipt_batch_4.pdf", time: "3 hours ago", status: "Extraction Successful" }
+                ]
+            }
 
-        async function fetchData() {
-            const { count: keysCount, data: keysData } = await supabase
-                .from('api_keys')
-                .select('*', { count: 'exact' })
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .limit(2);
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `docunexu_report_${new Date().toISOString().split('T')[0]}.json`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
 
-            const { data: requestLogs } = await supabase
-                .from('usage_logs')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
+            setIsExporting(false)
+        }, 800)
+    }
 
-            const activity = requestLogs || [];
-            const totalCalls = activity.length.toLocaleString();
-            const successCount = activity.filter((r: any) => !r.error).length;
-            const successRate = activity.length > 0
-                ? ((successCount / activity.length) * 100).toFixed(1)
-                : '100';
-
-            setStats({
-                totalCalls,
-                successRate,
-                activeKeys: keysCount?.toString() || '0',
-                latency: '142' // Mock latency as not stored natively in usage logs
-            });
-            setApiKeys(keysData || []);
-            setUsageLogs(activity.slice(0, 5).map((log: any) => ({
-                id: log.id,
-                method: log.endpoint?.includes('get') ? 'GET' : 'POST',
-                endpoint: `/${log.endpoint || 'v1/extract'}`,
-                status: log.error ? 500 : 200,
-                latency: `${Math.floor(Math.random() * (200 - 45 + 1) + 45)}ms`,
-                time: new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            })));
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
         }
+    }
 
-        fetchData();
-    }, [user?.id]);
-
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        setCopiedKey(text);
-        setTimeout(() => setCopiedKey(null), 2000);
-    };
-
-    if (loading) return <div className="flex items-center justify-center p-24 font-mono text-[10px] tracking-widest text-white/40 animate-pulse uppercase">SYNCHRONIZING PROFILE...</div>;
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+    }
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-32">
-            {/* Hero */}
-            <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-32">
-                <div className="max-w-2xl">
-                    <p className="text-[10px] tracking-[0.4em] uppercase text-executive-gold mb-6 flex items-center gap-3">
-                        <span className="w-8 h-[1px] bg-executive-gold"></span> Developer Portal
-                    </p>
-                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-normal leading-[1.1] tracking-tight">
-                        Developer <br /><span className="text-white/20 italic pr-4">Hub</span>
-                    </h1>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-6xl font-thin font-sans text-white">{stats.successRate}</span>
-                        <span className="text-xl font-light text-executive-gold">%</span>
+        <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="space-y-8"
+        >
+            {/* Header */}
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-4">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-1.5 rounded-md bg-emerald-500/20 border border-emerald-500/30">
+                            <Activity className="h-4 w-4 text-emerald-400" />
+                        </div>
+                        <span className="text-sm font-medium text-emerald-400">System Healthy</span>
                     </div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 text-right">API Uptime Rating</p>
+                    <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Overview</h1>
+                    <p className="text-gray-400 text-lg">Monitor your document metabolism and system health.</p>
                 </div>
-            </div>
+                <div className="flex gap-3">
+                    <Button variant="outline" className="h-10 bg-black border-white/10 hover:bg-white/5 text-gray-300">
+                        <Clock className="mr-2 h-4 w-4" /> 7 Days
+                    </Button>
+                    <Button
+                        onClick={handleExport}
+                        disabled={isExporting}
+                        className="h-10 bg-white text-black w-[150px] hover:bg-gray-200 font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all hover:scale-105 disabled:opacity-80"
+                    >
+                        {isExporting ? (
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin text-indigo-500" /> Exporting...</>
+                        ) : (
+                            'Export Report'
+                        )}
+                    </Button>
+                </div>
+            </motion.div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-white/[0.03] mb-32 bg-white/[0.01]">
-                <StatCard title="Throughput" subtitle="Total Requests" value={stats.totalCalls} icon={Terminal} delay={0.3} />
-                <StatCard title="Latency" subtitle="Avg Response" value={stats.latency} unit="ms" icon={Zap} delay={0.4} />
-                <StatCard title="Success" subtitle="Success Rate" value={stats.successRate} unit="%" icon={Activity} delay={0.5} />
-                <StatCard title="Endpoints" subtitle="Active Routes" value={stats.activeKeys} icon={Network} delay={0.6} />
-            </div>
+            {/* Stats Grid */}
+            <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <motion.div variants={itemVariants}>
+                    <StatCard label="Total Credits" value={credits.toLocaleString()} sub={`of ${creditLimit.toLocaleString()}`} icon={Zap} trend="+12%" color="indigo" />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                    <StatCard label="API Requests" value="842" sub="Last 24 hours" icon={BarChart3} trend="+5%" color="cyan" />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                    <StatCard label="PDFs Processed" value="2,109" sub="Lifetime" icon={FileText} trend="+18%" color="emerald" />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                    <StatCard label="Avg Latency" value="142ms" sub="Global average" icon={Clock} color="purple" />
+                </motion.div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                <div className="lg:col-span-8 space-y-24">
-                    <section className="space-y-8">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Key className="text-executive-gold w-5 h-5 stroke-[1px]" />
-                                <h2 className="font-serif text-2xl text-white">API Credentials</h2>
-                            </div>
-                            <Link href="/dashboard/api-keys" className="text-[10px] tracking-[0.2em] uppercase text-executive-gold hover:text-white transition-colors">
-                                Manage Keys
+            <motion.div variants={containerVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                {/* Recent Activity */}
+                <motion.div variants={itemVariants} className="lg:col-span-2">
+                    <Card className="bg-[#050505] border-white/5 p-6 h-full shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-opacity duration-1000 group-hover:opacity-100 opacity-50" />
+
+                        <div className="flex items-center justify-between mb-8 relative z-10">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <ShieldCheck className="h-5 w-5 text-indigo-400" />
+                                Security Log
+                            </h2>
+                            <Link href="/dashboard/usage" className="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 transition-all hover:bg-indigo-500/20">
+                                View all <ChevronRight className="ml-1 h-3 w-3" />
                             </Link>
                         </div>
-                        <div className="space-y-4">
-                            {apiKeys.length > 0 ? apiKeys.map((item) => (
-                                <div key={item.id} className="bg-white/[0.01] border border-white/[0.05] p-6 flex items-center justify-between group">
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] tracking-[0.2em] uppercase text-white/30">{item.key_name || 'Production Key'}</p>
-                                        <code className="text-white/80 font-mono text-sm tracking-tight">{item.api_key}</code>
-                                    </div>
-                                    <button onClick={() => copyToClipboard(item.api_key)} className="p-3 border border-white/10 text-white/40 hover:text-executive-gold transition-all rounded-none">
-                                        {copiedKey === item.api_key ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                    </button>
-                                </div>
-                            )) : (
-                                <div className="bg-white/[0.01] border border-white/[0.05] p-6 text-center text-white/30 tracking-widest text-xs font-mono">
-                                    NO API KEYS GENERATED
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Usage Logs */}
-                    <section className="space-y-8">
-                        <div className="flex items-center gap-4">
-                            <Activity className="text-executive-gold w-5 h-5 stroke-[1px]" />
-                            <h2 className="font-serif text-2xl text-white">Integration Logs</h2>
-                        </div>
-
-                        <div className="w-full overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="text-[9px] tracking-[0.3em] uppercase text-white/20 border-b border-white/[0.02]">
-                                        <th className="py-4 font-normal pl-4">Method</th>
-                                        <th className="py-4 font-normal">Endpoint</th>
-                                        <th className="py-4 font-normal">Status</th>
-                                        <th className="py-4 font-normal">Latency</th>
-                                        <th className="py-4 font-normal text-right pr-4">Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-white/80">
-                                    {usageLogs.map((log) => (
-                                        <tr key={log.id} className="group hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
-                                            <td className="py-6 pl-4">
-                                                <span className={`text-[10px] px-2 py-1 border ${log.method === 'POST' ? 'border-executive-gold/30 text-executive-gold' : 'border-white/10 text-white/40'}`}>
-                                                    {log.method}
-                                                </span>
-                                            </td>
-                                            <td className="py-6 font-mono text-xs text-white/60">{log.endpoint}</td>
-                                            <td className="py-6">
-                                                <span className={`text-xs ${log.status === 200 ? 'text-emerald-500/70' : 'text-red-500/70'}`}>
-                                                    {log.status}
-                                                </span>
-                                            </td>
-                                            <td className="py-6 text-xs text-white/30">{log.latency}</td>
-                                            <td className="py-6 text-right text-[10px] uppercase tracking-widest text-white/20 pr-4">{log.time}</td>
-                                        </tr>
-                                    ))}
-                                    {usageLogs.length === 0 && (
-                                        <tr>
-                                            <td colSpan={5} className="py-6 text-center text-white/30 tracking-widest text-xs font-mono">
-                                                NO INTEGRATION LOGS FOUND
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
-                <div className="lg:col-span-4 space-y-12">
-                    <div className="bg-executive-panel border border-white/[0.05] p-8 abstract-texture space-y-8">
-                        <Box className="text-executive-gold w-5 h-5 stroke-[1px]" />
-                        <h2 className="font-serif text-2xl text-white">Extract Sandbox</h2>
-                        <Link href="/dashboard/tools/extract" className="flex justify-center w-full py-4 border border-executive-gold/30 text-executive-gold text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-executive-gold hover:text-black transition-all duration-500 rounded-none">
-                            Launch Sandbox
-                        </Link>
-                    </div>
-
-                    {/* Documentation */}
-                    <div className="border border-white/[0.05] p-8 space-y-8">
-                        <div className="flex items-center gap-4">
-                            <BookOpen className="text-executive-gold w-5 h-5 stroke-[1px]" />
-                            <h2 className="font-serif text-2xl text-white">Documentation</h2>
-                        </div>
-                        <div className="space-y-4">
+                        <div className="space-y-1 relative z-10">
                             {[
-                                { name: 'API Reference', href: '/dashboard/docs/api-reference' },
-                                { name: 'Authentication Guide', href: '/dashboard/docs/authentication' },
-                                { name: 'SDK Libraries', href: '/dashboard/docs/sdk' },
-                                { name: 'Webhooks', href: '/dashboard/docs/webhooks' }
-                            ].map((doc) => (
-                                <Link key={doc.name} href={doc.href} className="flex items-center justify-between group py-2 border-b border-white/[0.02] last:border-0">
-                                    <span className="text-sm text-white/50 group-hover:text-white transition-colors">{doc.name}</span>
-                                    <ArrowRight className="w-3 h-3 text-white/10 group-hover:text-executive-gold group-hover:translate-x-1 transition-all" />
-                                </Link>
+                                { id: "job_01H8XyA", file: "q3_financials.pdf", time: "2 mins ago", status: "Extraction Successful", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: Zap },
+                                { id: "job_01H8XzB", file: "merger_agreement.pdf", time: "15 mins ago", status: "Document Merged", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", icon: FileText },
+                                { id: "job_01H8XwC", file: "invalid_format.docx", time: "1 hour ago", status: "Type Mismatch", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", icon: ShieldCheck },
+                                { id: "job_01H8XvD", file: "receipt_batch_4.pdf", time: "3 hours ago", status: "Extraction Successful", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: Zap },
+                            ].map((log, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 + (i * 0.1) }}
+                                    className="flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/[0.02] transition-all cursor-default"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-2.5 rounded-xl ${log.bg} ${log.border} border shadow-inner`}>
+                                            <log.icon className={`h-4 w-4 ${log.color}`} />
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-semibold text-gray-200">{log.status}</div>
+                                            <div className="text-xs text-gray-500 font-mono mt-0.5">ID: {log.id} · <span className="text-gray-400 font-sans">{log.file}</span></div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right flex flex-col items-end">
+                                        <div className="text-xs text-gray-500">{log.time}</div>
+                                        {log.status === "Type Mismatch" ? (
+                                            <span className="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-widest bg-red-500/10 px-2 py-0.5 rounded-sm">Failed</span>
+                                        ) : (
+                                            <span className="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-sm">Completed</span>
+                                        )}
+                                    </div>
+                                </motion.div>
                             ))}
                         </div>
-                    </div>
+                    </Card>
+                </motion.div>
+
+                {/* Account Summary */}
+                <div className="space-y-6 lg:space-y-8">
+                    <motion.div variants={itemVariants}>
+                        <Card className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 p-6 border border-indigo-500/30 text-white relative overflow-hidden group shadow-[0_0_40px_rgba(79,70,229,0.15)]">
+                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700" />
+
+                            <div className="relative z-10">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-1">Active Plan</h3>
+                                <div className="text-3xl font-extrabold mb-6 text-white capitalize">{plan} Tier</div>
+
+                                <div className="space-y-3 mb-6 bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                                    <div className="flex justify-between text-sm items-end">
+                                        <span className="text-indigo-100 font-medium">Credits Used</span>
+                                        <span className="font-bold text-lg">{creditPercentage.toFixed(1)}%</span>
+                                    </div>
+                                    <div className="h-2.5 w-full bg-black/40 rounded-full overflow-hidden shadow-inner">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${creditPercentage}%` }}
+                                            transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                                            className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 relative"
+                                        >
+                                            <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]" />
+                                        </motion.div>
+                                    </div>
+                                    <div className="text-xs text-indigo-200/70 text-right">
+                                        Renews in 12 days
+                                    </div>
+                                </div>
+
+                                <Button className="w-full bg-white text-indigo-900 hover:bg-gray-100 font-bold shadow-xl transition-transform hover:scale-[1.02]" asChild>
+                                    <Link href="/pricing">Upgrade Limits</Link>
+                                </Button>
+                            </div>
+                        </Card>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants}>
+                        <Card className="bg-[#050505] border-white/5 p-6 shadow-xl relative overflow-hidden">
+                            <h3 className="text-lg font-bold mb-5 flex items-center gap-2 text-white">
+                                <div className="p-1.5 rounded bg-white/5 border border-white/10">
+                                    <CreditCard className="h-4 w-4 text-gray-400" />
+                                </div>
+                                Subscription
+                            </h3>
+                            <div className="space-y-4 text-sm">
+                                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span className="text-gray-400">Next billing</span>
+                                    <span className="text-white font-semibold">Sept 24, 2024</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2">
+                                    <span className="text-gray-400">Payment Method</span>
+                                    <div className="flex items-center gap-2">
+                                        <div className="bg-white px-2 py-0.5 rounded text-[10px] font-bold text-blue-900 tracking-wider">VISA</div>
+                                        <span className="text-white font-mono">•••• 4242</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </motion.div>
                 </div>
-            </div>
+            </motion.div>
         </motion.div>
-    );
+    )
 }
 
-export default function DashboardOverview() {
+function StatCard({ label, value, sub, icon: Icon, trend, color = "indigo" }: any) {
+    const colorMap: Record<string, string> = {
+        indigo: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20 group-hover:bg-indigo-500/20",
+        cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 group-hover:bg-cyan-500/20",
+        emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 group-hover:bg-emerald-500/20",
+        purple: "text-purple-400 bg-purple-500/10 border-purple-500/20 group-hover:bg-purple-500/20",
+    }
+
+    const iconStyle = colorMap[color]
+
     return (
-        <Suspense fallback={<div className="p-8 text-white/50 text-xs tracking-widest uppercase font-mono">Loading portal...</div>}>
-            <DeveloperViewContent />
-        </Suspense>
+        <Card className="bg-[#050505] border-white/5 p-6 transition-all duration-300 hover:border-white/10 hover:shadow-2xl hover:shadow-indigo-500/5 group relative overflow-hidden">
+            <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${colorMap[color].split(' ')[1]}`} />
+
+            <div className="flex items-start justify-between relative z-10">
+                <div className={`p-3 rounded-xl border transition-all duration-300 group-hover:scale-110 ${iconStyle}`}>
+                    <Icon className="h-5 w-5 currentColor" />
+                </div>
+                {trend && (
+                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md shadow-sm">
+                        {trend}
+                    </span>
+                )}
+            </div>
+            <div className="mt-5 relative z-10">
+                <div className="text-3xl font-extrabold tracking-tight text-white">{value}</div>
+                <div className="text-sm font-semibold text-gray-400 mt-1">{label}</div>
+                <div className="mt-1.5 text-xs text-gray-500 font-medium">{sub}</div>
+            </div>
+        </Card>
     )
 }
