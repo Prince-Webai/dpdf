@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  output: 'standalone', // Optimized for Vercel
 
   // Vercel: allow images from Supabase storage & external providers
   images: {

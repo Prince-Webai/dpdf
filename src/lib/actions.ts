@@ -25,7 +25,8 @@ export async function signUpUser(formData: {
                     last_name: formData.lastName,
                     full_name: `${formData.firstName} ${formData.lastName}`.trim(),
                     plan: 'free',
-                    credits: 500,
+                    credits: 0,
+                    credit_limit: 0,
                     token_limit: 50000
                 }
             }

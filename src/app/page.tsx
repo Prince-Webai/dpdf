@@ -38,7 +38,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-            className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-600 leading-[1.1]"
+            className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-8 text-white leading-[1.1]"
           >
             The Intelligence Layer <br className="hidden md:block" /> for Documents
           </motion.h1>

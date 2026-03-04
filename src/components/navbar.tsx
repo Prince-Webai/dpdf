@@ -72,8 +72,8 @@ export function Navbar() {
                                 <Link href="/login">Log in</Link>
                             </Button>
                             <Link href="/signup" className="relative group">
-                                <div className="absolute -inset-0.5 bg-executive-gold rounded-none blur-md opacity-10 group-hover:opacity-30 transition duration-500"></div>
-                                <Button className="relative bg-executive-gold text-black hover:bg-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-executive-gold/10 group-hover:border-white/20">
+                                <div className="absolute -inset-0.5 bg-executive-gold rounded-none blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(203,178,106,0.3)]"></div>
+                                <Button className="relative bg-executive-gold text-black hover:bg-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-executive-gold/30 shadow-[0_0_10px_rgba(203,178,106,0.2)]">
                                     Get Started
                                 </Button>
                             </Link>
@@ -109,7 +109,7 @@ export function Navbar() {
                                 <Button variant="outline" asChild className="w-full border-white/10 text-white rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14" onClick={() => setIsMenuOpen(false)}>
                                     <Link href="/login">Log in</Link>
                                 </Button>
-                                <Button asChild className="w-full bg-executive-gold text-black rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14" onClick={() => setIsMenuOpen(false)}>
+                                <Button asChild className="w-full bg-executive-gold text-black rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14 shadow-[0_0_20px_rgba(203,178,106,0.25)] border border-executive-gold/20" onClick={() => setIsMenuOpen(false)}>
                                     <Link href="/signup">Get Started</Link>
                                 </Button>
                             </>

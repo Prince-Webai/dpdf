@@ -28,7 +28,7 @@ export default function DocsPage() {
             </section>
 
             {/* Authentication */}
-            <section id="authentication" className="scroll-mt-24">
+            <section id="authentication" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-400 text-sm">1</span>
                     Authentication
@@ -44,123 +44,186 @@ export default function DocsPage() {
                 </div>
             </section>
 
+            {/* Base URL */}
+            <section id="base-url" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Base URL & Versioning</h2>
+                <p className="text-gray-400 mb-6">All API requests should be made to our global edge endpoint. We use URL versioning to ensure backward compatibility.</p>
+                <div className="bg-black/40 border border-white/10 rounded-lg p-6 flex items-center justify-between group hover:border-executive-gold/30 transition-colors">
+                    <code className="text-white/80 font-mono text-sm tracking-tight">https://api.docunexu.com/v1</code>
+                </div>
+            </section>
+
+            {/* Errors */}
+            <section id="errors" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Error Codes</h2>
+                <p className="text-gray-400 mb-6">DocuNexus uses standard HTTP response codes to indicate the success or failure of an API request.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 border border-white/5 bg-white/[0.01]">
+                        <span className="text-emerald-400 font-mono text-xs font-bold block mb-1">200 OK</span>
+                        <p className="text-[10px] text-gray-500">The request was successful.</p>
+                    </div>
+                    <div className="p-4 border border-white/5 bg-white/[0.01]">
+                        <span className="text-amber-400 font-mono text-xs font-bold block mb-1">401 Unauthorized</span>
+                        <p className="text-[10px] text-gray-500">Invalid or missing API key.</p>
+                    </div>
+                    <div className="p-4 border border-white/5 bg-white/[0.01]">
+                        <span className="text-blue-400 font-mono text-xs font-bold block mb-1">429 Too Many Requests</span>
+                        <p className="text-[10px] text-gray-500">Rate limit exceeded.</p>
+                    </div>
+                    <div className="p-4 border border-white/5 bg-white/[0.01]">
+                        <span className="text-red-400 font-mono text-xs font-bold block mb-1">500 Server Error</span>
+                        <p className="text-[10px] text-gray-500">Something went wrong on our end.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Rate Limits */}
+            <section id="rate-limits" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">Rate Limits</h2>
+                <p className="text-gray-400 mb-6">
+                    Limits are applied per API key. Free tier keys are limited to 10 requests per minute. Business tier users enjoy up to 10,000 requests per minute.
+                </p>
+                <div className="bg-indigo-500/5 border border-indigo-500/10 p-6 rounded-xl">
+                    <p className="text-xs text-indigo-300 font-mono">X-RateLimit-Limit: 1000</p>
+                    <p className="text-xs text-indigo-300 font-mono">X-RateLimit-Remaining: 999</p>
+                    <p className="text-xs text-indigo-300 font-mono">X-RateLimit-Reset: 135029302</p>
+                </div>
+            </section>
+
             {/* Upload */}
-            <section id="upload" className="scroll-mt-24">
+            <section id="upload" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-bold">File Ingestion</h2>
                     <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest">v1.2</span>
                 </div>
-
-                <div className="space-y-8">
-                    <div className="space-y-4">
-                        <p className="text-gray-400">Initialize a document upload by requesting a pre-signed URL. This allows for direct, secure ingestion into our processing vault.</p>
-                        <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg">
-                            <span className="text-indigo-400 font-bold">GET</span>
-                            <span className="text-white">/v1/file/upload/get-presigned-url</span>
-                        </div>
+                <div className="space-y-4">
+                    <p className="text-gray-400">Initialize a document upload by requesting a pre-signed URL.</p>
+                    <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg">
+                        <span className="text-indigo-400 font-bold">GET</span>
+                        <span className="text-white">/v1/file/upload/get-presigned-url</span>
                     </div>
-
                     <Card className="bg-black border-white/10 overflow-hidden">
-                        <div className="px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-widest">Response Schema</h4>
-                            <span className="text-emerald-400 text-xs font-mono">200 OK</span>
-                        </div>
-                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto leading-loose">
-                            {`{
-  "vault_id": "test_document.pdf",
-  "upload_url": "https://vault.docunexu.io/...",
-  "expires_in": 3600
-}`}
+                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto">
+                            {`{ "vault_id": "doc_123", "upload_url": "..." }`}
                         </pre>
                     </Card>
                 </div>
             </section>
 
-            {/* Document Extraction */}
-            <section id="pdf-to-json" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+            {/* Upload Direct */}
+            <section id="upload-direct" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Direct Upload (Base64)</h2>
+                <p className="text-gray-400 mb-6">For smaller files (under 5MB), you can send the document as a Base64-encoded string directly in the request payload.</p>
+                <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg mb-4">
+                    <span className="text-indigo-400 font-bold">POST</span>
+                    <span className="text-white">/v1/file/upload/direct</span>
+                </div>
+            </section>
+
+            {/* AI Extract */}
+            <section id="ai-extract" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold">Document Parser & Extraction</h2>
+                    <h2 className="text-2xl font-bold">AI Document Extract</h2>
                     <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">v1.1</span>
                 </div>
-
-                <div className="space-y-8">
-                    <div className="space-y-4">
-                        <p className="text-gray-400">Extract structured JSON table data and text arrays from unstructured PDF documents or scanned images.</p>
-                        <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg">
-                            <span className="text-indigo-400 font-bold">POST</span>
-                            <span className="text-white">/v1/pdf/convert/to/json</span>
-                        </div>
+                <div className="space-y-4">
+                    <p className="text-gray-400">Extract structured JSON table data and text arrays from documents.</p>
+                    <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg">
+                        <span className="text-indigo-400 font-bold">POST</span>
+                        <span className="text-white">/v1/pdf/convert/to/json</span>
                     </div>
-
                     <Card className="bg-black border-white/10 overflow-hidden">
-                        <div className="px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-widest">Request Payload</h4>
-                        </div>
-                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto leading-loose">
-                            {`{
-  "url": "https://your-server.com/invoice.pdf",
-  "inline": true,
-  "pages": "0,1-3"
-}`}
+                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto">
+                            {`{ "url": "...", "inline": true }`}
                         </pre>
                     </Card>
+                </div>
+            </section>
 
-                    <Card className="bg-black border-white/10 overflow-hidden">
-                        <div className="px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-widest">Response Schema</h4>
-                            <span className="text-emerald-400 text-xs font-mono">200 OK</span>
-                        </div>
-                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto leading-loose">
-                            {`{
-  "status": 200,
-  "body": [
-    { "text": "Invoice Number: 4501", "rect": [50, 60, 200, 80] }
-  ],
-  "credits_consumed": 1
-}`}
-                        </pre>
-                    </Card>
+            {/* PDF to Text / CSV / XML */}
+            <section id="pdf-to-text" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">PDF to Text / CSV / XML</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div id="pdf-to-csv" className="space-y-2">
+                        <h4 className="font-bold text-white uppercase text-[10px] tracking-widest">CSV Export</h4>
+                        <p className="text-xs text-gray-500">Flatten tables into RFC-compliant CSV structures.</p>
+                    </div>
+                    <div id="pdf-to-xml" className="space-y-2">
+                        <h4 className="font-bold text-white uppercase text-[10px] tracking-widest">XML Structure</h4>
+                        <p className="text-xs text-gray-500">Full hierarchical layout analysis in XML format.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <h4 className="font-bold text-white uppercase text-[10px] tracking-widest">Raw Text</h4>
+                        <p className="text-xs text-gray-500">Simple UTF-8 formatted string extraction.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Invoice Parser */}
+            <section id="invoice-parser" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Invoice Parser</h2>
+                <p className="text-gray-400 mb-6">Proprietary model specifically trained for financial documents, identifying Line Items, Taxes, Vendors, and Totals with 99.9% accuracy.</p>
+            </section>
+
+            {/* PDF Generation */}
+            <section id="html-to-pdf" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">HTML / URL to PDF</h2>
+                <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg mb-6">
+                    <span className="text-indigo-400 font-bold">POST</span>
+                    <span className="text-white">/v1/pdf/generate/from-html</span>
+                </div>
+                <div id="doc-builder">
+                    <p className="text-gray-400">Our <span className="text-white font-bold">Document Builder</span> supports complex CSS layouts, custom fonts, and multi-page page breaks.</p>
                 </div>
             </section>
 
             {/* Merge & Split */}
-            <section id="merge-split" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold">Merge & Split PDFs</h2>
-                    <span className="px-3 py-1 rounded-full bg-pink-500/10 text-pink-400 text-[10px] font-bold uppercase tracking-widest">v1.0</span>
+            <section id="merge" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-8">Merge PDFs</h2>
+                <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg mb-6">
+                    <span className="text-indigo-400 font-bold">POST</span>
+                    <span className="text-white">/v1/pdf/merge</span>
                 </div>
+            </section>
 
-                <div className="space-y-8">
-                    <div className="space-y-4">
-                        <p className="text-gray-400">Combine multiple PDF files from given URLs or split a large document into isolated single-page PDFs.</p>
-                        <div className="flex flex-col gap-2 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg">
-                            <div className="flex items-center gap-3">
-                                <span className="text-indigo-400 font-bold">POST</span>
-                                <span className="text-white">/v1/pdf/merge</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-gray-500">
-                                <span className="text-indigo-400/50 font-bold">POST</span>
-                                <span>/v1/pdf/split</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <Card className="bg-black border-white/10 overflow-hidden">
-                        <div className="px-6 py-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-widest">Merge Request Payload</h4>
-                        </div>
-                        <pre className="p-6 text-sm font-mono text-blue-300 overflow-x-auto leading-loose">
-                            {`{
-  "urls": [
-    "https://your-server.com/part1.pdf",
-    "https://your-server.com/part2.pdf"
-  ],
-  "name": "final-export.pdf"
-}`}
-                        </pre>
-                    </Card>
+            <section id="split" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-8">Split PDF</h2>
+                <div className="flex items-center gap-3 font-mono text-sm bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-lg mb-6">
+                    <span className="text-indigo-400 font-bold">POST</span>
+                    <span className="text-white">/v1/pdf/split</span>
                 </div>
+            </section>
 
+            {/* Annotate & Watermark */}
+            <section id="annotate" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Fill Forms & Sign</h2>
+                <p className="text-gray-400">Programmatically fill PDF forms (AcroForms) or add visual signatures and stamps to any document.</p>
+            </section>
+
+            <section id="watermark" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Watermark & Encrypt</h2>
+                <p className="text-gray-400">Secure your documents with owner passwords, usage restrictions, or visible text/image watermarks across all pages.</p>
+            </section>
+
+            {/* Conversion */}
+            <section id="pdf-to-image" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6 font-serif tracking-tight">PDF to Image Conversion</h2>
+                <p className="text-gray-400 mb-6">Convert individual pages or entire documents into high-resolution PNG, JPG, or WEBP formats.</p>
+                <div id="image-to-pdf" className="p-6 border border-white/10 bg-white/[0.02] rounded-xl">
+                    <h4 className="text-white font-bold mb-2">Image to PDF</h4>
+                    <p className="text-sm text-gray-500">Wrap any image set into a standard PDF container with optional OCR layering.</p>
+                </div>
+            </section>
+
+            {/* Utilities */}
+            <section id="barcode" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16">
+                <h2 className="text-2xl font-bold mb-6">Barcode / QR Code</h2>
+                <p className="text-gray-400">Identify and decode over 20+ barcode formats (QR, UPC, EAN, DataMatrix) found within document pages.</p>
+            </section>
+
+            <section id="url-to-pdf" className="scroll-mt-24 border-t border-white/5 pt-16 mt-16 pb-32">
+                <h2 className="text-2xl font-bold mb-6">URL Screenshot</h2>
+                <p className="text-gray-400">Capture any live website URL and convert it into a pixel-perfect PDF document or screenshot.</p>
             </section>
 
             <div className="pt-20 text-center">
@@ -169,3 +232,4 @@ export default function DocsPage() {
         </div>
     )
 }
+

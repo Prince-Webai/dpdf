@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,20 +12,98 @@ import {
     ChevronRight,
     Activity,
     ShieldCheck,
-    Loader2
+    Loader2,
+    CheckCircle2,
+    XCircle,
+    Info
 } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useProfile } from "@/context/profile-context"
+import { createClient } from "@/utils/supabase/client"
+
+interface UsageLog {
+    id: string
+    user_id: string
+    action: string
+    file_name?: string
+    created_at: string
+    status?: string
+    credits_used?: number
+}
 
 export default function DashboardPage() {
-    const { plan, creditPercentage, credits, creditLimit } = useProfile()
+    const { plan, creditPercentage, credits, creditLimit, user } = useProfile()
     const [isExporting, setIsExporting] = useState(false)
+
+    // Real data states
+    const [apiRequests24h, setApiRequests24h] = useState<number | null>(null)
+    const [pdfsProcessed, setPdfsProcessed] = useState<number | null>(null)
+    const [recentLogs, setRecentLogs] = useState<UsageLog[]>([])
+    const [loadingStats, setLoadingStats] = useState(true)
+
+    useEffect(() => {
+        if (!user?.id) return
+
+        const supabase = createClient()
+
+        const fetchStats = async () => {
+            setLoadingStats(true)
+            try {
+                // API requests in last 24h
+                const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+                const { count: apiCount } = await supabase
+                    .from('usage_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', user.id)
+                    .gte('created_at', since24h)
+
+                setApiRequests24h(apiCount ?? 0)
+
+                // Total PDFs processed lifetime
+                const { count: pdfCount } = await supabase
+                    .from('usage_logs')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', user.id)
+
+                setPdfsProcessed(pdfCount ?? 0)
+
+                // Recent activity logs
+                const { data: logs } = await supabase
+                    .from('usage_logs')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5)
+
+                setRecentLogs(logs ?? [])
+            } catch (err) {
+                console.error('Error fetching dashboard stats:', err)
+            } finally {
+                setLoadingStats(false)
+            }
+        }
+
+        fetchStats()
+
+        // Realtime subscription to usage_logs for live updates
+        const channel = supabase
+            .channel(`usage-logs-${user.id}`)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'usage_logs',
+                filter: `user_id=eq.${user.id}`,
+            }, () => {
+                fetchStats()
+            })
+            .subscribe()
+
+        return () => { supabase.removeChannel(channel) }
+    }, [user?.id])
 
     const handleExport = () => {
         setIsExporting(true)
-
-        // Simulate a small delay for a premium fluid animation effect
         setTimeout(() => {
             const reportData = {
                 generatedAt: new Date().toISOString(),
@@ -34,16 +112,15 @@ export default function DashboardPage() {
                     totalCredits: credits,
                     creditLimit: creditLimit,
                     creditPercentageUsed: creditPercentage.toFixed(2) + "%",
-                    apiRequestsLast24h: 842,
-                    pdfsProcessedLifetime: 2109,
-                    avgLatencyMs: 142
+                    apiRequestsLast24h: apiRequests24h ?? 0,
+                    pdfsProcessedLifetime: pdfsProcessed ?? 0,
                 },
-                recentActivity: [
-                    { id: "job_01H8XyA", file: "q3_financials.pdf", time: "2 mins ago", status: "Extraction Successful" },
-                    { id: "job_01H8XzB", file: "merger_agreement.pdf", time: "15 mins ago", status: "Document Merged" },
-                    { id: "job_01H8XwC", file: "invalid_format.docx", time: "1 hour ago", status: "Type Mismatch" },
-                    { id: "job_01H8XvD", file: "receipt_batch_4.pdf", time: "3 hours ago", status: "Extraction Successful" }
-                ]
+                recentActivity: recentLogs.map(l => ({
+                    id: l.id,
+                    file: l.file_name || 'N/A',
+                    time: new Date(l.created_at).toLocaleString(),
+                    status: l.action,
+                }))
             }
 
             const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
@@ -55,7 +132,6 @@ export default function DashboardPage() {
             a.click()
             document.body.removeChild(a)
             URL.revokeObjectURL(url)
-
             setIsExporting(false)
         }, 800)
     }
@@ -70,7 +146,7 @@ export default function DashboardPage() {
 
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } as any }
     }
 
     return (
@@ -111,19 +187,60 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* Stats Grid */}
-            <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                 <motion.div variants={itemVariants}>
-                    <StatCard label="Total Credits" value={credits.toLocaleString()} sub={`of ${creditLimit.toLocaleString()}`} icon={Zap} trend="+12%" color="indigo" />
+                    <StatCard
+                        label="Credits Remaining"
+                        value={credits.toLocaleString()}
+                        sub={`of ${creditLimit.toLocaleString()} total`}
+                        icon={Zap}
+                        color="indigo"
+                        loading={false}
+                    />
                 </motion.div>
                 <motion.div variants={itemVariants}>
-                    <StatCard label="API Requests" value="842" sub="Last 24 hours" icon={BarChart3} trend="+5%" color="cyan" />
+                    <StatCard
+                        label="API Requests"
+                        value={loadingStats ? '—' : (apiRequests24h ?? 0).toLocaleString()}
+                        sub="Last 24 hours"
+                        icon={BarChart3}
+                        color="cyan"
+                        loading={loadingStats}
+                    />
                 </motion.div>
                 <motion.div variants={itemVariants}>
-                    <StatCard label="PDFs Processed" value="2,109" sub="Lifetime" icon={FileText} trend="+18%" color="emerald" />
+                    <StatCard
+                        label="Operations Logged"
+                        value={loadingStats ? '—' : (pdfsProcessed ?? 0).toLocaleString()}
+                        sub="Lifetime total"
+                        icon={FileText}
+                        color="emerald"
+                        loading={loadingStats}
+                    />
                 </motion.div>
-                <motion.div variants={itemVariants}>
-                    <StatCard label="Avg Latency" value="142ms" sub="Global average" icon={Clock} color="purple" />
-                </motion.div>
+            </motion.div>
+
+            {/* Quick Tools */}
+            <motion.div variants={itemVariants}>
+                <Link href="/dashboard/tools/extract">
+                    <Card className="bg-gradient-to-r from-emerald-900/40 to-indigo-900/40 border-white/10 p-8 hover:border-executive-gold/30 transition-all group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-executive-gold/5 rounded-full blur-[100px] -mr-32 -mt-32 transition-opacity group-hover:opacity-100 opacity-0" />
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                            <div className="flex items-center gap-6">
+                                <div className="p-4 rounded-2xl bg-executive-gold/10 border border-executive-gold/20 shadow-[0_0_20px_rgba(203,178,106,0.1)]">
+                                    <Zap className="h-8 w-8 text-executive-gold" />
+                                </div>
+                                <div className="text-center md:text-left">
+                                    <h2 className="text-2xl font-bold text-white mb-2">AI Parse Sandbox</h2>
+                                    <p className="text-white/40 text-sm max-w-md">Test our extraction engine with your own documents in a zero-latency development environment.</p>
+                                </div>
+                            </div>
+                            <Button className="bg-white text-black font-bold h-12 px-8 hover:bg-executive-gold hover:text-white transition-all">
+                                Open Sandbox
+                            </Button>
+                        </div>
+                    </Card>
+                </Link>
             </motion.div>
 
             <motion.div variants={containerVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -135,45 +252,62 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between mb-8 relative z-10">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <ShieldCheck className="h-5 w-5 text-indigo-400" />
-                                Security Log
+                                Activity Log
                             </h2>
                             <Link href="/dashboard/usage" className="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 transition-all hover:bg-indigo-500/20">
                                 View all <ChevronRight className="ml-1 h-3 w-3" />
                             </Link>
                         </div>
+
                         <div className="space-y-1 relative z-10">
-                            {[
-                                { id: "job_01H8XyA", file: "q3_financials.pdf", time: "2 mins ago", status: "Extraction Successful", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: Zap },
-                                { id: "job_01H8XzB", file: "merger_agreement.pdf", time: "15 mins ago", status: "Document Merged", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", icon: FileText },
-                                { id: "job_01H8XwC", file: "invalid_format.docx", time: "1 hour ago", status: "Type Mismatch", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", icon: ShieldCheck },
-                                { id: "job_01H8XvD", file: "receipt_batch_4.pdf", time: "3 hours ago", status: "Extraction Successful", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: Zap },
-                            ].map((log, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.3 + (i * 0.1) }}
-                                    className="flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/[0.02] transition-all cursor-default"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className={`p-2.5 rounded-xl ${log.bg} ${log.border} border shadow-inner`}>
-                                            <log.icon className={`h-4 w-4 ${log.color}`} />
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-semibold text-gray-200">{log.status}</div>
-                                            <div className="text-xs text-gray-500 font-mono mt-0.5">ID: {log.id} · <span className="text-gray-400 font-sans">{log.file}</span></div>
-                                        </div>
-                                    </div>
-                                    <div className="text-right flex flex-col items-end">
-                                        <div className="text-xs text-gray-500">{log.time}</div>
-                                        {log.status === "Type Mismatch" ? (
-                                            <span className="mt-1 text-[10px] text-red-500 font-bold uppercase tracking-widest bg-red-500/10 px-2 py-0.5 rounded-sm">Failed</span>
-                                        ) : (
-                                            <span className="mt-1 text-[10px] text-emerald-500 font-bold uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-sm">Completed</span>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            ))}
+                            {loadingStats ? (
+                                <div className="flex items-center justify-center h-32 text-gray-500 gap-2">
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    <span className="text-sm">Loading activity...</span>
+                                </div>
+                            ) : recentLogs.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-32 text-center">
+                                    <Info className="h-8 w-8 text-gray-600 mb-3" />
+                                    <p className="text-gray-500 text-sm font-medium">No activity yet</p>
+                                    <p className="text-gray-600 text-xs mt-1">Your API calls and document operations will appear here.</p>
+                                </div>
+                            ) : (
+                                recentLogs.map((log, i) => {
+                                    const isError = log.status === 'error' || log.status === 'failed'
+                                    const color = isError ? 'text-red-400' : 'text-emerald-400'
+                                    const bg = isError ? 'bg-red-500/10' : 'bg-emerald-500/10'
+                                    const border = isError ? 'border-red-500/20' : 'border-emerald-500/20'
+                                    const relTime = getRelativeTime(log.created_at)
+                                    return (
+                                        <motion.div
+                                            key={log.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.1 + (i * 0.05) }}
+                                            className="flex items-center justify-between p-3 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/[0.02] transition-all cursor-default"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`p-2.5 rounded-xl ${bg} ${border} border shadow-inner`}>
+                                                    {isError ? <XCircle className={`h-4 w-4 ${color}`} /> : <CheckCircle2 className={`h-4 w-4 ${color}`} />}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-semibold text-gray-200">{log.action}</div>
+                                                    <div className="text-xs text-gray-500 font-mono mt-0.5">
+                                                        ID: {log.id.slice(0, 12)}…
+                                                        {log.file_name && <span className="text-gray-400 font-sans"> · {log.file_name}</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right flex flex-col items-end">
+                                                <div className="text-xs text-gray-500">{relTime}</div>
+                                                <span className={`mt-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm ${isError ? 'text-red-500 bg-red-500/10' : 'text-emerald-500 bg-emerald-500/10'}`}>
+                                                    {isError ? 'Failed' : 'Completed'}
+                                                </span>
+                                            </div>
+                                        </motion.div>
+                                    )
+                                })
+                            )}
                         </div>
                     </Card>
                 </motion.div>
@@ -205,7 +339,7 @@ export default function DashboardPage() {
                                         </motion.div>
                                     </div>
                                     <div className="text-xs text-indigo-200/70 text-right">
-                                        Renews in 12 days
+                                        {credits.toLocaleString()} / {creditLimit.toLocaleString()} credits
                                     </div>
                                 </div>
 
@@ -226,15 +360,21 @@ export default function DashboardPage() {
                             </h3>
                             <div className="space-y-4 text-sm">
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
+                                    <span className="text-gray-400">Current Plan</span>
+                                    <span className="text-white font-semibold capitalize">{plan}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2 border-b border-white/5">
                                     <span className="text-gray-400">Next billing</span>
-                                    <span className="text-white font-semibold">Sept 24, 2024</span>
+                                    <span className="text-white font-semibold text-xs">Managed via PayPal</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2">
-                                    <span className="text-gray-400">Payment Method</span>
-                                    <div className="flex items-center gap-2">
-                                        <div className="bg-white px-2 py-0.5 rounded text-[10px] font-bold text-blue-900 tracking-wider">VISA</div>
-                                        <span className="text-white font-mono">•••• 4242</span>
-                                    </div>
+                                    <span className="text-gray-400">Credits Available</span>
+                                    <span className="text-white font-semibold">{credits.toLocaleString()}</span>
+                                </div>
+                                <div className="pt-2">
+                                    <Link href="/pricing" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                                        View upgrade options →
+                                    </Link>
                                 </div>
                             </div>
                         </Card>
@@ -245,7 +385,17 @@ export default function DashboardPage() {
     )
 }
 
-function StatCard({ label, value, sub, icon: Icon, trend, color = "indigo" }: any) {
+function getRelativeTime(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return 'just now'
+    if (mins < 60) return `${mins} min ago`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `${hrs}h ago`
+    return `${Math.floor(hrs / 24)}d ago`
+}
+
+function StatCard({ label, value, sub, icon: Icon, color = "indigo", loading = false }: any) {
     const colorMap: Record<string, string> = {
         indigo: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20 group-hover:bg-indigo-500/20",
         cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 group-hover:bg-cyan-500/20",
@@ -263,14 +413,13 @@ function StatCard({ label, value, sub, icon: Icon, trend, color = "indigo" }: an
                 <div className={`p-3 rounded-xl border transition-all duration-300 group-hover:scale-110 ${iconStyle}`}>
                     <Icon className="h-5 w-5 currentColor" />
                 </div>
-                {trend && (
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-md shadow-sm">
-                        {trend}
-                    </span>
-                )}
             </div>
             <div className="mt-5 relative z-10">
-                <div className="text-3xl font-extrabold tracking-tight text-white">{value}</div>
+                {loading ? (
+                    <div className="h-9 w-20 bg-white/5 rounded animate-pulse" />
+                ) : (
+                    <div className="text-3xl font-extrabold tracking-tight text-white">{value}</div>
+                )}
                 <div className="text-sm font-semibold text-gray-400 mt-1">{label}</div>
                 <div className="mt-1.5 text-xs text-gray-500 font-medium">{sub}</div>
             </div>

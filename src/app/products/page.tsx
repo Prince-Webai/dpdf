@@ -17,7 +17,7 @@ export default function ProductsPage() {
 
     const itemVariants = {
         hidden: { opacity: 0, scale: 0.9, y: 20 },
-        show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", bounce: 0.4, duration: 0.8 } }
+        show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring" as const, bounce: 0.4, duration: 0.8 } }
     }
 
     return (
@@ -46,7 +46,7 @@ export default function ProductsPage() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-                        className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-gray-200 to-gray-500 leading-[1.1]"
+                        className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-8 text-white leading-[1.1]"
                     >
                         Powerful Document <br className="hidden sm:block" /> Intelligence API
                     </motion.h1>
