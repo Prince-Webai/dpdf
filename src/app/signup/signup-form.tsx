@@ -70,7 +70,7 @@ export function SignupForm() {
 
             {/* Background glows */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-executive-gold/8 blur-[140px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/3 blur-[140px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/8 blur-[140px]" />
                 {/* Dot grid */}
                 <div
@@ -253,7 +253,7 @@ export function SignupForm() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="relative w-full h-13 py-3.5 bg-executive-gold text-black text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                                    className="relative w-full h-13 py-3.5 bg-white/10 backdrop-blur-md text-white text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />

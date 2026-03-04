@@ -23,7 +23,7 @@ export function TopNavHeader() {
         <header className="fixed w-full top-0 z-50 bg-executive-black/90 backdrop-blur-md border-b border-white/[0.02]">
             <div className="max-w-[1920px] mx-auto px-8 md:px-16 h-20 flex items-center justify-between">
                 <div className="flex items-center gap-12">
-                    <Link href="/dashboard" className="group flex items-center gap-3">
+                    <Link href="/" className="group flex items-center gap-3">
                         <Pentagon className="text-executive-gold w-6 h-6 stroke-[1px] group-hover:rotate-180 transition-transform duration-700" />
                         <span className="font-serif text-xl tracking-[0.15em] text-white">NEXUS</span>
                     </Link>

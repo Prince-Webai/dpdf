@@ -178,7 +178,7 @@ function PriceCard({ name, price, desc, features, featured = false, delay, link 
             className={`relative p-10 rounded-none border flex flex-col items-center text-center transition-all duration-300 group ${featured ? 'bg-executive-panel/50 border-white shadow-[0_0_40px_rgba(255,255,255,0.15)] md:-translate-y-4 md:hover:-translate-y-6' : 'bg-[#050505] border-white/10 hover:border-white/30 hover:bg-[#0a0a0a]'}`}
         >
             {featured && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#ffffff] text-black px-4 py-1.5 rounded-none text-[9px] font-bold uppercase tracking-[0.3em] shadow-[0_0_15px_rgba(255,255,255,0.3)] z-50">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-none text-[9px] font-bold uppercase tracking-[0.3em] shadow-[0_0_15px_rgba(255,255,255,0.1)] z-50">
                     Most Popular
                 </div>
             )}
@@ -216,7 +216,7 @@ function PriceCard({ name, price, desc, features, featured = false, delay, link 
             </ul>
             <div className="mt-auto w-full relative group/btn">
                 <div className={`absolute -inset-0.5 blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${featured ? 'bg-white' : 'bg-transparent group-hover/btn:bg-white/20'}`} />
-                <Button variant="outline" className={`relative w-full h-14 rounded-none text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 flex items-center justify-center border-0 ${featured ? 'bg-white text-black hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black hover:border-white'}`} asChild>
+                <Button variant="outline" className={`relative w-full h-14 rounded-none text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 flex items-center justify-center border-0 ${featured ? 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black hover:border-white'}`} asChild>
                     <Link href={link}>{btnText}</Link>
                 </Button>
             </div>

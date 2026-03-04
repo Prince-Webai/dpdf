@@ -63,7 +63,7 @@ export function Navbar() {
 
                 <div className="hidden md:flex items-center gap-6">
                     {user ? (
-                        <Button asChild className="bg-white text-black hover:bg-executive-gold hover:text-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-white/10 group-hover:border-executive-gold/20">
+                        <Button asChild className="bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-white/10 group-hover:border-white/20">
                             <Link href="/dashboard">Dashboard</Link>
                         </Button>
                     ) : (
@@ -73,7 +73,7 @@ export function Navbar() {
                             </Button>
                             <Link href="/signup" className="relative group">
                                 <div className="absolute -inset-0.5 bg-executive-gold rounded-none blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]"></div>
-                                <Button className="relative bg-executive-gold text-black hover:bg-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-white/30 shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                                <Button className="relative bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]">
                                     Get Started
                                 </Button>
                             </Link>
