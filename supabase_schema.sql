@@ -50,3 +50,29 @@ BEGIN
     WHERE a.api_key = input_key;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create an RPC to safely deduct user credits
+CREATE OR REPLACE FUNCTION deduct_user_credits(user_id_input UUID, credits_to_deduct INTEGER)
+RETURNS JSON AS $$
+DECLARE
+    current_credits INTEGER;
+BEGIN
+    SELECT credits INTO current_credits
+    FROM public.profiles
+    WHERE id = user_id_input;
+
+    IF current_credits IS NULL THEN
+        RAISE EXCEPTION 'User profile not found';
+    END IF;
+
+    IF current_credits < credits_to_deduct THEN
+        RAISE EXCEPTION 'Insufficient credits';
+    END IF;
+
+    UPDATE public.profiles
+    SET credits = credits - credits_to_deduct
+    WHERE id = user_id_input;
+
+    RETURN json_build_object('success', true, 'remaining_credits', current_credits - credits_to_deduct);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

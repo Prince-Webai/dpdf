@@ -1,12 +1,20 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
-import { Toaster } from "@/components/ui/toaster"
-export const dynamic = 'force-dynamic'
+import { createClient } from "@/utils/supabase/server"
+import { redirect } from "next/navigation"
+export const revalidate = 0
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || user.app_metadata?.role !== 'admin') {
+        redirect('/dashboard')
+    }
+
     return (
         <div className="flex min-h-screen bg-black text-white relative flex-col md:flex-row">
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -17,7 +25,6 @@ export default function AdminLayout({
                 <div className="max-w-[1920px] mx-auto w-full">
                     {children}
                 </div>
-                <Toaster />
             </main>
         </div>
     )

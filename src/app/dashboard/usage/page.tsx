@@ -31,6 +31,7 @@ export default function UsagePage() {
     const joinedDate = profile?.created_at ? new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', day: '2-digit', year: 'numeric' }) : 'March 02, 2024';
 
     return (
+<<<<<<< HEAD
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-24">
             <div className="flex flex-col lg:flex-row justify-between items-start gap-12">
                 <div className="max-w-2xl">
@@ -110,12 +111,133 @@ export default function UsagePage() {
                                 </div>
                                 <div className="h-[2px] bg-white/[0.05] w-full relative">
                                     <motion.div initial={{ width: 0 }} animate={{ width: `${stat.percentage}%` }} transition={{ duration: 1.5, ease: "circOut", delay: 0.6 }} className="absolute top-0 left-0 h-full bg-executive-gold shadow-[0_0_10px_rgba(59,130,246,0.4)]" />
+=======
+        <div className="space-y-10">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-4xl font-bold tracking-tight text-white">Utilization Intelligence</h1>
+                <p className="text-white/40 text-[13px] font-medium uppercase tracking-widest">Quota & Performance monitoring</p>
+            </div>
+
+            {isLoading ? (
+                <div className="flex items-center justify-center p-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+                        <Card className="bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] p-8 hover:bg-white/[0.08] transition-all group relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
+                            <CardHeader className="p-0 mb-4">
+                                <CardTitle className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Active Subscription</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="text-4xl font-black text-white capitalize tracking-tighter">{plan}</div>
+                                <p className="text-xs text-blue-400/50 mt-2 font-medium">Standard enterprise grade</p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-white/5 backdrop-blur-3xl border-white/10 rounded-[2.5rem] p-8 hover:bg-white/[0.08] transition-all group relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl" />
+                            <CardHeader className="p-0 mb-4">
+                                <CardTitle className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Available Credits</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="text-4xl font-black text-white tracking-tighter">
+                                    {credits.toLocaleString()}
+                                    <span className="text-xl text-white/10 font-medium tracking-normal ml-2">/ {creditLimit.toLocaleString()}</span>
+                                </div>
+                                <p className="text-xs text-emerald-400/50 mt-2 font-medium">Auto-renewing monthly</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="max-w-3xl">
+                        <Card className="bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] p-10 overflow-hidden shadow-2xl relative">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px]" />
+                            <CardHeader className="p-0 mb-8">
+                                <CardTitle className="text-xl font-bold text-white tracking-tight">Consumption Velocity</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="flex justify-between items-end mb-4">
+                                    <div className="flex flex-col">
+                                        <span className="text-5xl font-black text-white tracking-tighter">{Math.max(0, creditsUsed).toLocaleString()}</span>
+                                        <span className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em] mt-1">Credits Invoiced</span>
+                                    </div>
+                                    <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{usagePercent.toFixed(1)}% Velocity</span>
+                                </div>
+                                <div className="w-full bg-white/5 rounded-full h-4 p-1 ring-1 ring-white/10 shadow-inner overflow-hidden">
+                                    <div
+                                        className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(99,102,241,0.4)]"
+                                        style={{ width: `${usagePercent}%` }}
+                                    />
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
                                 </div>
                             </motion.div>
                         ))}
                     </div>
+<<<<<<< HEAD
                 </div>
             </div>
         </motion.div>
     );
+=======
+
+                    <Card className="bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] p-10 shadow-2xl overflow-hidden relative group">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <h3 className="text-xl font-bold text-white tracking-tight mb-10">Network Traffic (7D Window)</h3>
+                        <div className="h-80 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData}>
+                                    <defs>
+                                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                                            <stop offset="100%" stopColor="#6366f1" stopOpacity={0.4} />
+                                        </linearGradient>
+                                    </defs>
+                                    <XAxis
+                                        dataKey="name"
+                                        stroke="rgba(255,255,255,0.1)"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: 'rgba(255,255,255,0.3)', fontWeight: 600 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        stroke="rgba(255,255,255,0.1)"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: 'rgba(255,255,255,0.3)', fontWeight: 600 }}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(255,255,255,0.03)', radius: 8 }}
+                                        contentStyle={{
+                                            backgroundColor: 'rgba(10,10,10,0.8)',
+                                            backdropFilter: 'blur(12px)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '16px',
+                                            color: '#fff',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                            padding: '12px'
+                                        }}
+                                        itemStyle={{ color: '#60a5fa', fontWeight: 700 }}
+                                        labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                                    />
+                                    <Bar
+                                        dataKey="calls"
+                                        fill="url(#barGradient)"
+                                        radius={[12, 12, 4, 4]}
+                                        barSize={32}
+                                        animationDuration={1500}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </Card>
+                </>
+            )}
+        </div>
+    )
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
 }

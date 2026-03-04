@@ -4,17 +4,19 @@ import Link from 'next/link'
 import { Pentagon, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+<<<<<<< HEAD
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 
 import { useProfile } from '@/context/profile-context'
+=======
+import { createClient } from '@/utils/supabase/client'
+import { User } from '@supabase/supabase-js'
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
 
 export function Navbar() {
-    const pathname = usePathname()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const { user } = useProfile()
-
-    if (pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard')) return null
 
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-white/[0.03] bg-executive-black/80 backdrop-blur-xl transition-all duration-500 h-24 flex items-center">

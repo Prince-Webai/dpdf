@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Ban, UserCheck, Loader2, RefreshCw, Users, MoreHorizontal, Activity, Trash2, Edit2 } from "lucide-react"
 import { listAllUsers, updateUserMetadata, deleteUserAccount, getUserUsage } from "@/lib/actions"
+import { PLAN_LIMITS } from "@/lib/constants"
 import { toast } from "@/hooks/use-toast"
 import {
     Dialog,
@@ -253,18 +254,12 @@ export default function AdminUsersPage() {
                                     value={selectedUser.plan}
                                     onChange={(e) => {
                                         const newPlan = e.target.value;
-                                        const PLAN_LIMITS: Record<string, { credits: number, tokenLimit: number }> = {
-                                            'free': { credits: 100, tokenLimit: 50000 },
-                                            'Basic': { credits: 17000, tokenLimit: 1000000 },
-                                            'Personal': { credits: 37000, tokenLimit: 5000000 },
-                                            'Business': { credits: 81000, tokenLimit: 20000000 }
-                                        };
                                         const limits = PLAN_LIMITS[newPlan] || PLAN_LIMITS['free'];
                                         setSelectedUser({
                                             ...selectedUser,
                                             plan: newPlan,
                                             credits: limits.credits,
-                                            tokenLimit: limits.tokenLimit
+                                            tokenLimit: limits.token_limit
                                         });
                                     }}
                                     className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm focus:ring-1 focus:ring-blue-500/50 outline-none transition-colors text-white"

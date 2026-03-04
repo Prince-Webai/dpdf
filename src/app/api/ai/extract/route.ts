@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 export const dynamic = 'force-dynamic'
 
@@ -57,6 +59,28 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: true, message: "Missing documentText" }, { status: 400 });
         }
 
+        // 1. Authenticate Request
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: true, message: "Unauthorized. Please log in." }, { status: 401 });
+        }
+
+        // 2. Check Credits
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('credits')
+            .eq('id', user.id)
+            .single();
+
+        // Assume AI extraction costs 5 credits
+        const AI_EXTRACTION_COST = 5;
+
+        if (profileError || !profile || (profile.credits || 0) < AI_EXTRACTION_COST) {
+            return NextResponse.json({ error: true, message: "Insufficient credits for AI extraction." }, { status: 402 });
+        }
+
         const apiKey = process.env.OPENAI_API_KEY;
         if (!apiKey) {
             return NextResponse.json({
@@ -96,6 +120,20 @@ export async function POST(req: Request) {
         } catch (e) {
             jsonResponse = { rawOutput: content, error: true, message: "Failed to parse OpenAI response as JSON" };
         }
+
+        // 4. Deduct Credits
+        const adminSupabase = await createAdminClient();
+        await adminSupabase.rpc('deduct_user_credits', {
+            p_user_id: user.id,
+            p_amount: AI_EXTRACTION_COST
+        });
+
+        // Log usage
+        await adminSupabase.from('usage_logs').insert({
+            user_id: user.id,
+            endpoint: '/api/ai/extract',
+            credits_used: AI_EXTRACTION_COST
+        });
 
         return NextResponse.json(jsonResponse);
 

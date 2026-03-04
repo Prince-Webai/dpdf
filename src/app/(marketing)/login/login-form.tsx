@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useToast } from "@/hooks/use-toast"
 import Link from 'next/link'
 import { Pentagon, Loader2, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -18,6 +19,17 @@ export function LoginForm() {
     const next = searchParams.get('next')
     const message = searchParams.get('message')
     const supabase = createClient()
+    const { toast } = useToast()
+    const message = searchParams.get('message')
+
+    useEffect(() => {
+        if (message) {
+            toast({
+                title: "Notice",
+                description: message,
+            })
+        }
+    }, [message, toast])
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -39,7 +51,16 @@ export function LoginForm() {
                 }
             }
         } catch (err: any) {
+<<<<<<< HEAD:src/app/login/login-form.tsx
             setError(err.message || 'Failed to sign in')
+=======
+            setError(err.message || "Failed to sign in")
+            toast({
+                title: "Error",
+                description: err.message || "Failed to sign in",
+                variant: "destructive",
+            })
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/login/login-form.tsx
             setIsLoading(false)
         }
     }

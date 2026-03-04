@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useToast } from "@/hooks/use-toast"
 import Link from 'next/link'
 import { Pentagon, Loader2, Eye, EyeOff, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -27,6 +28,7 @@ export function SignupForm() {
     const searchParams = useSearchParams()
     const next = searchParams.get('next')
     const supabase = createClient()
+    const { toast } = useToast()
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -38,15 +40,33 @@ export function SignupForm() {
 
             if (!result.success) throw new Error(result.error)
 
-            const { data: { session } } = await supabase.auth.getSession()
+            const { data: { user } } = await supabase.auth.getUser()
 
+<<<<<<< HEAD:src/app/signup/signup-form.tsx
             if (session) {
                 window.location.href = next ?? '/dashboard'
+=======
+            if (user) {
+                if (next) {
+                    window.location.href = next
+                } else {
+                    window.location.href = '/dashboard'
+                }
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/signup/signup-form.tsx
             } else {
                 window.location.href = `/login?message=Please check your email to confirm your account${next ? `&next=${encodeURIComponent(next)}` : ''}`
             }
         } catch (err: any) {
+<<<<<<< HEAD:src/app/signup/signup-form.tsx
             setError(err.message || 'Failed to create account')
+=======
+            setError(err.message || "Failed to create account")
+            toast({
+                title: "Error",
+                description: err.message || "Failed to create account",
+                variant: "destructive",
+            })
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/signup/signup-form.tsx
             setIsLoading(false)
         }
     }

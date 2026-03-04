@@ -25,6 +25,7 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
         let userId: string | null = null;
 
         // 2. Securely check `userApiKey` against Supabase
+<<<<<<< HEAD
         // Bypass for Sandbox key used in the dashboard tools
         if (userApiKey === 'dn_test_sandbox') {
             console.log("Sandbox request detected: bypassing API key validation.");
@@ -57,25 +58,55 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
 
             if (keyError || !keyData || keyData.length === 0) {
                 return NextResponse.json({ error: "Invalid docunexus API Key" }, { status: 401 });
+=======
+        const cookieStore = cookies()
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    async getAll() {
+                        return (await cookieStore).getAll()
+                    },
+                    async setAll(cookiesToSet) {
+                        try {
+                            const store = await cookieStore;
+                            cookiesToSet.forEach(({ name, value, options }) =>
+                                store.set(name, value, options)
+                            )
+                        } catch {
+                            // The `setAll` method was called from a Server Component.
+                        }
+                    },
+                },
+>>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
             }
+        )
 
-            const { is_active, user_id } = keyData[0];
-            userId = user_id;
+        // Use the secure RPC function to bypass RLS since the proxy request might not have a session cookie
+        const { data: keyData, error: keyError } = await supabase
+            .rpc('validate_api_key', { input_key: userApiKey })
 
-            if (!is_active) {
-                return NextResponse.json({ error: "This API Key has been deactivated" }, { status: 403 });
-            }
+        if (keyError || !keyData || keyData.length === 0) {
+            return NextResponse.json({ error: "Invalid DocuNexu API Key" }, { status: 401 });
+        }
 
-            // check if user has credits
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('credits')
-                .eq('id', userId)
-                .single();
+        const { is_active, user_id } = keyData[0];
+        userId = user_id;
 
-            if (profileError || !profile || (profile.credits || 0) <= 0) {
-                return NextResponse.json({ error: "Insufficient credits. Please upgrade your plan." }, { status: 402 });
-            }
+        if (!is_active) {
+            return NextResponse.json({ error: "This API Key has been deactivated" }, { status: 403 });
+        }
+
+        // check if user has credits
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('credits')
+            .eq('id', userId)
+            .single();
+
+        if (profileError || !profile || (profile.credits || 0) <= 0) {
+            return NextResponse.json({ error: "Insufficient credits. Please upgrade your plan." }, { status: 402 });
         }
 
         // 2. Build the target URL
