@@ -199,20 +199,20 @@ export default function SQLEditorPage() {
             {/* Header */}
             <div className="mb-5 flex items-center justify-between flex-shrink-0">
                 <div>
-                    <h1 className="text-3xl font-bold mb-1.5 flex items-center gap-3 text-white">
-                        <div className="p-1.5 rounded-lg bg-indigo-500/20 border border-indigo-500/30">
-                            <Database className="h-6 w-6 text-indigo-400" />
+                    <h1 className="text-3xl font-extrabold mb-1.5 flex items-center gap-3 text-white tracking-tight">
+                        <div className="p-1.5 rounded-xl bg-blue-500/20 border border-blue-500/30">
+                            <Database className="h-6 w-6 text-blue-400" />
                         </div>
                         SQL Console
                     </h1>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-400 text-sm">
                         Live query interface — press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-mono text-gray-300">Ctrl+Enter</kbd> to run
                     </p>
                 </div>
                 <div className="flex gap-3">
                     <Button
                         variant="outline"
-                        className="border-white/10 hover:bg-white/5 gap-2 text-gray-300"
+                        className="border-white/10 hover:bg-white/5 gap-2 text-gray-300 rounded-xl transition-all"
                         onClick={() => setShowHistory(!showHistory)}
                     >
                         <History className="h-4 w-4" />
@@ -221,7 +221,7 @@ export default function SQLEditorPage() {
                     <Button
                         onClick={runQuery}
                         disabled={isExecuting || !query.trim()}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 shadow-[0_0_20px_rgba(99,102,241,0.2)] disabled:opacity-50"
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-[0_0_20px_rgba(59,130,246,0.2)] disabled:opacity-50 rounded-xl transition-all"
                     >
                         {isExecuting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4 fill-current" />}
                         Run Query
@@ -232,33 +232,33 @@ export default function SQLEditorPage() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 flex-1 overflow-hidden min-h-0">
                 {/* LEFT: Snippets Panel */}
                 <div className="lg:col-span-1 flex flex-col gap-4 overflow-hidden">
-                    <Card className="bg-[#0a0a0a] border-white/5 flex flex-col overflow-hidden h-full">
+                    <Card className="bg-[#050505] border-white/5 flex flex-col overflow-hidden h-full rounded-2xl shadow-xl">
                         <div className="p-4 border-b border-white/5 flex-shrink-0">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-600" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-500" />
                                 <input
                                     type="text"
                                     placeholder="Search snippets..."
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
-                                    className="w-full bg-black/50 border border-white/8 rounded-lg py-2 pl-9 pr-4 text-xs text-gray-300 focus:outline-none focus:border-indigo-500/40 transition-all placeholder:text-gray-700"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl py-2 pl-9 pr-4 text-xs text-gray-300 focus:outline-none focus:border-blue-500/40 transition-all placeholder:text-gray-600"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-3 space-y-1">
-                            <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 px-2 flex items-center gap-1.5">
+                        <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-hide">
+                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2 flex items-center gap-1.5">
                                 <Table className="h-3 w-3" /> Starter Queries
                             </h3>
                             {filteredSnippets.map((snippet, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setQuery(snippet.sql)}
-                                    className="w-full text-left px-3 py-2.5 rounded-lg text-xs text-gray-500 hover:bg-white/5 hover:text-white transition-all group border border-transparent hover:border-white/5"
+                                    className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-400 hover:bg-white/5 hover:text-white transition-all group border border-transparent hover:border-white/5"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <ChevronRight className="h-3 w-3 text-gray-700 group-hover:text-indigo-400 transition-colors flex-shrink-0" />
-                                        <span className="font-medium group-hover:text-indigo-300 transition-colors">{snippet.title}</span>
+                                        <ChevronRight className="h-3 w-3 text-gray-600 group-hover:text-blue-400 transition-colors flex-shrink-0" />
+                                        <span className="font-medium group-hover:text-blue-300 transition-colors">{snippet.title}</span>
                                     </div>
                                 </button>
                             ))}
@@ -273,23 +273,23 @@ export default function SQLEditorPage() {
                                         className="overflow-hidden"
                                     >
                                         <div className="pt-4 border-t border-white/5 mt-3">
-                                            <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 px-2 flex items-center gap-1.5">
+                                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2 flex items-center gap-1.5">
                                                 <History className="h-3 w-3" /> Recent
                                             </h3>
                                             {history.map((h, i) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => setQuery(h.sql)}
-                                                    className="w-full text-left px-3 py-2 rounded-lg text-xs text-gray-500 hover:bg-white/5 hover:text-white transition-all group border border-transparent hover:border-white/5"
+                                                    className="w-full text-left px-3 py-2 rounded-xl text-xs text-gray-400 hover:bg-white/5 hover:text-white transition-all group border border-transparent hover:border-white/5"
                                                 >
                                                     <div className="flex items-center gap-2 mb-0.5">
                                                         {h.success
                                                             ? <CheckCircle2 className="h-3 w-3 text-emerald-500 flex-shrink-0" />
                                                             : <XCircle className="h-3 w-3 text-red-500 flex-shrink-0" />}
-                                                        <span className="text-[10px] text-gray-700">{h.timestamp}</span>
-                                                        <span className="ml-auto text-[10px] text-gray-700">{h.rowCount} rows</span>
+                                                        <span className="text-[10px] text-gray-500">{h.timestamp}</span>
+                                                        <span className="ml-auto text-[10px] text-gray-500">{h.rowCount} rows</span>
                                                     </div>
-                                                    <div className="font-mono text-[10px] text-gray-600 truncate pl-5">{h.sql.slice(0, 60)}…</div>
+                                                    <div className="font-mono text-[10px] text-gray-500 truncate pl-5">{h.sql.slice(0, 60)}…</div>
                                                 </button>
                                             ))}
                                         </div>
@@ -303,7 +303,7 @@ export default function SQLEditorPage() {
                 {/* RIGHT: Editor + Results */}
                 <div className="lg:col-span-3 flex flex-col gap-4 overflow-hidden min-h-0">
                     {/* Editor */}
-                    <Card className="bg-[#0a0a0a] border-white/5 flex flex-col overflow-hidden" style={{ height: '45%', minHeight: '220px' }}>
+                    <Card className="bg-[#050505] border-white/5 flex flex-col overflow-hidden rounded-2xl shadow-xl hover:border-white/10 transition-colors" style={{ height: '45%', minHeight: '220px' }}>
                         <div className="bg-white/[0.02] border-b border-white/5 px-4 py-2 flex items-center justify-between flex-shrink-0">
                             <div className="flex items-center gap-3">
                                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Query Editor</span>
@@ -315,7 +315,7 @@ export default function SQLEditorPage() {
                             <div className="flex gap-1">
                                 <Button
                                     variant="ghost" size="sm"
-                                    className="h-7 px-2 text-gray-500 hover:text-white gap-1.5 text-xs"
+                                    className="h-7 px-2 text-gray-400 hover:text-white gap-1.5 text-xs rounded-xl"
                                     onClick={copyQuery}
                                 >
                                     {copied ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
@@ -323,7 +323,7 @@ export default function SQLEditorPage() {
                                 </Button>
                                 <Button
                                     variant="ghost" size="sm"
-                                    className="h-7 px-2 text-gray-500 hover:text-red-400 gap-1.5 text-xs"
+                                    className="h-7 px-2 text-gray-400 hover:text-red-400 gap-1.5 text-xs rounded-xl"
                                     onClick={() => { setQuery(''); setResult(null) }}
                                 >
                                     <Trash2 className="h-3.5 w-3.5" /> Clear
@@ -333,7 +333,7 @@ export default function SQLEditorPage() {
 
                         <div className="flex-1 flex overflow-hidden">
                             {/* Line numbers */}
-                            <div className="w-10 bg-black/30 border-r border-white/5 flex flex-col items-end pr-2 pt-4 pb-4 text-[11px] text-gray-700 select-none font-mono flex-shrink-0 overflow-hidden">
+                            <div className="w-10 bg-black/40 border-r border-white/5 flex flex-col items-end pr-2 pt-4 pb-4 text-[11px] text-gray-600 select-none font-mono flex-shrink-0 overflow-hidden">
                                 {Array.from({ length: Math.max(lineCount, 12) }, (_, i) => (
                                     <div key={i} className="leading-[1.625rem]">{i + 1}</div>
                                 ))}
@@ -344,17 +344,17 @@ export default function SQLEditorPage() {
                                 onChange={e => setQuery(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 spellCheck={false}
-                                className="flex-1 bg-transparent text-indigo-100 p-4 focus:outline-none resize-none font-mono text-sm leading-[1.625rem] overflow-auto"
+                                className="flex-1 bg-transparent text-blue-100 p-4 focus:outline-none resize-none font-mono text-sm leading-[1.625rem] overflow-auto scrollbar-hide"
                                 placeholder="-- Enter SQL query here..."
                             />
                         </div>
                     </Card>
 
                     {/* Results */}
-                    <Card className="bg-[#0a0a0a] border-white/5 flex flex-col overflow-hidden flex-1 min-h-0">
+                    <Card className="bg-[#050505] border-white/5 flex flex-col overflow-hidden flex-1 min-h-0 rounded-2xl shadow-xl hover:border-white/10 transition-colors">
                         <div className="bg-white/[0.02] border-b border-white/5 px-4 py-2.5 flex items-center justify-between flex-shrink-0">
                             <h3 className="font-bold text-sm flex items-center gap-2 text-white">
-                                <Terminal className="h-4 w-4 text-indigo-400" /> Output
+                                <Terminal className="h-4 w-4 text-blue-400" /> Output
                             </h3>
                             <div className="flex items-center gap-3">
                                 {result && !result.error && (
@@ -365,7 +365,7 @@ export default function SQLEditorPage() {
                                 {result?.rows.length ? (
                                     <Button
                                         variant="ghost" size="sm"
-                                        className="h-6 px-2 text-gray-500 hover:text-white gap-1 text-xs"
+                                        className="h-6 px-2 text-gray-400 hover:text-white gap-1 text-xs rounded-xl"
                                         onClick={copyResults}
                                     >
                                         <ClipboardCopy className="h-3 w-3" /> CSV
@@ -374,20 +374,20 @@ export default function SQLEditorPage() {
                             </div>
                         </div>
 
-                        <CardContent className="p-0 flex-1 overflow-auto bg-[#050505]">
+                        <CardContent className="p-0 flex-1 overflow-auto bg-[#050505] scrollbar-hide">
                             {/* Empty state */}
                             {!result && !isExecuting && (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-700">
+                                <div className="h-full flex flex-col items-center justify-center text-gray-600">
                                     <Terminal className="h-10 w-10 mb-3 opacity-30" />
                                     <p className="text-xs uppercase tracking-widest font-bold opacity-50">Run a query to see results</p>
-                                    <p className="text-[10px] text-gray-700 mt-1">Ctrl+Enter to execute</p>
+                                    <p className="text-[10px] text-gray-600 mt-1">Ctrl+Enter to execute</p>
                                 </div>
                             )}
 
                             {/* Loading */}
                             {isExecuting && (
                                 <div className="h-full flex flex-col items-center justify-center gap-4">
-                                    <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
+                                    <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
                                     <p className="text-sm text-gray-500 animate-pulse font-mono">Executing query…</p>
                                 </div>
                             )}
@@ -398,12 +398,12 @@ export default function SQLEditorPage() {
                                     <motion.div
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="m-4 p-4 bg-red-500/8 border border-red-500/20 rounded-xl flex items-start gap-3"
+                                        className="m-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3"
                                     >
-                                        <XCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                                        <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                                         <div>
-                                            <p className="text-sm font-bold text-red-400 mb-1">Query Error</p>
-                                            <pre className="text-xs text-red-300/80 whitespace-pre-wrap break-all font-mono">{result.error}</pre>
+                                            <p className="text-sm font-bold text-red-500 mb-1">Query Error</p>
+                                            <pre className="text-xs text-red-400/80 whitespace-pre-wrap break-all font-mono">{result.error}</pre>
                                         </div>
                                     </motion.div>
                                 )}
@@ -438,7 +438,7 @@ export default function SQLEditorPage() {
                                                     >
                                                         {result.columns.map(col => {
                                                             const val = row[col]
-                                                            const display = val === null ? <span className="text-gray-700 italic">null</span>
+                                                            const display = val === null ? <span className="text-gray-600 italic">null</span>
                                                                 : typeof val === 'boolean' ? (
                                                                     val
                                                                         ? <span className="text-emerald-400 font-bold text-xs">true</span>
@@ -465,11 +465,11 @@ export default function SQLEditorPage() {
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="h-full flex flex-col items-center justify-center text-gray-600 gap-3"
+                                        className="h-full flex flex-col items-center justify-center text-gray-500 gap-3"
                                     >
                                         <CheckCircle2 className="h-8 w-8 text-emerald-500/40" />
                                         <p className="text-xs font-mono">Query executed — 0 rows returned</p>
-                                        <p className="text-[10px] text-gray-700">{result.duration}ms</p>
+                                        <p className="text-[10px] text-gray-600">{result.duration}ms</p>
                                     </motion.div>
                                 )}
                             </AnimatePresence>

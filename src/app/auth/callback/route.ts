@@ -1,27 +1,31 @@
 import { NextResponse } from 'next/server'
-// The client you created from the Server-Side Auth instructions
 import { createClient } from '../../../utils/supabase/server'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
-    // if "next" is in search params, use it as the redirection URL
-    const next = searchParams.get('next') ?? '/'
+    const next = searchParams.get('next') ?? '/dashboard'
 
     if (code) {
         const supabase = await createClient()
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
         if (!error) {
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that the origin is localhost:3000
-                return NextResponse.redirect(`${origin}${next}`)
-            } else {
-                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || origin}${next}`)
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || origin
+
+            // Determine redirect: respect explicit 'next', else check for admin role
+            let redirectPath = next
+            if (next === '/dashboard') {
+                const role = data.session?.user?.app_metadata?.role
+                if (role === 'admin') {
+                    redirectPath = '/admin'
+                }
             }
+
+            return NextResponse.redirect(`${appUrl}${redirectPath}`)
         }
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+    // OAuth failed — redirect to login with error message
+    return NextResponse.redirect(`${origin}/login?message=OAuth sign-in failed. Please try again.`)
 }

@@ -4,11 +4,25 @@ import { Button } from "@/components/ui/button"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { FileCode2, Layers, Zap, Shield, ChevronRight, Terminal, Cpu } from "lucide-react"
+import { useEffect, useState } from "react"
+import { createClient } from "@/utils/supabase/client"
 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll()
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
+  const [ctaHref, setCtaHref] = useState("/signup")
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        setCtaHref("/dashboard")
+      }
+    }
+    checkAuth()
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen bg-black overflow-hidden">
@@ -59,7 +73,7 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row justify-center gap-5 items-center"
           >
             <Button size="lg" className="h-14 px-8 text-lg bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all shadow-[0_0_40px_rgba(59,130,246,0.3)] rounded-xl" asChild>
-              <Link href="/signup">
+              <Link href={ctaHref}>
                 Start Building Free <ChevronRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
@@ -193,8 +207,8 @@ export default function LandingPage() {
             Get your API key in seconds and start processing documents for free. No credit card required to start.
           </p>
           <Button size="lg" className="h-14 px-10 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-600/30 hover:scale-105 transition-all" asChild>
-            <Link href="/signup">
-              Create an Account
+            <Link href={ctaHref}>
+              {ctaHref === "/dashboard" ? "Go to Dashboard" : "Create an Account"}
             </Link>
           </Button>
         </motion.div>
