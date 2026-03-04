@@ -55,16 +55,6 @@ export default function LandingPage() {
         style={{ opacity, scale }}
       >
         <div className="container mx-auto text-center flex flex-col items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111]/80 border border-white/10 text-gray-300 text-xs mb-8 font-mono shadow-[0_0_30px_rgba(59,130,246,0.15)] backdrop-blur-md"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
-            API Status: <span className="text-blue-400 font-semibold">Online & Scaling</span>
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
