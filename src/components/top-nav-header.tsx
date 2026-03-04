@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Pentagon, Code, User, Settings as SettingsIcon, Search } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '../utils/supabase/client'
 import { useProfile } from '@/context/profile-context'
 
 export function TopNavHeader() {

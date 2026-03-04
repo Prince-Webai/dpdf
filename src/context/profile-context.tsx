@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '../utils/supabase/client'
 
 export const PLAN_LIMITS: Record<string, { credits: number; token_limit: number }> = {
     'free': { credits: 100, token_limit: 50000 },

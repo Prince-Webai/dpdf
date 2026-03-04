@@ -19,7 +19,7 @@ import {
     ClipboardCopy
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { createClient } from "@/utils/supabase/client"
+import { createClient } from "../../../utils/supabase/client"
 
 // --- Starter Snippets ---
 const SNIPPETS = [

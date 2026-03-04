@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Pentagon, Loader2, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '../../utils/supabase/client'
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false)

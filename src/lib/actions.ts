@@ -1,7 +1,7 @@
 'use server'
 
-import { createAdminClient } from "@/utils/supabase/admin"
-import { createClient } from "@/utils/supabase/server"
+import { createAdminClient } from "../utils/supabase/admin"
+import { createClient } from "../utils/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 // --- AUTH ACTIONS ---
