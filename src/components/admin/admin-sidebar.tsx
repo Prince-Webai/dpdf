@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FileText, LayoutDashboard, Users, Key, LogOut, ShieldAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { createClient } from '../../utils/supabase/client'
+import { createClient } from '@/utils/supabase/client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
