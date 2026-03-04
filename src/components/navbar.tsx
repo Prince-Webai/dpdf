@@ -49,17 +49,17 @@ export function Navbar() {
 
                 <div className="hidden md:flex items-center gap-6">
                     {user ? (
-                        <Button asChild className="bg-blue-500/10 backdrop-blur-md text-blue-400 hover:bg-blue-500 hover:text-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-blue-500/10 group-hover:border-blue-500/20">
+                        <Button asChild className="bg-blue-500/10 backdrop-blur-md text-blue-400 hover:bg-blue-500 hover:text-white rounded-full font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-blue-500/10 group-hover:border-blue-500/20">
                             <Link href="/dashboard">Dashboard</Link>
                         </Button>
                     ) : (
                         <>
-                            <Button variant="ghost" asChild className="text-white/40 hover:text-white hover:bg-white/5 rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all">
+                            <Button variant="ghost" asChild className="text-white/40 hover:text-white hover:bg-white/5 rounded-full font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all">
                                 <Link href="/login">Log in</Link>
                             </Button>
                             <Link href="/signup" className="relative group">
-                                <div className="absolute -inset-0.5 bg-blue-500 rounded-none blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
-                                <Button className="relative bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]">
+                                <div className="absolute -inset-0.5 bg-blue-500 rounded-full blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
+                                <Button className="relative bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-full font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]">
                                     Get Started
                                 </Button>
                             </Link>
@@ -87,15 +87,15 @@ export function Navbar() {
                     </div>
                     <div className="flex flex-col gap-4 pt-8 border-t border-white/[0.05]">
                         {user ? (
-                            <Button asChild className="w-full bg-executive-gold text-black rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14">
+                            <Button asChild className="w-full bg-executive-gold text-black rounded-full font-bold text-[11px] tracking-[0.3em] uppercase h-14">
                                 <Link href="/dashboard">Dashboard</Link>
                             </Button>
                         ) : (
                             <>
-                                <Button variant="outline" asChild className="w-full border-white/10 text-white rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14" onClick={() => setIsMenuOpen(false)}>
+                                <Button variant="outline" asChild className="w-full border-white/10 text-white rounded-full font-bold text-[11px] tracking-[0.3em] uppercase h-14" onClick={() => setIsMenuOpen(false)}>
                                     <Link href="/login">Log in</Link>
                                 </Button>
-                                <Button asChild className="w-full bg-executive-gold text-black rounded-none font-bold text-[11px] tracking-[0.3em] uppercase h-14 shadow-[0_0_20px_rgba(255,255,255,0.25)] border border-white/20" onClick={() => setIsMenuOpen(false)}>
+                                <Button asChild className="w-full bg-executive-gold text-black rounded-full font-bold text-[11px] tracking-[0.3em] uppercase h-14 shadow-[0_0_20px_rgba(255,255,255,0.25)] border border-white/20" onClick={() => setIsMenuOpen(false)}>
                                     <Link href="/signup">Get Started</Link>
                                 </Button>
                             </>

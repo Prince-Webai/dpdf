@@ -31,7 +31,7 @@ export default function PricingPage() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-500 text-[10px] uppercase tracking-[0.2em] mb-8 font-bold shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/5 border border-blue-500/20 text-blue-500 text-[10px] uppercase tracking-[0.2em] mb-8 font-bold shadow-[0_0_20px_rgba(59,130,246,0.1)]"
                     >
                         <Sparkles className="w-3 h-3" />
                         Save 20% on all Annual Plans

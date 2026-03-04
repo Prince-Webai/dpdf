@@ -60,24 +60,28 @@ export function TopNavHeader() {
                                     {fullName ? fullName.split(' ').map((n: string) => n[0]).join('.') : (user.email?.split('@')[0] || 'Strategic.Commander')}
                                 </p>
                             </div>
+                            <div className="h-8 w-8 rounded-full overflow-hidden ring-1 ring-white/10 p-[2px] bg-white/5 relative">
+                                {user.user_metadata?.avatar_url ? (
+                                    <img
+                                        alt="User"
+                                        className="w-full h-full object-cover rounded-full"
+                                        src={user.user_metadata.avatar_url}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                ) : (
+                                    <User className="w-full h-full p-1 text-white/50" />
+                                )}
+                            </div>
                             <button
                                 onClick={async () => {
                                     await supabase.auth.signOut()
                                     window.location.href = '/login'
                                 }}
-                                className="h-8 w-8 rounded-none overflow-hidden ring-1 ring-white/10 p-[2px] group-hover:ring-red-500/50 transition-all flex items-center justify-center bg-white/5 relative"
+                                className="ml-2 px-3 py-1.5 rounded-full border border-white/10 text-xs font-semibold text-gray-400 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all flex items-center gap-1.5"
                                 title="Sign out"
                             >
-                                {user.user_metadata?.avatar_url ? (
-                                    <img
-                                        alt="User"
-                                        className="w-full h-full object-cover grayscale opacity-70 group-hover:opacity-10 transition-all rounded-none"
-                                        src={user.user_metadata.avatar_url}
-                                        referrerPolicy="no-referrer"
-                                    />
-                                ) : (
-                                    <User className="w-4 h-4 text-white/50 group-hover:text-white" />
-                                )}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+                                Log out
                             </button>
                         </div>
                     </div>

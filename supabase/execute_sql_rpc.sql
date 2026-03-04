@@ -9,6 +9,8 @@
 -- The function runs with SECURITY DEFINER to allow running queries,
 -- but we restrict which statements are allowed.
 
+DROP FUNCTION IF EXISTS public.execute_sql(text);
+
 CREATE OR REPLACE FUNCTION public.execute_sql(query_text text)
 RETURNS jsonb
 LANGUAGE plpgsql
