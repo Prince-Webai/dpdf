@@ -63,12 +63,12 @@ export function LoginForm() {
 
             {/* Background glows */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/3 blur-[140px]" />
+                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 blur-[140px]" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/6 blur-[140px]" />
                 <div
                     className="absolute inset-0 opacity-[0.04]"
                     style={{
-                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)`,
+                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59,130,246,0.5) 1px, transparent 0)`,
                         backgroundSize: '40px 40px',
                     }}
                 />
@@ -79,7 +79,7 @@ export function LoginForm() {
                 {/* Mobile logo */}
                 <Link href="/" className="flex lg:hidden items-center gap-3 mb-10">
                     <Pentagon className="text-executive-gold w-6 h-6 stroke-[1px]" />
-                    <span className="font-serif text-xl tracking-[0.08em] text-white">Docu<span className="text-white/35 italic">Nexus</span></span>
+                    <span className="font-serif text-xl tracking-[0.08em] text-white">Docu<span className="text-blue-500/35 italic">Nexus</span></span>
                 </Link>
 
                 <motion.div
@@ -166,11 +166,11 @@ export function LoginForm() {
                         {/* Submit */}
                         <div className="pt-2">
                             <div className="relative group">
-                                <div className="absolute -inset-0.5 bg-executive-gold blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                                <div className="absolute -inset-0.5 bg-blue-500 blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]" />
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="relative w-full py-3.5 bg-white/10 backdrop-blur-md text-white text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]"
+                                    className="relative w-full py-3.5 bg-blue-500/10 backdrop-blur-md text-blue-400 text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-blue-500 hover:text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.05)]"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -221,7 +221,7 @@ export function LoginForm() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3 group justify-end">
                     <span className="font-serif text-2xl tracking-[0.08em] text-white">
-                        Docu<span className="text-white/35 italic">Nexus</span>
+                        Docu<span className="text-blue-500/35 italic">Nexus</span>
                     </span>
                     <div className="relative">
                         <Pentagon className="text-executive-gold w-7 h-7 stroke-[1px] group-hover:rotate-180 transition-transform duration-700 ease-in-out" />

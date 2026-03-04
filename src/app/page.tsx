@@ -14,8 +14,8 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-black overflow-hidden">
       {/* Background Ambient Glows */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/20 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[120px]" />
       </div>
 
       {/* Hero Section */}
@@ -28,9 +28,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm mb-8"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm mb-8"
           >
-            <Zap className="w-4 h-4 text-indigo-400" />
+            <Zap className="w-4 h-4 text-blue-400" />
             <span className="font-medium">DocuNexu API v2.0 is now live</span>
           </motion.div>
 
@@ -58,7 +58,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="flex flex-col sm:flex-row justify-center gap-5 items-center"
           >
-            <Button size="lg" className="h-14 px-8 text-lg bg-white text-black hover:bg-gray-100 hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] rounded-xl" asChild>
+            <Button size="lg" className="h-14 px-8 text-lg bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 transition-all shadow-[0_0_40px_rgba(59,130,246,0.3)] rounded-xl" asChild>
               <Link href="/signup">
                 Start Building Free <ChevronRight className="ml-2 w-5 h-5" />
               </Link>
@@ -81,7 +81,7 @@ export default function LandingPage() {
         className="relative z-20 container mx-auto px-4 -mt-10 md:-mt-20 mb-32"
       >
         <div className="max-w-5xl mx-auto relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
           <div className="relative bg-[#050505] rounded-xl border border-white/10 shadow-2xl overflow-hidden flex flex-col md:flex-row">
 
             {/* Code Side */}
@@ -106,10 +106,10 @@ export default function LandingPage() {
 
             {/* Response Side */}
             <div className="w-full md:w-80 bg-black/50 p-6 md:p-8 flex flex-col justify-center">
-              <div className="text-xs text-indigo-400 font-mono mb-4 flex items-center gap-2">
+              <div className="text-xs text-blue-400 font-mono mb-4 flex items-center gap-2">
                 <Terminal className="w-4 h-4" /> Output
               </div>
-              <pre className="font-mono text-xs text-emerald-300/80 leading-relaxed overflow-x-auto bg-emerald-950/20 p-4 rounded-lg border border-emerald-900/30">
+              <pre className="font-mono text-xs text-blue-300/80 leading-relaxed overflow-x-auto bg-blue-950/20 p-4 rounded-lg border border-blue-900/30">
                 {`{
   "status": "success",
   "confidence": 0.99,
@@ -180,7 +180,7 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="py-32 relative z-10 border-t border-white/5">
-        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -192,7 +192,7 @@ export default function LandingPage() {
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
             Get your API key in seconds and start processing documents for free. No credit card required to start.
           </p>
-          <Button size="lg" className="h-14 px-10 text-lg bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:scale-105 transition-all" asChild>
+          <Button size="lg" className="h-14 px-10 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-600/30 hover:scale-105 transition-all" asChild>
             <Link href="/signup">
               Create an Account
             </Link>
@@ -212,8 +212,8 @@ function FeatureCard({ icon: Icon, title, desc, delay }: { icon: any, title: str
       transition={{ duration: 0.6, delay }}
       className="p-8 rounded-3xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-indigo-500/30 transition-all group flex flex-col gap-6"
     >
-      <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
-        <Icon className="w-6 h-6 text-indigo-400" />
+      <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-300">
+        <Icon className="w-6 h-6 text-blue-400" />
       </div>
       <div>
         <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{title}</h3>

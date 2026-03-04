@@ -70,13 +70,13 @@ export function SignupForm() {
 
             {/* Background glows */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/3 blur-[140px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 blur-[140px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/8 blur-[140px]" />
                 {/* Dot grid */}
                 <div
                     className="absolute inset-0 opacity-[0.04]"
                     style={{
-                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)`,
+                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59,130,246,0.5) 1px, transparent 0)`,
                         backgroundSize: '40px 40px',
                     }}
                 />
@@ -112,7 +112,7 @@ export function SignupForm() {
                         </div>
                         <h2 className="text-5xl font-serif leading-tight text-white mb-6">
                             Orchestrate<br />
-                            <span className="text-white/30 italic">every document.</span>
+                            <span className="text-blue-500/30 italic">every document.</span>
                         </h2>
                         <p className="text-white/35 font-light leading-relaxed mb-12 text-base max-w-sm">
                             The world's most sophisticated PDF API framework. Join thousands of developers building mission-critical document workflows.
@@ -143,7 +143,7 @@ export function SignupForm() {
                     <p className="text-white/25 text-sm italic font-serif leading-relaxed">
                         "DocuNexus reduced our invoice processing pipeline from 4 hours to 6 minutes."
                     </p>
-                    <p className="text-executive-gold/50 text-[10px] tracking-[0.2em] uppercase mt-2 font-bold">— Enterprise Client</p>
+                    <p className="text-blue-500/50 text-[10px] tracking-[0.2em] uppercase mt-2 font-bold">— Enterprise Client</p>
                 </div>
             </div>
 
@@ -249,11 +249,11 @@ export function SignupForm() {
                         {/* Submit */}
                         <div className="pt-2">
                             <div className="relative group">
-                                <div className="absolute -inset-0.5 bg-executive-gold blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+                                <div className="absolute -inset-0.5 bg-blue-500 blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]" />
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="relative w-full h-13 py-3.5 bg-white/10 backdrop-blur-md text-white text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]"
+                                    className="relative w-full h-13 py-3.5 bg-blue-500/10 backdrop-blur-md text-blue-400 text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-blue-500 hover:text-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.05)]"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />

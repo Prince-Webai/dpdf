@@ -39,7 +39,7 @@ export function Navbar() {
                         <motion.div
                             animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                             transition={{ repeat: Infinity, duration: 4 }}
-                            className="absolute inset-0 bg-executive-gold/20 blur-md rounded-none"
+                            className="absolute inset-0 bg-blue-500/20 blur-md rounded-none"
                         />
                     </div>
                     <span className="font-serif text-2xl tracking-[0.1em] text-white">Docu<span className="text-white/40 italic">Nexus</span></span>
@@ -51,11 +51,11 @@ export function Navbar() {
                         <Link
                             key={item}
                             href={`/${item.toLowerCase()}`}
-                            className="hover:text-executive-gold transition-colors relative group py-2"
+                            className="hover:text-blue-400 transition-colors relative group py-2"
                         >
                             {item}
                             <motion.span
-                                className="absolute bottom-0 left-0 w-0 h-[1px] bg-executive-gold transition-all duration-500 group-hover:w-full"
+                                className="absolute bottom-0 left-0 w-0 h-[1px] bg-blue-500 transition-all duration-500 group-hover:w-full"
                             />
                         </Link>
                     ))}
@@ -63,7 +63,7 @@ export function Navbar() {
 
                 <div className="hidden md:flex items-center gap-6">
                     {user ? (
-                        <Button asChild className="bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-white/10 group-hover:border-white/20">
+                        <Button asChild className="bg-blue-500/10 backdrop-blur-md text-blue-400 hover:bg-blue-500 hover:text-white rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 shadow-md border border-blue-500/10 group-hover:border-blue-500/20">
                             <Link href="/dashboard">Dashboard</Link>
                         </Button>
                     ) : (
@@ -72,7 +72,7 @@ export function Navbar() {
                                 <Link href="/login">Log in</Link>
                             </Button>
                             <Link href="/signup" className="relative group">
-                                <div className="absolute -inset-0.5 bg-executive-gold rounded-none blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]"></div>
+                                <div className="absolute -inset-0.5 bg-blue-500 rounded-none blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
                                 <Button className="relative bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black rounded-none !rounded-none font-bold text-[10px] tracking-[0.2em] uppercase h-10 px-8 transition-all duration-500 border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.05)]">
                                     Get Started
                                 </Button>

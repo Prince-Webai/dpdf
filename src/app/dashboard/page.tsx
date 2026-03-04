@@ -178,7 +178,7 @@ export default function DashboardPage() {
                         className="h-10 bg-white text-black w-[150px] hover:bg-gray-200 font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all hover:scale-105 disabled:opacity-80"
                     >
                         {isExporting ? (
-                            <><Loader2 className="mr-2 h-4 w-4 animate-spin text-indigo-500" /> Exporting...</>
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin text-blue-500" /> Exporting...</>
                         ) : (
                             'Export Report'
                         )}
@@ -194,7 +194,7 @@ export default function DashboardPage() {
                         value={credits.toLocaleString()}
                         sub={`of ${creditLimit.toLocaleString()} total`}
                         icon={Zap}
-                        color="indigo"
+                        color="blue"
                         loading={false}
                     />
                 </motion.div>
@@ -223,11 +223,11 @@ export default function DashboardPage() {
             {/* Quick Tools */}
             <motion.div variants={itemVariants}>
                 <Link href="/dashboard/tools/extract">
-                    <Card className="bg-gradient-to-r from-emerald-900/40 to-indigo-900/40 border-white/10 p-8 hover:border-white/30 transition-all group relative overflow-hidden">
+                    <Card className="bg-gradient-to-r from-blue-900/40 to-blue-800/40 border-white/10 p-8 hover:border-blue-500/30 transition-all group relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-executive-gold/5 rounded-full blur-[100px] -mr-32 -mt-32 transition-opacity group-hover:opacity-100 opacity-0" />
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                             <div className="flex items-center gap-6">
-                                <div className="p-4 rounded-2xl bg-white/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                                <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                                     <Zap className="h-8 w-8 text-executive-gold" />
                                 </div>
                                 <div className="text-center md:text-left">
@@ -235,7 +235,7 @@ export default function DashboardPage() {
                                     <p className="text-white/40 text-sm max-w-md">Test our extraction engine with your own documents in a zero-latency development environment.</p>
                                 </div>
                             </div>
-                            <Button className="bg-white text-black font-bold h-12 px-8 hover:bg-executive-gold hover:text-white transition-all">
+                            <Button className="bg-blue-500 text-white font-bold h-12 px-8 hover:bg-blue-600 transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                                 Open Sandbox
                             </Button>
                         </div>
@@ -247,14 +247,14 @@ export default function DashboardPage() {
                 {/* Recent Activity */}
                 <motion.div variants={itemVariants} className="lg:col-span-2">
                     <Card className="bg-[#050505] border-white/5 p-6 h-full shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-opacity duration-1000 group-hover:opacity-100 opacity-50" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-opacity duration-1000 group-hover:opacity-100 opacity-50" />
 
                         <div className="flex items-center justify-between mb-8 relative z-10">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <ShieldCheck className="h-5 w-5 text-indigo-400" />
+                                <ShieldCheck className="h-5 w-5 text-blue-400" />
                                 Activity Log
                             </h2>
-                            <Link href="/dashboard/usage" className="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 transition-all hover:bg-indigo-500/20">
+                            <Link href="/dashboard/usage" className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 transition-all hover:bg-blue-500/20">
                                 View all <ChevronRight className="ml-1 h-3 w-3" />
                             </Link>
                         </div>
@@ -315,17 +315,17 @@ export default function DashboardPage() {
                 {/* Account Summary */}
                 <div className="space-y-6 lg:space-y-8">
                     <motion.div variants={itemVariants}>
-                        <Card className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 p-6 border border-indigo-500/30 text-white relative overflow-hidden group shadow-[0_0_40px_rgba(79,70,229,0.15)]">
+                        <Card className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 p-6 border border-blue-500/30 text-white relative overflow-hidden group shadow-[0_0_40px_rgba(59,130,246,0.15)]">
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700" />
 
                             <div className="relative z-10">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-1">Active Plan</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-1">Active Plan</h3>
                                 <div className="text-3xl font-extrabold mb-6 text-white capitalize">{plan} Tier</div>
 
                                 <div className="space-y-3 mb-6 bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
                                     <div className="flex justify-between text-sm items-end">
-                                        <span className="text-indigo-100 font-medium">Credits Used</span>
+                                        <span className="text-blue-100 font-medium">Credits Used</span>
                                         <span className="font-bold text-lg">{creditPercentage.toFixed(1)}%</span>
                                     </div>
                                     <div className="h-2.5 w-full bg-black/40 rounded-full overflow-hidden shadow-inner">
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                                     </div>
                                 </div>
 
-                                <Button className="w-full bg-white text-indigo-900 hover:bg-gray-100 font-bold shadow-xl transition-transform hover:scale-[1.02]" asChild>
+                                <Button className="w-full bg-blue-500 text-white hover:bg-blue-600 font-bold shadow-xl transition-transform hover:scale-[1.02]" asChild>
                                     <Link href="/pricing">Upgrade Limits</Link>
                                 </Button>
                             </div>
@@ -372,7 +372,7 @@ export default function DashboardPage() {
                                     <span className="text-white font-semibold">{credits.toLocaleString()}</span>
                                 </div>
                                 <div className="pt-2">
-                                    <Link href="/pricing" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                                    <Link href="/pricing" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
                                         View upgrade options →
                                     </Link>
                                 </div>
@@ -397,7 +397,7 @@ function getRelativeTime(dateStr: string): string {
 
 function StatCard({ label, value, sub, icon: Icon, color = "indigo", loading = false }: any) {
     const colorMap: Record<string, string> = {
-        indigo: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20 group-hover:bg-indigo-500/20",
+        blue: "text-blue-400 bg-blue-500/10 border-blue-500/20 group-hover:bg-blue-500/20",
         cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20 group-hover:bg-cyan-500/20",
         emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20 group-hover:bg-emerald-500/20",
         purple: "text-purple-400 bg-purple-500/10 border-purple-500/20 group-hover:bg-purple-500/20",
@@ -406,7 +406,7 @@ function StatCard({ label, value, sub, icon: Icon, color = "indigo", loading = f
     const iconStyle = colorMap[color]
 
     return (
-        <Card className="bg-[#050505] border-white/5 p-6 transition-all duration-300 hover:border-white/10 hover:shadow-2xl hover:shadow-indigo-500/5 group relative overflow-hidden">
+        <Card className="bg-[#050505] border-white/5 p-6 transition-all duration-300 hover:border-blue-500/10 hover:shadow-2xl hover:shadow-blue-500/5 group relative overflow-hidden">
             <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${colorMap[color].split(' ')[1]}`} />
 
             <div className="flex items-start justify-between relative z-10">

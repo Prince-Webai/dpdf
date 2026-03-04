@@ -109,7 +109,7 @@ export default function UsagePage() {
                                     </span>
                                 </div>
                                 <div className="h-[2px] bg-white/[0.05] w-full relative">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${stat.percentage}%` }} transition={{ duration: 1.5, ease: "circOut", delay: 0.6 }} className="absolute top-0 left-0 h-full bg-executive-gold shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${stat.percentage}%` }} transition={{ duration: 1.5, ease: "circOut", delay: 0.6 }} className="absolute top-0 left-0 h-full bg-executive-gold shadow-[0_0_10px_rgba(59,130,246,0.4)]" />
                                 </div>
                             </motion.div>
                         ))}

@@ -18,7 +18,7 @@ export default function PricingPage() {
         <div className="flex flex-col min-h-screen pt-32 pb-24 relative overflow-hidden bg-executive-black text-white selection:bg-executive-gold selection:text-black">
             <div className="executive-grain" />
             {/* Immersive Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-white/5 via-executive-black to-executive-black -z-10" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-500/5 via-executive-black to-executive-black -z-10" />
 
             <div className="absolute top-[20%] left-[-10%] w-[40%] h-[40%] rounded-full bg-executive-gold/5 blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
@@ -29,7 +29,7 @@ export default function PricingPage() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-white/5 border border-white/20 text-white text-[10px] uppercase tracking-[0.2em] mb-8 font-bold shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-500 text-[10px] uppercase tracking-[0.2em] mb-8 font-bold shadow-[0_0_20px_rgba(59,130,246,0.1)]"
                     >
                         <Sparkles className="w-3 h-3" />
                         Save 20% on all Annual Plans
@@ -76,7 +76,7 @@ export default function PricingPage() {
                                 </span>
                             </button>
                             <motion.div
-                                className="absolute bg-white rounded-full h-[calc(100%-12px)] shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                                className="absolute bg-blue-500 rounded-full h-[calc(100%-12px)] shadow-[0_0_20px_rgba(59,130,246,0.3)]"
                                 animate={{
                                     left: billingCycle === 'monthly' ? 6 : '50%',
                                     width: 'calc(50% - 6px)'
@@ -148,14 +148,14 @@ export default function PricingPage() {
                 >
                     <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto text-sm text-gray-400">
                         <div className="flex gap-4 items-start">
-                            <Info className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+                            <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                             <div>
                                 <h4 className="text-white font-semibold mb-2 text-base">What happens if I exceed my usage?</h4>
                                 <p className="leading-relaxed">We will never hardblock your application in production. If you consistently exceed your tier limit, our team will reach out to discuss a custom plan suited for your volume.</p>
                             </div>
                         </div>
                         <div className="flex gap-4 items-start">
-                            <Info className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+                            <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                             <div>
                                 <h4 className="text-white font-semibold mb-2 text-base">Is my sensitive data secure?</h4>
                                 <p className="leading-relaxed">Yes. We run a fully stateless engine. Your documents are kept in highly encrypted volatile memory during processing and are wiped the millisecond the API responds.</p>
@@ -175,10 +175,10 @@ function PriceCard({ name, price, desc, features, featured = false, delay, link 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay, type: "spring", bounce: 0.3 }}
-            className={`relative p-10 rounded-none border flex flex-col items-center text-center transition-all duration-300 group ${featured ? 'bg-executive-panel/50 border-white shadow-[0_0_40px_rgba(255,255,255,0.15)] md:-translate-y-4 md:hover:-translate-y-6' : 'bg-[#050505] border-white/10 hover:border-white/30 hover:bg-[#0a0a0a]'}`}
+            className={`relative p-10 rounded-none border flex flex-col items-center text-center transition-all duration-300 group ${featured ? 'bg-executive-panel/50 border-blue-500 shadow-[0_0_40px_rgba(59,130,246,0.15)] md:-translate-y-4 md:hover:-translate-y-6' : 'bg-[#050505] border-white/10 hover:border-blue-500/30 hover:bg-[#0a0a0a]'}`}
         >
             {featured && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-none text-[9px] font-bold uppercase tracking-[0.3em] shadow-[0_0_15px_rgba(255,255,255,0.1)] z-50">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500/20 backdrop-blur-md text-blue-400 px-4 py-1.5 rounded-none text-[9px] font-bold uppercase tracking-[0.3em] shadow-[0_0_15px_rgba(59,130,246,0.1)] z-50">
                     Most Popular
                 </div>
             )}
@@ -215,8 +215,8 @@ function PriceCard({ name, price, desc, features, featured = false, delay, link 
                 ))}
             </ul>
             <div className="mt-auto w-full relative group/btn">
-                <div className={`absolute -inset-0.5 blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)] ${featured ? 'bg-white' : 'bg-transparent group-hover/btn:bg-white/20'}`} />
-                <Button variant="outline" className={`relative w-full h-14 rounded-none text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 flex items-center justify-center border-0 ${featured ? 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black hover:border-white'}`} asChild>
+                <div className={`absolute -inset-0.5 blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(59,130,246,0.3)] ${featured ? 'bg-blue-500' : 'bg-transparent group-hover/btn:bg-blue-500/20'}`} />
+                <Button variant="outline" className={`relative w-full h-14 rounded-none text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 flex items-center justify-center border-0 ${featured ? 'bg-blue-500/10 backdrop-blur-md text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-white shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-white/5 border border-white/10 text-white hover:bg-blue-500 hover:text-white hover:border-blue-500'}`} asChild>
                     <Link href={link}>{btnText}</Link>
                 </Button>
             </div>
