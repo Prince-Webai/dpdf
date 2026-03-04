@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains; preload",
+            value: "max-age=63072000; includeSubDomains; preload",
           },
           {
             key: "Permissions-Policy",
@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Long-term cache for Next.js static assets
+      // Cache-control for static assets handled by Vercel CDN
       {
         source: "/_next/static/(.*)",
         headers: [
@@ -62,9 +62,16 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Vercel: redirect bare domain → www (add this if your domain is docunexus.com)
+  // Vercel: redirect bare domain → www (Optional)
   async redirects() {
     return [];
+  },
+
+  // Dev-friendly logging for Vercel builds
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
   },
 };
 

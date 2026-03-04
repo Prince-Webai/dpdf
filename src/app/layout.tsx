@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
+import { ProfileProvider } from "@/context/profile-context";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-black text-white antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
+        <ProfileProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </ProfileProvider>
       </body>
     </html>
   );

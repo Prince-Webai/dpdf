@@ -10,17 +10,15 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <ProfileProvider>
-            <div className="flex min-h-screen bg-executive-black text-white selection:bg-executive-gold selection:text-black relative flex-col">
-                <div className="executive-grain" />
+        <div className="flex min-h-screen bg-executive-black text-white selection:bg-executive-gold selection:text-black relative flex-col">
+            <div className="executive-grain" />
 
-                <TopNavHeader />
+            <TopNavHeader />
 
-                <main className="flex-1 pt-32 pb-24 px-8 md:px-16 max-w-[1920px] mx-auto w-full relative z-10">
-                    {children}
-                </main>
-                <Toaster />
-            </div>
-        </ProfileProvider>
+            <main className="flex-1 pt-32 pb-24 px-8 md:px-16 max-w-[1920px] mx-auto w-full relative z-10">
+                {children}
+            </main>
+            <Toaster />
+        </div>
     )
 }

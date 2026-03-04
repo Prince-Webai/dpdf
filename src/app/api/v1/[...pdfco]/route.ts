@@ -29,20 +29,19 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pd
         if (userApiKey === 'dn_test_sandbox') {
             console.log("Sandbox request detected: bypassing API key validation.");
         } else {
-            const cookieStore = cookies()
+            const cookieStore = await cookies()
             const supabase = createServerClient(
                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
                 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
                 {
                     cookies: {
-                        async getAll() {
-                            return (await cookieStore).getAll()
+                        getAll() {
+                            return cookieStore.getAll()
                         },
-                        async setAll(cookiesToSet) {
+                        setAll(cookiesToSet) {
                             try {
-                                const store = await cookieStore;
                                 cookiesToSet.forEach(({ name, value, options }) =>
-                                    store.set(name, value, options)
+                                    cookieStore.set(name, value, options)
                                 )
                             } catch {
                                 // The `setAll` method was called from a Server Component.

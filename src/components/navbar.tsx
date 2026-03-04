@@ -2,31 +2,17 @@
 
 import Link from 'next/link'
 import { Pentagon, Menu, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/utils/supabase/client'
-import { User } from '@supabase/supabase-js'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+import { useProfile } from '@/context/profile-context'
 
 export function Navbar() {
     const pathname = usePathname()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [user, setUser] = useState<User | null>(null)
-    const supabase = useMemo(() => createClient(), [])
-
-    useEffect(() => {
-        // getSession reads from local cache — no network round-trip
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null)
-        })
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null)
-        })
-
-        return () => subscription.unsubscribe()
-    }, [supabase])
+    const { user } = useProfile()
 
     if (pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard')) return null
 
