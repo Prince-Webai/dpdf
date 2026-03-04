@@ -10,20 +10,6 @@ import { useProfile } from "@/context/profile-context"
 export default function PricingPage() {
     const { user } = useProfile()
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual')
-<<<<<<< HEAD:src/app/pricing/page.tsx
-=======
-    const [user, setUser] = useState<any>(null)
-    const router = useRouter()
-    const supabase = createClient()
-
-    useEffect(() => {
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user || null)
-        }
-        checkUser()
-    }, [supabase])
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/pricing/page.tsx
 
     const prices = {
         monthly: { basic: "14.99", personal: "24.99", business: "54.99" },
@@ -154,8 +140,6 @@ export default function PricingPage() {
                         isLoggedIn={!!user}
                     />
                 </div>
-
-
 
                 {/* FAQ / Trust Segment */}
                 <motion.div

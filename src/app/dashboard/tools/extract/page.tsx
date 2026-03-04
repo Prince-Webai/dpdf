@@ -3,11 +3,7 @@
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-<<<<<<< HEAD
-import { Upload, FileText, Loader2, Terminal, Download } from "lucide-react"
-=======
-import { Upload, FileText, Loader2, Code, Download, Shield, Zap } from "lucide-react"
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
+import { Upload, FileText, Loader2, Terminal, Download, Shield, Zap } from "lucide-react"
 import Script from 'next/script'
 
 export default function ExtractToolPage() {
@@ -235,34 +231,11 @@ export default function ExtractToolPage() {
 
                 {/* Output Panel */}
                 <div>
-<<<<<<< HEAD
-                    <Card className="bg-[#0a0a0a] border-white/10 h-full flex flex-col overflow-hidden">
-                        <div className="bg-white/5 border-b border-white/10 px-4 py-3 flex items-center justify-between">
-                            <h3 className="font-semibold text-sm flex items-center gap-2"><Terminal className="h-4 w-4 text-emerald-400" /> JSON Response</h3>
-                            {result && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 text-xs text-gray-400 hover:text-white"
-                                    onClick={handleDownload}
-                                >
-                                    <Download className="h-3 w-3 mr-2" /> Download
-                                </Button>
-                            )}
-                        </div>
-                        <CardContent className="p-0 flex-1 relative bg-[#050505] min-h-[400px]">
-                            {!result && !isProcessing && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
-                                    <Terminal className="h-12 w-12 mb-4 opacity-20" />
-                                    <p>Upload a document and extract data to see the JSON output.</p>
-                                </div>
-                            )}
-=======
                     <div>
                         <Card className="bg-white/5 backdrop-blur-3xl border-white/10 rounded-[3rem] h-full flex flex-col overflow-hidden shadow-2xl relative">
                             <div className="bg-white/[0.02] border-b border-white/5 px-8 py-5 flex items-center justify-between">
                                 <h3 className="text-xs font-bold text-white/30 uppercase tracking-[0.2em] flex items-center gap-2">
-                                    <Code className="h-4 w-4 text-emerald-400/50" /> Structured Intelligence Output
+                                    <Terminal className="h-4 w-4 text-emerald-400/50" /> Structured Intelligence Output
                                 </h3>
                                 {result && (
                                     <Button
@@ -280,12 +253,12 @@ export default function ExtractToolPage() {
                                 {!result && !isProcessing && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center text-white/10">
                                         <div className="w-20 h-20 bg-white/[0.02] rounded-full flex items-center justify-center mb-6">
-                                            <Code className="h-10 w-10 opacity-20" />
+                                            <Terminal className="h-10 w-10 opacity-20" />
                                         </div>
                                         <p className="text-sm font-medium tracking-tight">Stream output will manifest here</p>
                                     </div>
                                 )}
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
+
 
                                 {isProcessing && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center">

@@ -2,16 +2,11 @@
 import { createClient } from "@/utils/supabase/client"
 
 import { useEffect, useState } from "react"
-<<<<<<< HEAD
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Key, Activity, ArrowUpRight, Loader2, ShieldCheck, Info } from "lucide-react"
 import { getAdminStats, createInitialAdmin } from "@/lib/actions"
 import { motion } from "framer-motion"
-import { Card } from "@/components/ui/card"
-=======
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Key, Activity, ArrowUpRight, Loader2 } from "lucide-react"
-import { getAdminStats } from "@/lib/actions"
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
+
 
 export default function AdminOverviewPage() {
     const [stats, setStats] = useState<{
@@ -21,12 +16,12 @@ export default function AdminOverviewPage() {
     } | null>(null)
     const [loading, setLoading] = useState(true)
 
-<<<<<<< HEAD
+    const supabase = createClient()
+
     useEffect(() => {
         createInitialAdmin()
-=======
-    const supabase = createClient()
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
+    }, [])
+
 
     useEffect(() => {
         async function loadStats() {
@@ -97,7 +92,6 @@ export default function AdminOverviewPage() {
                 </div>
             </motion.div>
 
-<<<<<<< HEAD
             <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <motion.div variants={itemVariants}>
                     <StatCard
@@ -129,39 +123,7 @@ export default function AdminOverviewPage() {
                     />
                 </motion.div>
             </motion.div>
-=======
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-                <Card className="bg-[#0a0a0a] border-white/10 text-white">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
-                        <Users className="h-4 w-4 text-indigo-400" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.totalUsers.toLocaleString()}</div>
-                    </CardContent>
-                </Card>
 
-                <Card className="bg-[#0a0a0a] border-white/10 text-white">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-400">Active API Keys</CardTitle>
-                        <Key className="h-4 w-4 text-cyan-400" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.activeApiKeys.toLocaleString()}</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-[#0a0a0a] border-white/10 text-white">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-400">Total API Calls</CardTitle>
-                        <Activity className="h-4 w-4 text-red-400" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.totalApiCalls.toLocaleString()}</div>
-                    </CardContent>
-                </Card>
-            </div>
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
 
             <motion.div variants={itemVariants} className="mt-8">
                 <Card className="bg-[#050505] border-white/5 p-6 h-full shadow-2xl relative overflow-hidden group">

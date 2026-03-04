@@ -8,8 +8,8 @@ import { ProfileProvider } from "@/context/profile-context";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DocuNexu | AI PDF API",
-  description: "Advanced PDF manipulation and AI extraction API",
+  title: "DocuNexu | Enterprise AI PDF Infrastructure",
+  description: "The world's most sophisticated PDF API framework. Instantly merge, split, generate, and intelligently extract data from any PDF with AI-powered agents.",
 };
 
 export default function RootLayout({
@@ -18,22 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<<<<<<< HEAD
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-black text-white antialiased`}>
-        <ProfileProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </ProfileProvider>
-=======
-    <html lang="en" className="dark">
       <body
         className={`${inter.className} min-h-screen bg-black text-white antialiased flex flex-col selection:bg-indigo-500/30`}
       >
-        {children}
-        <Toaster />
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
+        <ProfileProvider>
+          {children}
+          <Toaster />
+        </ProfileProvider>
       </body>
     </html>
   );

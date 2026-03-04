@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Pentagon, Loader2, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { createClient } from '../../utils/supabase/client'
+import { createClient } from '@/utils/supabase/client'
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false)
@@ -20,7 +20,6 @@ export function LoginForm() {
     const message = searchParams.get('message')
     const supabase = createClient()
     const { toast } = useToast()
-    const message = searchParams.get('message')
 
     useEffect(() => {
         if (message) {
@@ -51,16 +50,12 @@ export function LoginForm() {
                 }
             }
         } catch (err: any) {
-<<<<<<< HEAD:src/app/login/login-form.tsx
-            setError(err.message || 'Failed to sign in')
-=======
             setError(err.message || "Failed to sign in")
             toast({
                 title: "Error",
                 description: err.message || "Failed to sign in",
                 variant: "destructive",
             })
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/login/login-form.tsx
             setIsLoading(false)
         }
     }
@@ -83,6 +78,11 @@ export function LoginForm() {
         } catch (err: any) {
             setError(err.message || `Failed to sign in with ${provider}`)
             setOauthLoading(null)
+            toast({
+                title: "OAuth Error",
+                description: err.message || `Failed to sign in with ${provider}`,
+                variant: "destructive",
+            })
         }
     }
 

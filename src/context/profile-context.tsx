@@ -1,20 +1,8 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-<<<<<<< HEAD
-import { createClient } from '../utils/supabase/client'
-
-export const PLAN_LIMITS: Record<string, { credits: number; token_limit: number }> = {
-    'free': { credits: 100, token_limit: 50000 },
-    'Hobby': { credits: 100, token_limit: 50000 },
-    'Basic': { credits: 17000, token_limit: 1000000 },
-    'Personal': { credits: 37000, token_limit: 5000000 },
-    'Business': { credits: 81000, token_limit: 20000000 },
-}
-=======
 import { createClient } from '@/utils/supabase/client'
 import { PLAN_LIMITS } from "@/lib/constants"
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
 
 interface Profile {
     id: string

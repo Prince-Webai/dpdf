@@ -4,15 +4,9 @@ import Link from 'next/link'
 import { Pentagon, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-<<<<<<< HEAD
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-
 import { useProfile } from '@/context/profile-context'
-=======
-import { createClient } from '@/utils/supabase/client'
-import { User } from '@supabase/supabase-js'
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)

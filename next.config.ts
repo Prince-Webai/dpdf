@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-<<<<<<< HEAD
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -30,8 +29,6 @@ const nextConfig: NextConfig = {
   },
 
   // Security headers applied to every route
-=======
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI)
   async headers() {
     return [
       {

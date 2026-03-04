@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Pentagon, Loader2, Eye, EyeOff, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { createClient } from '../../utils/supabase/client'
+import { createClient } from '@/utils/supabase/client'
 import { signUpUser } from '@/lib/actions'
 
 const features = [
@@ -42,33 +42,21 @@ export function SignupForm() {
 
             const { data: { user } } = await supabase.auth.getUser()
 
-<<<<<<< HEAD:src/app/signup/signup-form.tsx
-            if (session) {
-                window.location.href = next ?? '/dashboard'
-=======
             if (user) {
-                if (next) {
-                    window.location.href = next
-                } else {
-                    window.location.href = '/dashboard'
-                }
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/signup/signup-form.tsx
+                window.location.href = next || '/dashboard'
             } else {
                 window.location.href = `/login?message=Please check your email to confirm your account${next ? `&next=${encodeURIComponent(next)}` : ''}`
             }
         } catch (err: any) {
-<<<<<<< HEAD:src/app/signup/signup-form.tsx
-            setError(err.message || 'Failed to create account')
-=======
             setError(err.message || "Failed to create account")
             toast({
                 title: "Error",
                 description: err.message || "Failed to create account",
                 variant: "destructive",
             })
->>>>>>> 9d56d33 (feat: redesign dashboard with realtime intelligence and fluid UI):src/app/(marketing)/signup/signup-form.tsx
             setIsLoading(false)
         }
+
     }
 
     const handleOAuthSignup = async (provider: 'google' | 'github') => {
