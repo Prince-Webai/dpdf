@@ -223,11 +223,11 @@ export default function DashboardPage() {
             {/* Quick Tools */}
             <motion.div variants={itemVariants}>
                 <Link href="/dashboard/tools/extract">
-                    <Card className="bg-gradient-to-r from-emerald-900/40 to-indigo-900/40 border-white/10 p-8 hover:border-executive-gold/30 transition-all group relative overflow-hidden">
+                    <Card className="bg-gradient-to-r from-emerald-900/40 to-indigo-900/40 border-white/10 p-8 hover:border-white/30 transition-all group relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-executive-gold/5 rounded-full blur-[100px] -mr-32 -mt-32 transition-opacity group-hover:opacity-100 opacity-0" />
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                             <div className="flex items-center gap-6">
-                                <div className="p-4 rounded-2xl bg-executive-gold/10 border border-executive-gold/20 shadow-[0_0_20px_rgba(203,178,106,0.1)]">
+                                <div className="p-4 rounded-2xl bg-white/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                                     <Zap className="h-8 w-8 text-executive-gold" />
                                 </div>
                                 <div className="text-center md:text-left">

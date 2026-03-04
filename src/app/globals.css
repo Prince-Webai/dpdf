@@ -40,7 +40,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  --color-executive-gold: #cbb26a;
+  --color-executive-gold: #ffffff;
   --color-executive-black: #0a0a0a;
 
   --radius-sm: calc(var(--radius) - 4px);

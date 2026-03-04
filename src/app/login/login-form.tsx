@@ -68,7 +68,7 @@ export function LoginForm() {
                 <div
                     className="absolute inset-0 opacity-[0.04]"
                     style={{
-                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(156,130,74,0.8) 1px, transparent 0)`,
+                        backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)`,
                         backgroundSize: '40px 40px',
                     }}
                 />
@@ -166,11 +166,11 @@ export function LoginForm() {
                         {/* Submit */}
                         <div className="pt-2">
                             <div className="relative group">
-                                <div className="absolute -inset-0.5 bg-executive-gold blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(203,178,106,0.3)]" />
+                                <div className="absolute -inset-0.5 bg-executive-gold blur-md opacity-40 transition duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="relative w-full py-3.5 bg-executive-gold text-black text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(203,178,106,0.2)]"
+                                    className="relative w-full py-3.5 bg-executive-gold text-black text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(255,255,255,0.2)]"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="h-4 w-4 animate-spin" />
